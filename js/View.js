@@ -1,5 +1,4 @@
 (function (global) {
-
 	var View = (function () {
 		return {
 			initialize: function () {
@@ -14,10 +13,12 @@
 		};
 	}) ();
 	global.View = View;
+}) (this);
 
+(function (global) {
 	var Tabs = (function () {
 		var
-			$super	=	View,
+			$super	=	global,
 			data	=	{
 				// DOM Elements
 				bar		:	null,
@@ -40,8 +41,10 @@
 				data.view.set("id", "tabView");
 				data.wrap.adopt(data.view);
 
-				window.addEvent("resize", View.Tabs.refreshSize.bind(View.Tabs));
-				View.Tabs.refreshSize();
+				window.addEvent("resize", function () {
+					return global.Tabs.refreshSize.bind(global.Tabs);
+				});
+				global.Tabs.refreshSize();
 			},
 			createTab: function (tabName) {
 				var
@@ -75,11 +78,11 @@
 			}
 		};
 	}) ();
-	View.Tabs = Tabs;
+	global.Tabs = Tabs;
 
 	var Map = (function () {
 		var
-			$super	=	View,
+			$super	=	global,
 			data	=	{
 				mapCirc	:	new google.maps.Circle({
 					fillColor:		"black",
@@ -172,11 +175,11 @@
 			}
 		};
 	}) ();
-	View.Map = Map;
+	global.Map = Map;
 
 	var Info = (function () {
 		var
-			$super	=	View,
+			$super	=	global,
 			data	=	{
 				// DOM Elements
 				test: null,
@@ -202,7 +205,7 @@
 			}
 		};
 	}) ();
-	View.Info = Info;
+	global.Info = Info;
 
 	var Table = (function () {
 		var
@@ -233,7 +236,7 @@
 			},
 			addRow: function (obj) {
 				var
-					$super		=	View,
+					$super		=	global,
 					currIdx		=	el.getElements("tr.dataRow").length,
 					tableRow	=	new Element("tr");
 
@@ -250,8 +253,12 @@
 					tableRow.adopt(tableCell);
 				}
 
-				tableRow.addEvent("mouseenter", View.Map.highlightMarker.bind(tableRow));
-				tableRow.addEvent("mouseleave", View.Map.dehighlightMarker.bind(tableRow));
+				tableRow.addEvent("mouseenter", function () {
+					return global.Map.highlightMarker.bind(tableRow);
+				});
+				tableRow.addEvent("mouseleave", function () {
+					return global.Map.dehighlightMarker.bind(tableRow);
+				});
 				el.adopt(tableRow);
 			},
 			clear: function () {
@@ -301,7 +308,7 @@
 			}
 		};
 	}) ();
-	View.Table = Table;
+	global.Table = Table;
 
 	var ChannelBox = (function () {
 		var
@@ -343,7 +350,7 @@ $("testbar").hide.delay(3000, $("testbar"));
 			}
 		};
 	}) ();
-	View.ChannelBox = ChannelBox;
+	global.ChannelBox = ChannelBox;
 
-}) (this);
+}) (this.View);
 
