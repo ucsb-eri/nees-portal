@@ -1,5 +1,4 @@
 (function (global) {
-
 	var Model = (function () {
 		var settings = {
 			requestUrl: "get.php"
@@ -26,17 +25,20 @@
 		};
 	}) ();
 	global.Model = Model;
+}) (this);
 
+(function (global) {
 	var Data = (function () {
 		var
-			$super				=	Model,
+			$super				=	global,
 			observers			=	[],
 			values				=	{};
 
 		return {
 			attach: function () {
-				for (var idx = 0, j = arguments, k = arguments.length; idx < k; idx++) {
-					j[idx].update && observers.push(j[idx]);
+				for (var idx = 0, j = arguments, k = arguments.length;
+						idx < k; idx++) {
+					if (j[idx].update) observers.push(j[idx]);
 				}
 			},
 			getValues: function () {
@@ -52,8 +54,8 @@
 				var selOption	=	opts.site.options[opts.site.selectedIndex];
 				values.site		=	{
 					name		:	opts.site.value,
-					lat			:	parseFloat(selOption.getAttribute("lat")) || 34.42,
-					lon			:	parseFloat(selOption.getAttribute("lon")) || -119.84,
+					lat			:	parseFloat(selOption.getAttribute("lat")),
+					lon			:	parseFloat(selOption.getAttribute("lon")),
 
 					toString	:	function () {
 						return this.name;
@@ -91,11 +93,11 @@
 			}
 		};
 	}) ();
-	Model.Data = Data;
+	global.Data = Data;
 
 	var Events = (function () {
 		var
-			$super		=	Model;
+			$super		=	global;
 			events		=	[],
 			observers	=	[],
 			queryResult	=	'query-result'
@@ -103,7 +105,7 @@
 		return {
 			attach: function () {
 				for (var idx = 0, j = arguments, k = arguments.length; idx < k; idx++) {
-					j[idx].update && observers.push(j[idx]);
+					if (j[idx].update) observers.push(j[idx]);
 				}
 			},
 			getEvents: function () {
@@ -126,7 +128,7 @@
 			}
 		};
 	}) ();
-	Model.Events = Events;
+	global.Events = Events;
 
-}) (this);
+}) (this.Model);
 

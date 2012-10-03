@@ -1,5 +1,4 @@
 (function (global) {
-
 	var Controller = (function () {
 		var
 			ctrls		=	["site", "radius", "minMag", "maxMag", "sDate", "eDate", "itemsPerPage"],
@@ -63,7 +62,7 @@
 			attach: function () {
 				for (var idx = 0, j = arguments, k = arguments.length;
 					idx < k; idx++) {
-					j[idx].update && observers.push(j[idx]);
+					if (j[idx].update) observers.push(j[idx]);
 				}
 			},
 			get: function (k) {
@@ -83,8 +82,11 @@
 				for (var idx = 0, l = ctrls.length; idx < l; idx++) {
 					var val = ctrls[idx];
 
-					typeOf(val) === "string" && (val == "site" ?
-						input[val] = $(val) : input[val] = $(val).value);
+					if (typeOf(val) === "string") {
+						val == "site" ?
+							input[val] = $(val) :
+							input[val] = $(val).value;
+					}
 				}
 
 				input.page			=	0;
@@ -102,10 +104,12 @@
 		};
 	}) ();
 	global.Controller = Controller;
+}) (this);
 
+(function (global) {
 	var TableCtrls = (function () {
 		var
-			$super		=	Controller,
+			$super		=	global,
 			settings 	=	{
 				first:	"table-ctrl-first",
 				last:	"table-ctrl-last",
@@ -148,7 +152,7 @@
 					}
 
 					this.setCurrentPage(target);
-				}.bind(Controller.TableCtrls));
+				}.bind(global.TableCtrls));
 			},
 			resetPageCount: function () {
 				$(settings.page).set("value", 1);
@@ -170,7 +174,7 @@
 			}
 		};
 	}) ();
-	Controller.TableCtrls = TableCtrls;
+	global.TableCtrls = TableCtrls;
 
-}) (this);
+}) (this.Controller);
 
