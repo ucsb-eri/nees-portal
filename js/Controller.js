@@ -57,7 +57,7 @@
 							}
 						}.bind(sWrap));
 				});
-				this.TableCtrls.initialize();
+				this.TableCtrls = new TableCtrls();
 			},
 			attach: function () {
 				for (var idx = 0, j = arguments, k = arguments.length;
@@ -104,12 +104,10 @@
 		};
 	}) ();
 	global.Controller = Controller;
-}) (this);
-
-(function (global) {
+    
 	var TableCtrls = (function () {
 		var
-			$super		=	global,
+			$super		=	Controller,
 			settings 	=	{
 				first:	"table-ctrl-first",
 				last:	"table-ctrl-last",
@@ -119,7 +117,7 @@
 				maxPages:	"table-ctrl-total",
 				page:		"table-ctrl-page"
 			};
-		return {
+		return new Class({
 			initialize: function () {
 				$(settings.first).addEvent("click", this.gotoPage(-2));
 				$(settings.last).addEvent("click", this.gotoPage(2));
@@ -152,7 +150,7 @@
 					}
 
 					this.setCurrentPage(target);
-				}.bind(global.TableCtrls));
+				}.bind(this));
 			},
 			resetPageCount: function () {
 				$(settings.page).set("value", 1);
@@ -172,9 +170,8 @@
 				$super.set("maxPages", maxPages);
 				$(settings.maxPages).set("text", maxPages);
 			}
-		};
+		});
 	}) ();
-	global.TableCtrls = TableCtrls;
 
-}) (this.Controller);
+}) (this);
 
