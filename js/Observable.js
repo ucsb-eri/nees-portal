@@ -1,5 +1,7 @@
+/* vim: set tabstop=4 shiftwidth=4: */
 /*jshint mootools:true */
 (function (global) {
+    'use strict';
     
     /**
      * Defines a class of Objects which notifies observers when data is changed.

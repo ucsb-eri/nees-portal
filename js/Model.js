@@ -1,5 +1,8 @@
+/* vim: set tabstop=4 shiftwidth=4: */
 /*jshint mootools:true */
 (function (global) {
+    'use strict';
+    
 	var Model = (function () {
 		var settings = {
 			requestUrl: 'get.php'
