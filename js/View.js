@@ -1,5 +1,8 @@
+/* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
 (function (global) {
+    'use strict';
+    
 	var View = (function () {
 		return {
 			initialize: function () {
@@ -253,12 +256,10 @@
 					tableRow.adopt(tableCell);
 				}
 
-				tableRow.addEvent('mouseenter', function () {
-					return View.Map.highlightMarker.bind(tableRow);
-				});
-				tableRow.addEvent('mouseleave', function () {
-					return View.Map.dehighlightMarker.bind(tableRow);
-				});
+				tableRow.addEvent('mouseenter',
+                    View.Map.highlightMarker.bind(tableRow));
+				tableRow.addEvent('mouseleave',
+                    View.Map.dehighlightMarker.bind(tableRow));
                 tableRow.addEvent('click', function () {
                     // @@TODO: Pass req to Model to get channels and pass to
                     //           ChannelBox.

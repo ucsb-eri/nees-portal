@@ -1,4 +1,8 @@
+/* vim: set tabstop=4 shiftwidth=4: */
+/*jslint mootools:true */
 (function (global) {
+    'use strict';
+    
 	var DisplayAlgorithms = ({
         getCircleOptions: function (ml) {
             return {

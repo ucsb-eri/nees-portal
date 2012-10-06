@@ -1,4 +1,8 @@
+/* vim: set tabstop=4 shiftwidth=4: */
+/*jslint mootools:true */
 (function (global) {
+    'use strict';
+    
 	var Controller = (function () {
 		var
 			ctrls		=	["site", "radius", "minMag", "maxMag", "sDate", "eDate", "itemsPerPage"],
