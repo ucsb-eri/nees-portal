@@ -1,5 +1,6 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
+
 (function (global) {
     'use strict';
     
@@ -190,7 +191,7 @@
 			initialize: function (el) {
 				data.wrap = el;
 				var testDiv = data.test = new Element('div', {
-					'styles' : {
+					styles : {
 						'backgroundColor': '#FFF',
 						'height': '100%',
 						'width': '100%'
@@ -241,6 +242,8 @@
 				tableRow.addClass(currIdx % 2 ? 'even' : 'odd');
 				tableRow.addClass('dataRow');
 				tableRow.store('rowNum', currIdx);
+                tableRow.store('evid', obj.id);
+                tableRow.store('siteId', obj.siteId);
 
 				var chkBox = new Element('input', { type: 'checkbox' });
 				tableRow.adopt(chkBox);
@@ -260,16 +263,17 @@
                     View.Map.highlightMarker.bind(tableRow));
 				tableRow.addEvent('mouseleave',
                     View.Map.dehighlightMarker.bind(tableRow));
-                tableRow.addEvent('click', function () {
-                    // @@TODO: Pass req to Model to get channels and pass to
-                    //           ChannelBox.
-                });
+                tableRow.addEvent('click', this.getChannels.bind(tableRow));
 				el.adopt(tableRow);
 			},
 			clear: function () {
 				el.empty();
 				this.writeHeader();
 			},
+            getChannels: function () {
+                global.Model.Channels.update(this.retrieve('evid'),
+                    this.retrieve('siteId'));
+            },
 			parse: function (obj) {
 				// @@TODO: Parse data into readable format
 				if (~obj.toString().indexOf('UTC')) {
@@ -304,7 +308,11 @@
 						});
 					headCol.store('idx', idx);
 					headCol.addEvent('click', function (evt) {
-						Model.Data.sortBy(j[evt.target.retrieve('idx')]);
+						global.Model.Data.sortBy(
+                            Object.keys(settings.tableHeader)[
+                                evt.target.retrieve('idx')
+                            ]
+                        );
 					});
 					tRow.adopt(headCol);
 				}
@@ -316,12 +324,12 @@
 
 	var ChannelBox = (function () {
 		var
-            data        =   {
-                el: null
-            },
+            data        =   null,
+            el          =   {},
 			settings	=	{
 				sideBar: 'app-grid',
-				titleBar: 'app-title'
+				titleBar: 'app-title',
+                test: false
 			};
 
 		function getOffsets() {
@@ -332,21 +340,65 @@
 		}
 		return new Class({
 			initialize: function () {
-                var el = data.el = new Element('div', {
-                    'id': 'channel-box',
-                    'styles': {
-                        top: getOffsets().y + 'px',
-                        height: (window.getSize().y - getOffsets().y) + 'px',
-                        left: getOffsets().x + 'px'
-                    },
-                    text: 'filler Channel bar'
-                });
-                
-                document.body.adopt(el);
-			}
-		});
+                var
+                    wrap = el.wrap = new Element('div', {'id': 'channel-box'}),
+                    table = el.table = new Element('table');
 
+                window.addEvent('resize', this.onResize.bind(this));
+                this.onResize();
+
+                wrap.adopt(table);
+                document.body.adopt(el.wrap);
+                this.hide();
+			},
+            
+            hide: function () {
+                el.wrap.fade('hide');
+            },
+            onResize: function () {
+                el.wrap.setStyles({
+                    top: getOffsets().y + 'px',
+                    height: (window.getSize().y - getOffsets().y) + 'px',
+                    left: getOffsets().x + 'px'
+                });
+            },
+            render: function () {
+                var
+                    tHead       =   new Element('thead'),
+                    tHeadRow    =   new Element('tr');
+
+                el.table.empty();
+
+                // Write header
+                for (var i = 0, j = data.$meta.headers, k = j.length; i < k;
+                        i++) {
+                    tHeadRow.adopt(new Element('td', {
+                        text: data.$meta.headers[i]
+                    }));
+                }
+                el.table.adopt(tHeadRow);
+
+                // Write table
+                for (var i = 0, j = data.$data, k = j.length; i < k; i++) {
+                    var tRow = new Element('tr');
+                    for (var p = 0, q = j[i], r = q.length; p < r; p++) {
+                        tRow.adopt(new Element('td', {
+                            text: q[p]
+                        }));
+                    }
+                    el.table.adopt(tRow);
+                }
+
+                this.show();
+            },
+            show: function () {
+                el.wrap.fade('show');
+            },
+            update: function (obj) {
+                data = obj.getChannels();
+                this.render();
+            }
+		});
 	}) ();
 
 }) (this);
-

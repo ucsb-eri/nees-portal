@@ -1,20 +1,29 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jshint mootools:true */
+
+/**
+ * NEES Data Portal
+ */
 (function (global) {
     'use strict';
     
-	document.addEvent("domready", function () {
-		[Controller, View, Model].invoke("initialize");
+    var Portal = global.Portal = function () {
+        this.version = '0.0.0';
+    };
+    
+	document.addEvent('domready', function () {
+		[global.Controller, global.View, global.Model].invoke('initialize');
 
-		Controller.attach(Model.Data);
-		Model.Data.attach(View.Map, View.Info, Model.Events);
-		Model.Events.attach(View.Map, View.Table);
+		global.Controller.attach(global.Model.Data);
+        global.Model.Channels.attach(global.View.ChannelBox);
+		global.Model.Data.attach(global.View.Map, global.View.Info,
+            global.Model.Events);
+		global.Model.Events.attach(global.View.Map, global.View.Table);
 
-		Controller.retrieveInput();
+		global.Controller.retrieveInput();
 
-		$$(".toggle:not(.active)").retrieve("slide").invoke("hide");
-		$("site").focus();
+		$$('.toggle:not(.active)').retrieve('slide').invoke('hide');
+		$('site').focus();
 	});
 
 }) (this);
-

@@ -110,11 +110,11 @@ body {
 	background: url(../img/tango/list-remove.png) no-repeat center center;
 }
 #app-grid .toggle-target {
-	background-color: #595959;
+	background-color: #444;
 	margin: 25px 15px;
 	margin-top: 0;
 }
-#app-input form {
+#app-input {
 	background-color: #444;
 }
 #app-input table {
@@ -199,21 +199,21 @@ body {
 #table-ctrl-page {
 	width: 50px;
 }
-form table td input[type=text], form table td select {
+#app-input input[type=text], #app-input select {
 	margin: 3px 0;
 	padding-left: 0;
 	padding-right: 0;
 	width: 100%;
 }
-form table td input[type=text] {
+#app-input input[type=text] {
 	border: 2px inset;
 	height: 14px;
 }
-#minMag {
+#app-input input[type=text]#minMag {
 	float: left;
 	width: 45%;
 }
-#maxMag {
+#app-input input[type=text]#maxMag {
 	float: right;
 	margin-left: 8px;
 	position: relative;
@@ -224,4 +224,8 @@ form table td input[type=text] {
 	background-color: #334;
 	padding: 5px 0;
 	text-align: center;
+}
+#channel-box {
+    background-color: #555;
+    position: absolute;
 }
