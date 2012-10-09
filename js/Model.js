@@ -1,19 +1,45 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jshint mootools:true */
+
+/**
+ * Handles data retrieval and storage.
+ * 
+ * -----------------------------------------------------------------------------
+ * Layout
+ * -----------------------------------------------------------------------------
+ * Model
+ *  - initialize()
+ *  - sendRequest(type, opts, callback, bind)
+ * 
+ *     Channels
+ *      - initialize()
+ *      - processChannels()
+ *      - update(evid)
+ *     Data
+ *      - getValues()
+ *      - setValues(opts)
+ *      - sortBy(col)
+ *      - update(obj)
+ *     Events
+ *      - getEvents()
+ *      - processEvents(json)
+ *      - update(obj)
+ */
 (function (global) {
     'use strict';
     
-	var Model = (function () {
+	var Model = global.Model = (function () {
 		var settings = {
 			requestUrl: 'get.php'
 		};
 
 		return {
 			initialize:		function () {
+            // Initialize child objects
                 this.Channels = new Channels();
                 this.Data = new Data();
                 this.Events = new Events();
-            }, // Do nothing
+            },
 			sendRequest:	function (type, opts, callback, bind) {
 				var queryString = '';
 				
@@ -33,21 +59,47 @@
 			}
 		};
 	}) ();
-	global.Model = Model;
-    
+
     var Channels = (function () {
+        var
+            $super = Model,
+            data = {
+                channels: null,
+                evid: -1
+            },
+            queryResult = 'channel-results';
+
         return new Class({
-            Extends: Observable,
-            initialize: function () {}
+            Extends: global.Observable,
+            initialize: function () {},
+            getChannels: function () {
+                return data.channels;
+            },
+            processChannels: function (json) {
+				data.channels = json;
+                
+//				$(queryResult).set('text', 'Found ' + json.$meta.rows +
+//                    ' results.');
+
+				this.notify();
+            },
+            update: function (evid, siteId) {
+                console.log('evid: ' + evid);
+                console.log('siteId' + siteId);
+                $super.sendRequest('chn', {
+                    evid: evid,
+                    siteId: siteId
+                }, this.processChannels, this);
+            }
         });
     }) ();
-    
+
 	var Data = (function () {
 		var
-			values		=	{};
+			values	=	{};
 
 		return new Class({
-            Extends: Observable,
+            Extends: global.Observable,
 			getValues: function () {
 				return values;
 			},
@@ -103,7 +155,7 @@
 			queryResult	=	'query-result';
 
 		return new Class({
-            Extends: Observable,
+            Extends: global.Observable,
 			getEvents: function () {
 				return events;
 			},

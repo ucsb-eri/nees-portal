@@ -13,18 +13,18 @@
 			initialize: function () {
 				// Initialize input fields
 				ctrls.each(function (strId) {
-					if (~strId.toLowerCase().indexOf("date")) {
+					if (~strId.toLowerCase().indexOf('date')) {
 						new Picker.Date($(strId), {
 							format:			'%x',
 							onSelect:		Controller.update.bind(Controller),
-							pickerClass:	"datepicker_jqui",
+							pickerClass:	'datepicker_jqui',
 							positionOffset:	{ x: 0, y: 5 },
 							yearPicker:		true
 						});
 					} else {
-						$(strId).addEvent("change",
+						$(strId).addEvent('change',
 								Controller.update.bind(Controller));
-						$(strId).addEvent("keypress", function (evt) {
+						$(strId).addEvent('keypress', function (evt) {
 							// update if Enter pressed
 							if (evt.code === 13) {
 								this.update();
@@ -34,19 +34,19 @@
 				});
 
 				// Initialize sliders
-				$$(".toggle>span").each(function (el) {
+				$$('.toggle>span').each(function (el) {
 					var
 						sWrap	=	el.getParent(),
-						sObj	=	new Fx.Slide(sWrap.getElements(".toggle-target")[0], {
-								duration	:	"short",
-								link		:	"chain",
+						sObj	=	new Fx.Slide(sWrap.getElements('.toggle-target')[0], {
+								duration	:	'short',
+								link		:	'chain',
 								resetHeight	:	true
 						});
 
-						sWrap.store("slide", sObj);
+						sWrap.store('slide', sObj);
 
-						el.addEvent("click", function() {
-							if (this.hasClass("active")) {
+						el.addEvent('click', function() {
+							if (this.hasClass('active')) {
 								this.retrieve('slide').slideOut().chain(
 									function () {
 										this.removeClass('active');
@@ -86,8 +86,8 @@
 				for (var idx = 0, l = ctrls.length; idx < l; idx++) {
 					var val = ctrls[idx];
 
-					if (typeOf(val) === "string") {
-						val == "site" ?
+					if (typeOf(val) === 'string') {
+						val == 'site' ?
 							input[val] = $(val) :
 							input[val] = $(val).value;
 					}
@@ -113,23 +113,23 @@
 		var
 			$super		=	Controller,
 			settings 	=	{
-				first:	"table-ctrl-first",
-				last:	"table-ctrl-last",
-				next:	"table-ctrl-next",
-				prev:	"table-ctrl-prev",
+				first:	'table-ctrl-first',
+				last:	'table-ctrl-last',
+				next:	'table-ctrl-next',
+				prev:	'table-ctrl-prev',
 
-				maxPages:	"table-ctrl-total",
-				page:		"table-ctrl-page"
+				maxPages:	'table-ctrl-total',
+				page:		'table-ctrl-page'
 			};
 		return new Class({
 			initialize: function () {
-				$(settings.first).addEvent("click", this.gotoPage(-2));
-				$(settings.last).addEvent("click", this.gotoPage(2));
-				$(settings.next).addEvent("click", this.gotoPage(1));
-				$(settings.prev).addEvent("click", this.gotoPage(-1));
+				$(settings.first).addEvent('click', this.gotoPage(-2));
+				$(settings.last).addEvent('click', this.gotoPage(2));
+				$(settings.next).addEvent('click', this.gotoPage(1));
+				$(settings.prev).addEvent('click', this.gotoPage(-1));
 
-				$(settings.page).addEvent("change", function () {
-					this.setCurrentPage($(settings.page).get("value") - 1);
+				$(settings.page).addEvent('change', function () {
+					this.setCurrentPage($(settings.page).get('value') - 1);
 				}.bind(this));
 			},
 			gotoPage: function (opt) {
@@ -139,8 +139,8 @@
 
 				return (function () {
 					var
-						currPage	=	$super.get("page"),
-						maxPages	=	$super.get("maxPages");
+						currPage	=	$super.get('page'),
+						maxPages	=	$super.get('maxPages');
 
 					switch (navOpt) {
 					case -2: // First
@@ -157,25 +157,24 @@
 				}.bind(this));
 			},
 			resetPageCount: function () {
-				$(settings.page).set("value", 1);
+				$(settings.page).set('value', 1);
 			},
 			setCurrentPage: function (inputNum) {
 				var pageNum = parseInt(inputNum, 10);
-				if (pageNum < 0 || pageNum >= $super.get("maxPages")) {
-					$(settings.page).set("value", $super.get("page") + 1);
+				if (pageNum < 0 || pageNum >= $super.get('maxPages')) {
+					$(settings.page).set('value', $super.get('page') + 1);
 					return;
 				}
 
-				$(settings.page).set("value", pageNum + 1);
-				$super.set("page", pageNum);
+				$(settings.page).set('value', pageNum + 1);
+				$super.set('page', pageNum);
 				$super.notify();
 			},
 			setMaxPages: function (maxPages) {
-				$super.set("maxPages", maxPages);
-				$(settings.maxPages).set("text", maxPages);
+				$super.set('maxPages', maxPages);
+				$(settings.maxPages).set('text', maxPages);
 			}
 		});
 	}) ();
 
 }) (this);
-
