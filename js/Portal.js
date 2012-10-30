@@ -1,9 +1,6 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jshint mootools:true */
 
-/**
- * NEES Data Portal
- */
 (function (global) {
     'use strict';
     
@@ -11,6 +8,7 @@
         this.version = '0.0.0';
     };
     
+    // Initialize objects
 	document.addEvent('domready', function () {
 		[global.Controller, global.View, global.Model].invoke('initialize');
 
@@ -20,7 +18,7 @@
             global.Model.Events);
 		global.Model.Events.attach(global.View.Map, global.View.Table);
 
-		global.Controller.retrieveInput();
+		global.Controller.update();
 
 		$$('.toggle:not(.active)').retrieve('slide').invoke('hide');
 		$('site').focus();

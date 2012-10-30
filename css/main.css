@@ -49,10 +49,10 @@ body {
 	text-align: left;
 	width: 100%;
 }
-#app-evt-table .even {
+tr.even {
 	background-color: #F0F0F0;
 }
-#app-evt-table .odd {
+tr.odd {
 	background-color: #FFF;
 }
 #app-evt-table tr.dataRow:hover {
@@ -226,6 +226,42 @@ body {
 	text-align: center;
 }
 #channel-box {
-    background-color: #555;
     position: absolute;
+}
+#channel-box table {
+    border-collapse: collapse;
+    border: 1px solid #333;
+}
+#channel-box thead tr {
+    background-color: #333;
+    color: #DDD;
+}
+#channel-box thead tr {
+    border: 1px solid #111;
+    border-top: 0;
+    border-bottom: 0;
+    padding: 10px 15px;
+    text-align: left;
+}
+#channel-box td {
+    color: #333;
+    padding: 5px;
+}
+#channel-box tr.even {
+    background-color: #F0F0F0;
+}
+#channel-box tr.odd {
+    background-color: #FFF;
+}
+#channel-box thead {
+    background-color: #AAA;
+}
+#channel-box th {
+    padding: 5px;
+}
+.sort.desc:after {
+    content: '▾';
+}
+.sort.asc:after {
+    content: '▴';   
 }

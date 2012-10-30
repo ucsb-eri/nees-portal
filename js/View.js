@@ -86,23 +86,25 @@
 					fillOpacity: 0.25,
 					strokeOpacity: 0
 				}),
-				mapObj	:	null,
-				markers	:	[]
+				mapObj: null,
+				markers: []
 			};
 
 		function addMarker(lat, lon, ml) {
 			// @@TODO: Add real size algorithm
 			var
 				loc		=	new google.maps.LatLng(lat, lon),
-				marker	=	new google.maps.Circle({
-					center: loc,
-					fillColor: 'orange',
-					strokeOpacity: 0,
-					map: data.mapObj,
+				marker	=	new google.maps.Marker({
+                    icon: Object.append({
+                        path: google.maps.SymbolPath.CIRCLE,
+                        fillOpacity: 0.5,
+                        fillColor: 'orange',
+                        strokeOpacity: 0,
+                    }, Settings.getCircleOptions(ml)),
+					position: loc,
 					zIndex: 1
 				});
             
-            marker.setOptions(DisplayAlgorithms.getCircleOptions(ml));
 
 			marker.setMap(data.mapObj);
 			data.markers.push(marker);
@@ -212,7 +214,7 @@
 			settings	=	{
 				tableHeader: {
 					time: 'Date (UTC)',
-					depth: 'Depth',
+					depth: 'Depth (km)',
 					dist: 'Dist (km)',
 					ml:	'Mag'
 				},
@@ -243,7 +245,7 @@
 				tableRow.addClass('dataRow');
 				tableRow.store('rowNum', currIdx);
                 tableRow.store('evid', obj.id);
-                tableRow.store('siteId', obj.siteId);
+                tableRow.store('siteId', global.Model.Events.getSiteId());
 
 				var chkBox = new Element('input', { type: 'checkbox' });
 				tableRow.adopt(chkBox);
@@ -308,6 +310,17 @@
 						});
 					headCol.store('idx', idx);
 					headCol.addEvent('click', function (evt) {
+                        var sortMarkers = evt.target.getElements('span.sort');
+                        if (sortMarkers) {
+                            sortMarkers.toggleClass('asc');
+                            sortMarkers.toggleClass('desc');
+                        } else {
+                            $$('.sort').destroy();
+                            
+                            evt.target.adopt('span', {
+                                'class': 'sort desc'
+                            });
+                        }
 						global.Model.Data.sortBy(
                             Object.keys(settings.tableHeader)[
                                 evt.target.retrieve('idx')
@@ -341,15 +354,12 @@
 		return new Class({
 			initialize: function () {
                 var
-                    wrap = el.wrap = new Element('div', {'id': 'channel-box'}),
-                    table = el.table = new Element('table');
+                    wrap = el.wrap = new Element('div', {'id': 'channel-box'});
+                document.body.adopt(wrap);
 
                 window.addEvent('resize', this.onResize.bind(this));
                 this.onResize();
-
-                wrap.adopt(table);
-                document.body.adopt(el.wrap);
-                this.hide();
+                el.wrap.fade('hide');
 			},
             
             hide: function () {
@@ -364,29 +374,77 @@
             },
             render: function () {
                 var
+                    bodyRow, headRow,
+                    
+                    scrollPane  =   new Element('div'),
+                    tBodyTable  =   new Element('table'), // Put header and body
+                    tHeadTable  =   new Element('table'), // in separate tables
+                    tBody       =   new Element('tbody'),
                     tHead       =   new Element('thead'),
                     tHeadRow    =   new Element('tr');
 
-                el.table.empty();
+                el.wrap.empty();
 
                 // Write header
+                tHeadRow.adopt(new Element('th', { text: '?' })); // Checkbox cl
                 for (var i = 0, j = data.$meta.headers, k = j.length; i < k;
                         i++) {
-                    tHeadRow.adopt(new Element('td', {
+                    tHeadRow.adopt(new Element('th', {
                         text: data.$meta.headers[i]
                     }));
                 }
-                el.table.adopt(tHeadRow);
+                
+                tHead.adopt(tHeadRow);
+                tHeadTable.adopt(tHead);
+                el.wrap.adopt(tHeadTable);
 
                 // Write table
                 for (var i = 0, j = data.$data, k = j.length; i < k; i++) {
-                    var tRow = new Element('tr');
+                    var
+                        tRow = new Element('tr'),
+                        chkBox = new Element('td');
+                        
+                    chkBox.adopt(new Element('input', {
+                        type: 'checkbox'
+                    }));
+                    tRow.adopt(chkBox);
+                    
                     for (var p = 0, q = j[i], r = q.length; p < r; p++) {
                         tRow.adopt(new Element('td', {
                             text: q[p]
                         }));
                     }
-                    el.table.adopt(tRow);
+
+                    tRow.addClass(i % 2 === 0 ? 'even' : 'odd');
+                    tBody.adopt(tRow);
+                }
+                tBodyTable.adopt(tBody);
+                tBodyTable.setStyle('width', '100%');
+                scrollPane.adopt(tBodyTable);
+                scrollPane.setStyle('overflow', 'auto');
+                scrollPane.setStyle('padding-bottom', '2em');
+                scrollPane.setStyle('width', '100%');
+                el.wrap.adopt(scrollPane);
+                
+                window.addEvent('resize', function () {
+                    scrollPane.setStyle('height',
+                        ($('channel-box').getSize().y - tHeadRow.getSize().y) + 'px');
+                });
+                scrollPane.setStyle('height',
+                    ($('channel-box').getSize().y - tHeadRow.getSize().y) + 'px');
+
+                if (tBodyTable.getElements('tr').length > 0) {
+                    // sync thead and tbody widths
+                    bodyRow =   tBodyTable.getElements('tr')[0],
+                    headRow =   tHeadTable.getElements('tr')[0];
+
+                    for (var i = 0, j = bodyRow.getElements('td'),
+                            k = headRow.getElements('th'), l = j.length;
+                            i < l; i++) {
+                        $$(j[i], k[i]).setStyle('width', j[i].getSize().x + 'px');
+                    }
+
+                    tHeadTable.set('width', tBodyTable.getSize().x + 'px');
                 }
 
                 this.show();

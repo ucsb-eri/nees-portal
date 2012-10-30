@@ -1,5 +1,17 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jshint mootools:true */
+
+/**
+ * Defines a class of Objects which notifies its observers when its data has
+ *   been modified.
+ * 
+ * -----------------------------------------------------------------------------
+ * Layout
+ * -----------------------------------------------------------------------------
+ * Observable
+ * - attach()
+ * - notify()
+ */
 (function (global) {
     'use strict';
     
