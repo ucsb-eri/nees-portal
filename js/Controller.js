@@ -1,26 +1,77 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
+
+/**
+ * Handles user input
+ * 
+ * -----------------------------------------------------------------------------
+ * Layout
+ * -----------------------------------------------------------------------------
+ * Controller
+ * - initialize()
+ * - attach()
+ * - get(k)
+ * - getInput()
+ * - notify()
+ * - set(k, v)
+ * - update()
+ * 
+ *     TableCtrls
+ *     - initialize()
+ *     - gotoPage(opt)
+ *     - resetPageCount()
+ *     - setCurrentPage(inputNum)
+ *     - setMaxPages(maxPages)
+ */
 (function (global) {
     'use strict';
     
-	var Controller = (function () {
+    /**
+     * Handle user input
+     */
+	var Controller = global.Controller = (function () {
 		var
-			ctrls		=	["site", "radius", "minMag", "maxMag", "sDate", "eDate", "itemsPerPage"],
+			ctrls		=	["site", "radius", "minMag", "maxMag", "sDate",
+                "eDate", "itemsPerPage"],
 			input		=	{},
 			observers	=	[];
+            
+		function retrieveInput() {
+			input = {};
+
+			for (var idx = 0, l = ctrls.length; idx < l; idx++) {
+				var val = ctrls[idx];
+
+				if (typeOf(val) === 'string') {
+					val == 'site' ?
+						input[val] = $(val) :
+						input[val] = $(val).value;
+				}
+			}
+
+			input.page			=	0;
+			input.maxPages		=	0;
+
+			Controller.TableCtrls.resetPageCount();
+			Controller.notify();
+		}
 
 		return {
 			initialize: function () {
+                var firstEvent = new Date(0);
+                firstEvent.setUTCSeconds(979439174);
+                
 				// Initialize input fields
 				ctrls.each(function (strId) {
 					if (~strId.toLowerCase().indexOf('date')) {
-						new Picker.Date($(strId), {
+						var picker = new global.Picker.Date($(strId), {
 							format:			'%x',
-							onSelect:		Controller.update.bind(Controller),
 							pickerClass:	'datepicker_jqui',
 							positionOffset:	{ x: 0, y: 5 },
 							yearPicker:		true
 						});
+                        
+                        $(strId).store('picker', picker);
 					} else {
 						$(strId).addEvent('change',
 								Controller.update.bind(Controller));
@@ -32,35 +83,42 @@
 						}.bind(Controller));
 					}
 				});
+                
+                $('sDate').retrieve('picker').select(firstEvent);
+                $('eDate').retrieve('picker').select(new Date());
+                $$('datepicker_jqui').addEvent('select',
+                    Controller.update.bind(Controller));
 
 				// Initialize sliders
 				$$('.toggle>span').each(function (el) {
 					var
 						sWrap	=	el.getParent(),
-						sObj	=	new Fx.Slide(sWrap.getElements('.toggle-target')[0], {
-								duration	:	'short',
-								link		:	'chain',
-								resetHeight	:	true
+						sObj	=	new Fx.Slide(
+                            sWrap.getElements('.toggle-target')[0], {
+								duration: 'short',
+								link: 'chain',
+								resetHeight: true
 						});
 
-						sWrap.store('slide', sObj);
+					sWrap.store('slide', sObj);
 
-						el.addEvent('click', function() {
-							if (this.hasClass('active')) {
-								this.retrieve('slide').slideOut().chain(
-									function () {
-										this.removeClass('active');
-									}.bind(this)
-								);
-							} else {
-								this.retrieve('slide').slideIn().chain(
-									function () {
-										this.addClass('active');
-									}.bind(this)
-								);
-							}
-						}.bind(sWrap));
+					el.addEvent('click', function() {
+						if (this.hasClass('active')) {
+							this.retrieve('slide').slideOut().chain(
+								function () {
+									this.removeClass('active');
+								}.bind(this)
+							);
+						} else {
+							this.retrieve('slide').slideIn().chain(
+								function () {
+									this.addClass('active');
+								}.bind(this)
+							);
+						}
+					}.bind(sWrap));
 				});
+                
 				this.TableCtrls = new TableCtrls();
 			},
 			attach: function () {
@@ -80,39 +138,21 @@
 					observers[idx].update(this);
 				}
 			},
-			retrieveInput: function () {
-				input = {};
-
-				for (var idx = 0, l = ctrls.length; idx < l; idx++) {
-					var val = ctrls[idx];
-
-					if (typeOf(val) === 'string') {
-						val == 'site' ?
-							input[val] = $(val) :
-							input[val] = $(val).value;
-					}
-				}
-
-				input.page			=	0;
-				input.maxPages		=	0;
-
-				this.TableCtrls.resetPageCount();
-				this.notify();
-			},
 			set: function (k, v) {
 				return input[k] = v;
 			},
 			update: function () {
-				this.retrieveInput();
+				retrieveInput();
 			}
 		};
 	}) ();
-	global.Controller = Controller;
+    
+    var Main = Controller.Main = (function () {
+    });
     
 	var TableCtrls = (function () {
-		var
-			$super		=	Controller,
-			settings 	=	{
+		var	$super		=	Controller,
+			settings    =	{
 				first:	'table-ctrl-first',
 				last:	'table-ctrl-last',
 				next:	'table-ctrl-next',
@@ -133,9 +173,8 @@
 				}.bind(this));
 			},
 			gotoPage: function (opt) {
-				var
-					target		=	0,
-					navOpt		=	opt;
+				var     target	=	0,
+					    navOpt	=	opt;
 
 				return (function () {
 					var

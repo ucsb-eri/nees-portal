@@ -22,6 +22,7 @@
  *      - update(obj)
  *     Events
  *      - getEvents()
+ *      - getSiteId()
  *      - processEvents(json)
  *      - update(obj)
  */
@@ -40,6 +41,9 @@
                 this.Data = new Data();
                 this.Events = new Events();
             },
+            /**
+             * Handle AJAX requests
+             */
 			sendRequest:	function (type, opts, callback, bind) {
 				var queryString = '';
 				
@@ -49,7 +53,6 @@
 					}
 				}
 
-				// @@TODO: type=evt for testing
 				queryString += 'type=' + type;
 
 				new Request.JSON({
@@ -84,8 +87,6 @@
 				this.notify();
             },
             update: function (evid, siteId) {
-                console.log('evid: ' + evid);
-                console.log('siteId' + siteId);
                 $super.sendRequest('chn', {
                     evid: evid,
                     siteId: siteId
@@ -152,6 +153,7 @@
 		var
 			$super		=	Model,
 			events		=	[],
+            meta        =   {},
 			queryResult	=	'query-result';
 
 		return new Class({
@@ -159,8 +161,12 @@
 			getEvents: function () {
 				return events;
 			},
+            getSiteId: function () {
+                return meta.siteId;
+            },
 			processEvents: function (json) {
-				events = json.$data;
+				events  =   json.$data;
+                meta    =   json.$meta;
 				global.Controller.TableCtrls.setMaxPages(json.$meta.totalPages);
 				$(queryResult).set('text', 'Found ' + json.$meta.rows +
                     ' results.');
