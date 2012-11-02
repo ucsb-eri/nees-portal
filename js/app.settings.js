@@ -1,7 +1,6 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
-
-var app = app || {};
+var app     =   window.app || (window.app = {});
 
 /**
  * Specifies algorithms controlling how certain objects are displayed
@@ -10,9 +9,11 @@ var app = app || {};
  * Layout
  * -----------------------------------------------------------------------------
  * app.settings
+ * - DP_SETTINGS
  * - FIRST_EVENT
+ * - MAP_CIRCLE_SETTINGS
  * 
- * - getCircleOptions(ml)
+ * - getMarkerOptions(ml)
  */
 (function () {
     'use strict';
@@ -44,7 +45,7 @@ var app = app || {};
         return {
             fillOpacity: 0.1 + 0.2 * ml,
             scale: 3 + Math.pow(2 * ml, 1.5)
-        }
+        };
     });
     
     app.settings = settings;

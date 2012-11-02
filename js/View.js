@@ -1,34 +1,75 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
-var app = app || {};
+var app     =   window.app || (window.app = {}),
+    _       =   window._,
+    google  =   window.google,
+    PubSub  =   window.PubSub,
+    Tabs    =   window.Tabs;
 
-(function (global) {
+(function () {
     'use strict';
+    
+    var info,
+        infoTab,
+        map,
+        mapTab,
+        tabs,
+        View;
     
     app.View = {};
     
-    var View = new Class({
+    tabs = new Tabs('app-viewport');
+    
+    View = new Class({
         initialize: function (options) {
             _.bindAll(this);
             Object.append(this, options);
             this.setup();
         },
-        link: function (topic) {
-            global.PubSub.subscribe(topic, this.render);
+        link: function (type, fn) {
+            PubSub.subscribe(type, fn);
         },
         render: function () {},
         setup: function () {}
     });
     
-    var Map = new View({
-        _el: $('app-viewport'),
+    mapTab = tabs.add('map');
+    map = new View({
+        _el: mapTab,
         _drawCircle: function (center, radius) {
 			this._mapCirc.setMap(null);
 			this._mapCirc.setCenter(center);
 			this._mapCirc.setRadius(radius * 1000);
 			this._mapCirc.setMap(this._mapObj);
         },
-        render: function () {
+        _drawMarkers: function (data) {
+            for (var i = 0, j = data.length; i < j; i++) {
+                var loc		=	new google.maps.LatLng(data[i].lat,
+                                    data[i].lon),
+                    marker	=	new google.maps.Marker({
+                        icon: Object.append({
+                            path: google.maps.SymbolPath.CIRCLE,
+                            fillOpacity: 0.5,
+                            fillColor: 'orange',
+                            strokeOpacity: 0,
+                        }, app.settings.getMarkerOptions(data[i].ml)),
+                        position: loc,
+                        zIndex: 1
+                    });
+    
+                marker.setMap(this._mapObj);
+                this._markers.push(marker);
+            }
+        },
+        _highlightMarker: function () {
+        },
+        _dehighlightMarker: function () {
+        },
+        _resetMarkers: function () {
+			for (var i = this._markers.length - 1; i >= 0; i--) {
+				this._markers[i].setMap(null);
+				this._markers.pop();
+			}
         },
         setPosition: function (data) {
 			var center = new google.maps.LatLng(data.site.lat, data.site.lon);
@@ -47,128 +88,24 @@ var app = app || {};
 			this._mapObj.fitBounds(this._rangeCircle.getBounds());
         },
         setup: function () {
+            this._markers = [];
             this._mapobj = new global.google.maps.Map(this._el, {
                 center: new google.maps.LatLng(0, 0),
 				mapTypeId: google.maps.MapTypeId.TERRAIN,
                 zoom: 0
             });
+            
+            this.link('inputChanged', this.setPosition);
+            this.link('eventsChanged', this._drawMarkers);
         }
     });
-    Map.link(app.Models.Inputs);
+    
+    infoTab = tabs.add('Info');
+    info = new View({
+        _el: infoTab
+    });
     
     /*
-	var View = (function () {
-		return {
-			initialize: function () {
-				this.Tabs = new Tabs();
-				this.Map = new Map(this.Tabs.createTab('Map'));
-				this.Info = new Info(this.Tabs.createTab('Info'));
-				this.Table = new Table();
-				this.ChannelBox = new ChannelBox();
-
-				$$(".tabTitle")[0].fireEvent('click');
-			}
-		};
-	}) ();
-	global.View = View;
-
-
-	var Map = (function () {
-		var
-			data	=	{
-				mapObj: null,
-				markers: []
-			};
-
-		function addMarker(lat, lon, ml) {
-			// @@TODO: Add real size algorithm
-			var
-				loc		=	new google.maps.LatLng(lat, lon),
-				marker	=	new google.maps.Marker({
-                    icon: Object.append({
-                        path: google.maps.SymbolPath.CIRCLE,
-                        fillOpacity: 0.5,
-                        fillColor: 'orange',
-                        strokeOpacity: 0,
-                    }, Settings.getMarkerOptions(ml)),
-					position: loc,
-					zIndex: 1
-				});
-            
-
-			marker.setMap(data.mapObj);
-			data.markers.push(marker);
-		}
-		function clearMarkers() {
-			for (var idx = data.markers.length - 1; idx >= 0; idx--) {
-				data.markers[idx].setMap(null);
-				data.markers.pop();
-			}
-		}
-		function drawCircle(center, rdx) {
-			// Erase previous circle
-			data.mapCirc.setMap(null);
-
-			data.mapCirc.setCenter(center);
-			data.mapCirc.setRadius(rdx * 1000);
-			data.mapCirc.setMap(data.mapObj);
-		}
-
-		return new Class({
-			initialize: function (el) {
-				var mapOpts = {
-					mapTypeId: google.maps.MapTypeId.TERRAIN
-				};
-				data.mapObj = new google.maps.Map(el, mapOpts);
-			},
-
-			// marker highlighting functions
-			dehighlightMarker: function () {
-				for (var idx = 0, j = data.markers, k = j.length; idx < k; idx++) {
-					j[idx].set("fillOpacity", j[idx].get("oldOpacity"));
-				}
-			},
-			highlightMarker: function () {
-				var selIdx = this.retrieve("rowNum");
-				for (var idx = 0, j = data.markers, k = j.length; idx < k; idx++) {
-					j[idx].set("oldOpacity", j[idx].get("fillOpacity"));
-					j[idx].set("fillOpacity", idx === selIdx ? "1" : "0.2");
-				}
-			},
-
-			setPosition: function(opts) {
-				var center =
-					new google.maps.LatLng(opts.site.lat, opts.site.lon);
-				if (!data.markers) {
-                    return;
-				}
-
-				if (data.mapCirc.getCenter() &&
-                        data.mapCirc.getCenter().equals(center) &&
-                        data.mapCirc.getRadius() === opts.radius * 1000) {
-                    return;
-                }
-
-				data.mapObj.setOptions({
-					center:	center
-				});
-
-				drawCircle(center, opts.radius);
-				data.mapObj.fitBounds(data.mapCirc.getBounds());
-			},
-			update: function (obj) {
-				if (obj.getValues) {
-					this.setPosition(obj.getValues());
-				} else if (obj.getEvents()) {
-					clearMarkers();
-					for (var idx = 0, j = obj.getEvents(), k = j.length;
-                            idx < k; idx++) {
-						addMarker(j[idx].lat, j[idx].lng, j[idx].ml);
-					}
-				}
-			}
-		});
-	}) ();
 
     // Station info tab
 	var Info = (function () {
@@ -450,4 +387,4 @@ var app = app || {};
 	}) ();
     */
 
-}) (this);
+}) ();
