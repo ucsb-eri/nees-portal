@@ -1,0 +1,52 @@
+/* vim: set tabstop=4 shiftwidth=4: */
+/*jslint mootools:true */
+
+var app = app || {};
+
+/**
+ * Specifies algorithms controlling how certain objects are displayed
+ * 
+ * -----------------------------------------------------------------------------
+ * Layout
+ * -----------------------------------------------------------------------------
+ * app.settings
+ * - FIRST_EVENT
+ * 
+ * - getCircleOptions(ml)
+ */
+(function () {
+    'use strict';
+    
+	var // Constant primatives
+        FIRST_EVENT_UTC     =   979439174, // UTC time of first event
+        // Initialize settings object
+        settings        =   {};
+        
+    // Constant objects
+    settings.DP_SETTINGS    =   { // DatePicker opts
+        format: '%x',
+        pickerClass: 'datepicker_jqui',
+        positionOffset: { x: 0, y: 5},
+        yearPicker: true
+	},
+	settings.MAP_CIRCLE_SETTINGS    =   { // google.maps.Circle
+		fillColor: 'black',
+		fillOpacity: 0.25,
+		strokeOpacity: 0
+	};
+        
+    // Default value for sDate field
+    settings.FIRST_EVENT = new Date(0);
+    settings.FIRST_EVENT.setUTCSeconds(FIRST_EVENT_UTC);
+    
+    // Algorithm used to determine Map marker size based on event magnitude
+    settings.getMarkerOptions = (function (ml) {
+        return {
+            fillOpacity: 0.1 + 0.2 * ml,
+            scale: 3 + Math.pow(2 * ml, 1.5)
+        }
+    });
+    
+    app.settings = settings;
+    
+}) ();

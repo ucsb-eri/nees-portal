@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<title>Data Portal &mdash; &beta;eta</title>
+
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+		<!-- CSS -->
+		<link href='//fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+		<link rel="stylesheet" type="text/css" href="css/datepicker_jqui.css">
+	</head>
+	<body>
+
+		<div id="app-title" class="clearfix">
+			<h1>NEES Data Portal</h1>
+		</div>
+		<div id="app-viewport">
+		</div>
+		<div id="app-grid" class="clearfix">
+			<div class="toggle active">
+				<span>Input</span>
+				<div id="app-input" class="toggle-target">
+					<table>
+						<tr>
+							<td><label for="site">Station:</label></td>
+							<td>
+								<select id="site">
+<optgroup label="NEES">
+<option value="site_1" lat="33.0974" lon="-115.531">&nbsp;&nbsp; WLA (Wildlife Downhole Array)</option>
+<option value="subsite_101" lat="33.0975" lon="-115.531">&nbsp;&nbsp;&nbsp;&nbsp; SAAR (WLA Old site - SAAR)</option>
+<option value="subsite_100" lat="33.0975" lon="-115.531">&nbsp;&nbsp;&nbsp;&nbsp; 5210 (WLA Old site)</option>
+<option value="site_2" lat="33.669" lon="-116.674">&nbsp;&nbsp; GVDA (Garner Valley Downhole Array)</option>
+<option value="subsite_201" lat="33.669" lon="-116.674">&nbsp;&nbsp;&nbsp;&nbsp; SFSI (Garner SFSI)</option>
+<option value="subsite_200" lat="33.6655" lon="-116.706">&nbsp;&nbsp;&nbsp;&nbsp; GVAR (Lake Hemet Dam)</option>
+</optgroup>
+<optgroup label="NEES/USGS">
+<option value="site_3" lat="33.3267" lon="-116.367">&nbsp;&nbsp; BVDA (Borrego Valley Downhole Array)</option>
+<option value="site_4" lat="36.7576" lon="-121.613">&nbsp;&nbsp; HEO (Hollister Downhole Array)</option>
+<option value="site_5" lat="33.669" lon="-116.674">&nbsp;&nbsp; SLA (Seattle Downhole Array)</option>
+</optgroup>
+<optgroup label="SCEC">
+<option value="site_13" lat="34.3109" lon="-118.497">&nbsp;&nbsp; JAB (Jensen, Admin Bldg )</option>
+<option value="site_14" lat="34.3131" lon="-118.499">&nbsp;&nbsp; JGB (Jensen, Generator Bldg)</option>
+<option value="site_15" lat="33.7403" lon="-118.335">&nbsp;&nbsp; MIS (Mira Catalina School)</option>
+<option value="site_16" lat="34.282" lon="-118.479">&nbsp;&nbsp; RIN (Rinaldi)</option>
+<option value="site_17" lat="33.9733" lon="-117.327">&nbsp;&nbsp; RS (UC Riverside)</option>
+<option value="site_18" lat="34.413" lon="-119.843">&nbsp;&nbsp; USB (UCSB)</option>
+<option value="site_19" lat="34.115" lon="-118.38">&nbsp;&nbsp; WNS (Wonderland School)</option>
+<option value="site_20" lat="32.9548" lon="-115.824">&nbsp;&nbsp; 286 (Superstition Hills)</option>
+<option value="site_11" lat="33.798" lon="-118.088">&nbsp;&nbsp; LBW (Long beach)</option>
+<option value="site_10" lat="34.1192" lon="-118.3">&nbsp;&nbsp; GRF (Griffith Park)</option>
+<option value="site_12" lat="34.1062" lon="-118.455">&nbsp;&nbsp; DJJ (Donna Jones Jenkins)</option>
+<option value="site_21" lat="34.037" lon="-118.178">&nbsp;&nbsp; 24400 (Orbegon Park)</option>
+</optgroup>
+<optgroup label="USGS">
+</optgroup>
+<optgroup label="Other">
+</optgroup>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="radius">Distance(km):</label></td>
+							<td><input id="radius"  type="text" value="10" /></td>
+						</tr>
+						<tr>
+							<td><label for="minMag">Magnitude:</label></td>
+							<td><input id="minMag" type="text" value="1.0" /><input id="maxMag" type="text" value="9.0" /></td>
+						</tr>
+						<tr>
+							<td><label for="sDate">Start Date:</label></td>
+							<td><input id="sDate" type="text" /></td>
+						</tr>
+						<tr>
+							<td><label for="eDate">End Date:</label></td>
+							<td><input id="eDate" type="text" /></td>
+						</tr>
+						<tr>
+							<td><label for="itemsPerPage">Events/Page:</label></td>
+							<td><input id="itemsPerPage" type="text" value='25' /></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td>
+								<input id="depToEvid" type="checkbox" /><span>Replace depth with evid</span>
+							</td>
+						</tr>
+					</table>
+					<div id="query-result">&nbsp;</div>
+				</div>
+			</div>
+			<div class="toggle">
+				<span>Events</span>
+				<div class="toggle-target">
+					<div id="table-ctrls" class="clearfix">
+						<div class="table-ctrl btn" id="table-ctrl-first" data-page-offset="-2"><img src="img/tango/go-first.png" alt="First" height="16" width="16"></div>
+						<div class="table-ctrl btn" id="table-ctrl-prev" data-page-offset="-1"><img src="img/tango/go-previous.png" alt="Previous" height="16" width="16"></div>
+						<div class="table-ctrl">Page <input id="table-ctrl-page" type="text" value="1"> out of <span id="table-ctrl-total">0</span></div>
+						<div class="table-ctrl btn" id="table-ctrl-next" data-page-offset="1"><img src="img/tango/go-next.png" alt="Next" height="16" width="16"></div>
+						<div class="table-ctrl btn" id="table-ctrl-last" data-page-offset="2"><img src="img/tango/go-last.png" alt="Last" height="16" width="16"></div>
+					</div>
+					<table id="app-evt-table">
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Libraries -->
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>
+		<script type="text/javascript" src="js/lib/mootools-more-1.4.0.1.js"></script>
+		<script type="text/javascript" src="js/lib/underscore.js"></script>
+		<script type="text/javascript" src="js/lib/tab.js"></script>
+		<script type="text/javascript" src="js/lib/toggle.js"></script>
+		<script type="text/javascript" src="js/lib/pubsub.js"></script>
+        
+        <!-- DatePicker JS -->
+		<script type="text/javascript" src="js/lib/DatePicker/Locale.en-US.DatePicker.js"></script>
+		<script type="text/javascript" src="js/lib/DatePicker/Picker.js"></script>
+		<script type="text/javascript" src="js/lib/DatePicker/Picker.Attach.js"></script>
+		<script type="text/javascript" src="js/lib/DatePicker/Picker.Date.js"></script>
+        
+		<script type="text/javascript" src="js/app.js"></script>
+		<script type="text/javascript" src="js/app.settings.js"></script>
+		<script type="text/javascript" src="js/Model.js"></script>
+		<script type="text/javascript" src="js/View.js"></script>
+		<script type="text/javascript" src="js/Controller.js"></script>
+	</body>
+</html>
