@@ -1,6 +1,8 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jshint mootools:true */
-var app = app || {};
+this.app    =   this.app || {};
+    
+var PubSub  =   window.PubSub;
 
 (function () {
     'use strict';

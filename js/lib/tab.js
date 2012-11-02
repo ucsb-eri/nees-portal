@@ -1,11 +1,23 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jshint mootools:true */
+var _ = window._;
 
+/**
+ * Provides tab functionality for a specified element
+ * 
+ * -----------------------------------------------------------------------------
+ * Layout
+ * -----------------------------------------------------------------------------
+ * Tabs
+ * - initialize(wrap)
+ * - add(name)
+ * - updateSize()
+ */
 (function (exports) {
     'use strict';
     
     var Tabs = new Class({
-        init: function (wrap) {
+        initialize: function (wrap) {
             _.bindAll(Tabs);
             this._wrap = wrap;
             
@@ -20,6 +32,8 @@
             window.addEvent('resize', this.refreshSize);
             this.refreshSize();
         },
+        // Adds a tab with a title specified by name and returns the contentPane
+        //   of the tab.
         add: function (name) {
             var title   =   new Element('div'),
                 view    =   new Element('div'),
@@ -37,10 +51,11 @@
             view.set('class', 'tabView');
             
         },
+        // Adjusts the size of the contextPane when parent element is resized.
         updateSize: function () {
             var size = this._wrap.getCoordinates();
             this._bar.setStyle('height', '25px');
             this._view.setStyle('height', Math.max(size.height - 25, 0) + 'px');
         }
     });
-}) (this);
+}) (window);

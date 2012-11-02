@@ -26,4 +26,4 @@
         }
     };
     exports.PubSub = PubSub;
-}) (this);
+}) (window);

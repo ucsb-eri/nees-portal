@@ -1,7 +1,8 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
-
-var app = app || {};
+var app     =   window.app || (window.app = {}),
+    _       =   window._,
+    PubSub  =   window.PubSub;
 
 /**
  * Handles user input
@@ -11,7 +12,7 @@ var app = app || {};
  * -----------------------------------------------------------------------------
  * Controller
  */
-(function (global) {
+(function () {
     'use strict';
     
     var inputFields =   $$('.app-input-flds'),
@@ -46,7 +47,7 @@ var app = app || {};
         
         this._input.page = this._input.maxPages = 0;
         
-        global.PubSub.publish('inputChanged', this._input);
+        PubSub.publish('inputChanged', this._input);
     });
     
     // Event query table navigation
@@ -60,7 +61,7 @@ var app = app || {};
         tableFields.addEvent('click', this.navOnClick);
         
         global.PubSub.subscribe('inputChanged', function () {
-            this._currPage = 0;
+            Controller.TableNav._currPage = 0;
         });
     });
     Controller.TableNav.checkBounds = (function () {
@@ -108,4 +109,4 @@ var app = app || {};
     
     app.Controller = Controller;
 
-}) (this);
+}) ();

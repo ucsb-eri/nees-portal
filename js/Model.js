@@ -1,8 +1,17 @@
 /* vim: set tabstop=4 shiftwidth=4: */
-/*jshint mootools:true */
-var app = app || {};
+/*jslint mootools:true */
+var app     =   window.app || (window.app = {}),
+    PubSub  =   window.PubSub;
 
-(function (global) {
+/**
+ * Handles application data
+ * 
+ * -----------------------------------------------------------------------------
+ * Layout
+ * -----------------------------------------------------------------------------
+ * Model
+ */
+(function () {
     var Collection, Sites, Events, Channels;
     
     // Initialize app.Models namespace
@@ -57,7 +66,7 @@ var app = app || {};
     
     Sites = new Collection({
         changed: function () {
-            global.PubSub.publish('eventsUpdated');
+            PubSub.publish('eventsUpdated');
         },
         url: 'sites.php'
     });
@@ -65,7 +74,7 @@ var app = app || {};
     
     Events = new Collection({
         changed: function () {
-            global.PubSub.publish('eventsUpdated');
+            PubSub.publish('eventsUpdated');
         },
         url: 'events.php'
     });
@@ -73,9 +82,10 @@ var app = app || {};
     
     Channels = new Collection({
         changed: function () {
-            global.PubSub.publish('channelsUpdated');
+            PubSub.publish('channelsUpdated');
         },
         url: 'channels.php'
     });
     app.Models.Events = Events;
-}) (this);
+    
+}) ();
