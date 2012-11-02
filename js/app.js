@@ -1,13 +1,20 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jshint mootools:true */
+var app = app || {};
 
-(function (global) {
+(function () {
     'use strict';
     
-    var Portal = global.Portal = function () {
-        this.version = '0.0.0';
-    };
+    app.version = '0.0.0';
     
+    PubSub.subscribe('inputChanged', function (data) {
+        app.Models.Events.fetch(data);
+    });
+    
+    // @@TODO hook up PubSubs
+    // @@TODO initialize controllers
+    
+    /*
     // Initialize objects
 	document.addEvent('domready', function () {
 		[global.Controller, global.View, global.Model].invoke('initialize');
@@ -23,5 +30,6 @@
 		$$('.toggle:not(.active)').retrieve('slide').invoke('hide');
 		$('site').focus();
 	});
+    */
 
-}) (this);
+}) ();

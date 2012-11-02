@@ -1,9 +1,62 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
+var app = app || {};
 
 (function (global) {
     'use strict';
     
+    app.View = {};
+    
+    var View = new Class({
+        initialize: function (options) {
+            _.bindAll(this);
+            Object.append(this, options);
+            this.setup();
+        },
+        link: function (topic) {
+            global.PubSub.subscribe(topic, this.render);
+        },
+        render: function () {},
+        setup: function () {}
+    });
+    
+    var Map = new View({
+        _el: $('app-viewport'),
+        _drawCircle: function (center, radius) {
+			this._mapCirc.setMap(null);
+			this._mapCirc.setCenter(center);
+			this._mapCirc.setRadius(radius * 1000);
+			this._mapCirc.setMap(this._mapObj);
+        },
+        render: function () {
+        },
+        setPosition: function (data) {
+			var center = new google.maps.LatLng(data.site.lat, data.site.lon);
+
+			if (this._mapCirc.getCenter() &&
+                this._mapCirc.getCenter().equals(center) &&
+                this._mapCirc.getRadius() === data.radius * 1000) {
+                return;
+            }
+
+			this._mapObj.setOptions({
+				center:	center
+			});
+
+			this._drawCircle(center, data.radius);
+			this._mapObj.fitBounds(this._rangeCircle.getBounds());
+        },
+        setup: function () {
+            this._mapobj = new global.google.maps.Map(this._el, {
+                center: new google.maps.LatLng(0, 0),
+				mapTypeId: google.maps.MapTypeId.TERRAIN,
+                zoom: 0
+            });
+        }
+    });
+    Map.link(app.Models.Inputs);
+    
+    /*
 	var View = (function () {
 		return {
 			initialize: function () {
@@ -19,73 +72,10 @@
 	}) ();
 	global.View = View;
 
-	var Tabs = (function () {
-		var
-			data	=	{
-				// DOM Elements
-				bar: null,
-				view: null,
-				wrap: null
-			},
-			settings = {
-				wrap: 'app-viewport'
-			};
-
-		return new Class({
-			initialize: function () {
-				data.wrap = $(settings.wrap);
-
-				data.bar = new Element('div');
-				data.bar.set('id', 'tabBar');
-				data.wrap.adopt(data.bar);
-
-				data.view = new Element('div');
-				data.view.set('id', 'tabView');
-				data.wrap.adopt(data.view);
-
-				window.addEvent('resize', this.refreshSize.bind(View.Tabs));
-				this.refreshSize();
-			},
-			createTab: function (tabName) {
-				var
-					title	=	new Element('div'),
-					view	=	new Element('div');
-
-				title.set({
-					'class': 'tabTitle',
-					'text': tabName
-				});
-				title.store('view', view);
-				title.addEvent('click', this.openTab.bind(title));
-
-				view.set('class', 'tabView');
-
-				data.bar.adopt(title);
-				data.view.adopt(view);
-
-				return view;
-			},
-			openTab: function () {
-				$$('.tabTitle, .tabView').removeClass('active');
-				$$(this, this.retrieve('view')).addClass('active');
-			},
-			refreshSize: function () {
-				var size = data.wrap.getCoordinates();
-				data.bar.setStyle('height', '25px');
-				data.view.setStyle('height',
-                    Math.max(size.height - 25, 0) + 'px');
-			}
-		});
-	}) ();
 
 	var Map = (function () {
 		var
 			data	=	{
-				mapCirc: new google.maps.Circle({
-					fillColor: 'black',
-					fillOpacity: 0.25,
-					strokeOpacity: 0
-				}),
 				mapObj: null,
 				markers: []
 			};
@@ -100,7 +90,7 @@
                         fillOpacity: 0.5,
                         fillColor: 'orange',
                         strokeOpacity: 0,
-                    }, Settings.getCircleOptions(ml)),
+                    }, Settings.getMarkerOptions(ml)),
 					position: loc,
 					zIndex: 1
 				});
@@ -458,5 +448,6 @@
             }
 		});
 	}) ();
+    */
 
 }) (this);
