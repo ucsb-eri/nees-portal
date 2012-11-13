@@ -1,6 +1,7 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
 var app     =   window.app || (window.app = {}),
+    _       =   window._,
     PubSub  =   window.PubSub;
 
 /**
@@ -22,10 +23,17 @@ var app     =   window.app || (window.app = {}),
         Implements: Options,
         options: {},
         
-        init: function (options) {
+        initialize: function (options) {
+            _.bindAll(this);
             this._meta = {};
             this._models = [];
             this.setOptions(options);
+            
+            if (this.options.fetchOn) {
+                this.options.fetchOn.split(',').each(function (topic) {
+                    PubSub.subscribe(topic, this.fetch);
+                }.bind(this));
+            }
         },
         _objToStr: function (obj) {
             var values = [];
@@ -38,8 +46,8 @@ var app     =   window.app || (window.app = {}),
             return values.join('&');
         },
         _processData: function (json) {
-            this._meta      =   json._meta;
-            this._models    =   json._data;
+            this._meta      =   json.$meta;
+            this._models    =   json.$data;
             
             if (this.options.changed) {
                 this.options.changed(this._models);
@@ -49,12 +57,13 @@ var app     =   window.app || (window.app = {}),
             this._models.push(model);
         },
         fetch: function (obj) {
-            var queryString = this._objToStr(obj);
+            var queryString = obj ? this._objToStr(obj) : '';
             
 			new Request.JSON({
 				onSuccess: this._processData,
 				url: this.options.url
-            }).post(queryString);
+            // }).post(queryString);
+			}).get(queryString);
         },
         getMeta: function () {
             return this._meta;
@@ -64,27 +73,22 @@ var app     =   window.app || (window.app = {}),
         }
     });
     
-    Sites = new Collection({
-        changed: function () {
-            PubSub.publish('eventsUpdated');
-        },
-        url: 'sites.php'
-    });
-    app.Models.Sites = Sites;
-    
     Events = new Collection({
-        changed: function () {
-            PubSub.publish('eventsUpdated');
+        changed: function (data) {
+            PubSub.publish('eventsUpdated', data);
         },
-        url: 'events.php'
+        fetchOn: 'inputChanged',
+        url: 'events.json'
+        //url: 'events.php'
     });
     app.Models.Events = Events;
     
     Channels = new Collection({
-        changed: function () {
-            PubSub.publish('channelsUpdated');
+        changed: function (data) {
+            PubSub.publish('channelsUpdated', data);
         },
-        url: 'channels.php'
+        fetchOn: 'eventSelected',
+        url: 'channels.json'
     });
     app.Models.Events = Events;
     

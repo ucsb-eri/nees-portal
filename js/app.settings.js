@@ -35,6 +35,17 @@ var app     =   window.app || (window.app = {});
 		fillOpacity: 0.25,
 		strokeOpacity: 0
 	};
+    settings.CHN_GRID_HEADER = {
+		chan: 'Channel',
+		snr: 'SNR',
+		peaka: 'Peak'
+	};
+    settings.EVT_GRID_HEADER = {
+		time: 'Date (UTC)',
+		depth: 'Depth (km)',
+		dist: 'Dist (km)',
+		ml:	'Mag'
+	};
         
     // Default value for sDate field
     settings.FIRST_EVENT = new Date(0);
