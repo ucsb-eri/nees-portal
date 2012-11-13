@@ -2,6 +2,7 @@
 /*jslint mootools:true */
 var app     =   window.app || (window.app = {}),
     _       =   window._,
+    Picker  =   window.Picker,
     PubSub  =   window.PubSub;
 
 /**
@@ -26,15 +27,17 @@ var app     =   window.app || (window.app = {}),
     // Handle input
     Controller.Input = {};
     Controller.Input.init = (function () {
-        _.bindAll(this, 'getInput');
+        _.bindAll(this, 'getInput', 'getSites', 'loadSites');
         
         dateFields.each(function (el) {
-            var datePicker = new global.Picker.Date(el,
+            var datePicker = new Picker.Date(el,
                 app.settings.DP_SETTINGS);
             el.store('_picker', datePicker);
         });
         $('sDate').retrieve('_picker').select(app.settings.FIRST_EVENT);
         $('eDate').retrieve('_picker').select(new Date());
+        
+        this.getSites();
         
         inputFields.addEvent('change', this.getInput);
     });
@@ -49,20 +52,67 @@ var app     =   window.app || (window.app = {}),
         
         PubSub.publish('inputChanged', this._input);
     });
+    Controller.Input.getSites = (function () {
+        new Request({
+            async: false,
+            onSuccess: this.loadSites,
+            url: 'sites.xml'
+        }).get();
+    });
+    Controller.Input.loadSites = (function (txt, xml) {
+        function addOption(node, level, parent) {
+            var thisEl;
+            if (node.tagName === 'category') {
+                thisEl = new Element('optgroup', {
+                    label: node.getAttribute('name'),
+                    id: node.getAttribute('id')
+                });
+            } else {
+                thisEl = new Element('option', {
+                    id: node.getAttribute('id'),
+                    lat: node.getAttribute('lat'),
+                    lon: node.getAttribute('lon'),
+                    // Insert Unicode &nbsp; character to create dropdown
+                    //   hierarchy
+                    text: (new Array(level + 1).join('\u00a0\u00a0')) +
+                        node.getAttribute('name') +
+                            ' (' + node.getAttribute('descrip') + ')',
+                    value: node.getAttribute('id')
+                });
+            }
+            parent.adopt(thisEl);
+            if (node.hasChildNodes()) {
+                for (var i = 0, j = node.childNodes, k = j.length; i < k; i++) {
+                    addOption(j[i], level + 1, (node.tagName === 'category') ?
+                        thisEl : parent);
+                }
+            }
+        }
+        for (var i = 0, j = xml.getElementsByTagName('category'), k = j.length;
+                i < k; i++) {
+            addOption(j[i], 0, $('site'));
+        }
+    });
     
     // Event query table navigation
     // @@TODO: page/maxPages should not be 'clickable'. page should have change event
-    var tableFields = $$('.event-table-ctrl');
     Controller.TableNav = {
         _currPage: 0,
         _maxPage: 0
     };
     Controller.TableNav.init = (function () {
-        tableFields.addEvent('click', this.navOnClick);
+        _.bindAll(Controller.TableNav);
+        $('table-ctrls').addEvent('click:relay(div.btn)',
+            Controller.TableNav.navOnClick);
         
-        global.PubSub.subscribe('inputChanged', function () {
+        PubSub.subscribe('inputChanged', function () {
             Controller.TableNav._currPage = 0;
         });
+        PubSub.subscribe('eventsUpdated', function () {
+            var metaData = app.Models.Events.getMeta();
+            this._currPage = metaData.pageNum;
+            this._maxPage = metaData.totalPages;
+        }.bind(this));
     });
     Controller.TableNav.checkBounds = (function () {
         if (this._currPage === 0) {
@@ -95,16 +145,12 @@ var app     =   window.app || (window.app = {}),
         
         this.checkBounds();
         
-        app.Models.Events.fetch({ page: this._currPage });
-        
-        $('table-ctrl-page').set('value', this._currPage + 1);
-        $('table-ctrl-total').set('text', this._maxPages);
+        app.Controller.Input._input.page = this._currPage;
+        app.Models.Events.fetch(app.Controller.Input._input);
     });
-    Controller.TableNav.navOnClick = (function (evt) {
-        var pageOffset = evt.target.get('data-page-offset');
-        if (!pageOffset) return;
-        
-        this.nav(pageOffset);
+    Controller.TableNav.navOnClick = (function (evt, btn) {
+        this.nav(btn.get('data-page-offset'));
+        evt.preventDefault();
     });
     
     app.Controller = Controller;

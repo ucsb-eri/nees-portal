@@ -1,41 +1,50 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
-var app     =   window.app || (window.app = {}),
-    _       =   window._,
-    google  =   window.google,
-    PubSub  =   window.PubSub,
-    Tabs    =   window.Tabs;
+var app         =   window.app || (window.app = {}),
+
+    _           =   window._,
+    google      =   window.google,
+    PubSub      =   window.PubSub,
+    Tabs        =   window.Tabs;
 
 (function () {
     'use strict';
     
-    var info,
+    var cart,
+        channelBox,
+        info,
         infoTab,
         map,
-        mapTab,
         tabs,
+        evtGrid,
         View;
     
     app.View = {};
     
-    tabs = new Tabs('app-viewport');
+    tabs = new Tabs($('app-viewport'));
     
     View = new Class({
         initialize: function (options) {
-            _.bindAll(this);
             Object.append(this, options);
+            _.bindAll(this);
+            
+            if (this._events) {
+                Object.each(this._events, function (v, k) {
+                    PubSub.subscribe(k, this[v]);
+                }, this);
+            }
+            
             this.setup();
-        },
-        link: function (type, fn) {
-            PubSub.subscribe(type, fn);
         },
         render: function () {},
         setup: function () {}
     });
     
-    mapTab = tabs.add('map');
     map = new View({
-        _el: mapTab,
+        _events: {
+            'inputChanged': 'setPosition',
+            'eventsUpdated': '_drawMarkers'
+        },
         _drawCircle: function (center, radius) {
 			this._mapCirc.setMap(null);
 			this._mapCirc.setCenter(center);
@@ -45,7 +54,7 @@ var app     =   window.app || (window.app = {}),
         _drawMarkers: function (data) {
             for (var i = 0, j = data.length; i < j; i++) {
                 var loc		=	new google.maps.LatLng(data[i].lat,
-                                    data[i].lon),
+                                    data[i].lng),
                     marker	=	new google.maps.Marker({
                         icon: Object.append({
                             path: google.maps.SymbolPath.CIRCLE,
@@ -62,8 +71,10 @@ var app     =   window.app || (window.app = {}),
             }
         },
         _highlightMarker: function () {
+            // @@TODO: Fill in code
         },
         _dehighlightMarker: function () {
+            // @@TODO: Fill in code
         },
         _resetMarkers: function () {
 			for (var i = this._markers.length - 1; i >= 0; i--) {
@@ -72,7 +83,8 @@ var app     =   window.app || (window.app = {}),
 			}
         },
         setPosition: function (data) {
-			var center = new google.maps.LatLng(data.site.lat, data.site.lon);
+			var center = new google.maps.LatLng($(data.site).get('lat'),
+                $(data.site).get('lon'));
 
 			if (this._mapCirc.getCenter() &&
                 this._mapCirc.getCenter().equals(center) &&
@@ -85,18 +97,20 @@ var app     =   window.app || (window.app = {}),
 			});
 
 			this._drawCircle(center, data.radius);
-			this._mapObj.fitBounds(this._rangeCircle.getBounds());
+			this._mapObj.fitBounds(this._mapCirc.getBounds());
         },
         setup: function () {
             this._markers = [];
-            this._mapobj = new global.google.maps.Map(this._el, {
+            this._el = tabs.add('map');
+            this._mapObj = new google.maps.Map(this._el, {
                 center: new google.maps.LatLng(0, 0),
 				mapTypeId: google.maps.MapTypeId.TERRAIN,
-                zoom: 0
+                zoom: 8
             });
+            this._mapCirc = new google.maps.Circle(
+                app.settings.MAP_CIRCLE_SETTINGS);
+            this._mapCirc.setMap(this._mapObj);
             
-            this.link('inputChanged', this.setPosition);
-            this.link('eventsChanged', this._drawMarkers);
         }
     });
     
@@ -105,162 +119,146 @@ var app     =   window.app || (window.app = {}),
         _el: infoTab
     });
     
+    evtGrid = new View({
+        _events: {
+            'eventsUpdated': '_loadEvents'
+        },
+        _loadEvents: function (models) {
+            var metaData;
+                
+            this._grid.empty();
+            for (var i = 0, j = models.length; i < j; i++) {
+                this._grid.push(Object.values(
+                    Object.subset(models[i], this._headers)
+                ), {
+                    modelNum: i
+                });
+            }
+            
+            metaData = app.Models.Events.getMeta();
+            $('query-result').set('text', 'Found ' + metaData.rows + ' results.');
+            $('table-ctrl-page').set('text', metaData.pageNum);
+            $('table-ctrl-total').set('text', metaData.totalPages);
+        },
+        _onSort: function (tbody, sortIndex) {
+            var input = app.Controller.Input._input;
+            if (input.sortBy === this._headers[sortIndex]) {
+                if (input.desc) {
+                    delete input.sortBy;
+                    delete input.desc;
+                } else {
+                    input.desc = true;
+                }
+            } else {
+                input.sortBy = this._headers[sortIndex];
+            }
+            
+            app.Models.Events.fetch(input);
+            // Trigger onSort
+        },
+        _rowSelected: function (evt, row) {
+            var modelNum    =   row.get('modelNum'),
+                evid        =   app.Models.Events.toArray()[modelNum].evid;
+                
+            console.log(row);
+            this._el.getElements('tr').removeClass('selected');
+            row.addClass('selected');
+            
+            PubSub.publish('eventSelected', {
+                evid: evid,
+                siteId: $(app.Controller.Input._input.site).get('id')
+            });
+        },
+        _toggleDepEvid: function () {
+            var hasDepth    =   this._headers.contains('depth'),
+                headerText  =   Object.values(app.settings.EVT_GRID_HEADER);
+                
+            this._headers = Object.keys(app.settings.EVT_GRID_HEADER);
+            if (hasDepth) {
+                headerText[headerText.indexOf('Depth (km)')] = 'Evid';
+                this._headers[this._headers.indexOf('depth')] = 'evid';
+            }
+            this._grid.set('headers', headerText);
+            
+            this._loadEvents(app.Models.Events.toArray());
+        },
+        setup: function () {
+            _.bindAll(this);
+            this._el = $('app-evt-table');
+            
+            this._headers = Object.keys(app.settings.EVT_GRID_HEADER);
+            
+            this._grid = new HtmlTable({
+                classZebra: 'odd',
+                gridContainer : this._el,
+                headers: Object.values(app.settings.EVT_GRID_HEADER),
+                zebra: true
+            });
+            this._grid.element.addEvent('click:relay(th)', this._onSort);
+            this._grid.body.addEvent('click:relay(tr)', this._rowSelected);
+            this._grid.inject(this._el);
+            
+            $('depToEvid').addEvent('click', this._toggleDepEvid);
+        }
+    });
+    
+    cart = new View({
+        setup: function () {
+            this._el = $('app-cart');
+            
+            this._el.fade('hide');
+            $('view-cart').addEvent('click', function () {
+                this._el.fade('in');
+            }.bind(this));
+        }
+    });
+    
+    channelBox = new View({
+        _events: {
+            'channelsUpdated': '_loadChannels'
+        },
+        _loadChannels: function (models) {
+            this._grid.empty();
+            for (var i = 0, j = models.length; i < j; i++) {
+                this._grid.push(Object.values(
+                    Object.subset(models[i], this._headers)
+                ), {
+                    modelNum: i
+                });
+            }
+        },
+        _adjustSize: function () {
+            var titleH = $('app-title').getSize().y,
+                offsetH = window.getSize().y - titleH,
+                sidebarW = $('app-grid').getSize().x;
+            this._el.setStyles({
+                top: titleH + 'px',
+                height: offsetH + 'px',
+                left: sidebarW + 'px'
+            });
+            this._gridEl.setStyle('height', '300px');
+        },
+        setup: function () {
+            _.bindAll(this);
+            this._el = $('app-channel-box');
+            this._gridEl = $('channel-grid');
+            
+            this._headers = Object.keys(app.settings.CHN_GRID_HEADER);
+            
+            this._grid = new HtmlTable({
+                classZebra: 'odd',
+                gridContainer : this._gridEl,
+                headers: Object.values(app.settings.CHN_GRID_HEADER),
+                zebra: true
+            });
+            this._grid.inject(this._gridEl);
+            
+            window.addEvent('resize', this._adjustSize);
+            this._adjustSize();
+        }
+    });
+    
     /*
-
-    // Station info tab
-	var Info = (function () {
-		var
-			data	=	{
-				// DOM Elements
-				test: null,
-				wrap: null
-			};
-
-		return new Class({
-			initialize: function (el) {
-				data.wrap = el;
-				var testDiv = data.test = new Element('div', {
-					styles : {
-						'backgroundColor': '#FFF',
-						'height': '100%',
-						'width': '100%'
-					},
-					text: ''
-				});
-
-				data.wrap.adopt(testDiv);
-			},
-			update: function (obj) {
-				data.test.set('text', obj.getValues().site.toString());
-			}
-		});
-	}) ();
-
-	var Table = (function () {
-		var
-			settings	=	{
-				tableHeader: {
-					time: 'Date (UTC)',
-					depth: 'Depth (km)',
-					dist: 'Dist (km)',
-					ml:	'Mag'
-				},
-				wrap: 'app-evt-table'
-			},
-			data	=	null,
-			el		=	null;
-		return new Class({
-			initialize: function () {
-				el = $(settings.wrap);
-				$('depToEvid').addEvent('click', function (evt) {
-					if (evt.target.checked) {
-						delete settings.tableHeader.depth;
-						settings.tableHeader.evid = 'Evid';
-					} else {
-						delete settings.tableHeader.evid;
-						settings.tableHeader.depth = 'Depth';
-					}
-					this.render();
-				}.bind(this));
-			},
-			addRow: function (obj) {
-				var
-					currIdx		=	el.getElements('tr.dataRow').length,
-					tableRow	=	new Element('tr');
-
-				tableRow.addClass(currIdx % 2 ? 'even' : 'odd');
-				tableRow.addClass('dataRow');
-				tableRow.store('rowNum', currIdx);
-                tableRow.store('evid', obj.id);
-                tableRow.store('siteId', global.Model.Events.getSiteId());
-
-				var chkBox = new Element('input', { type: 'checkbox' });
-				tableRow.adopt(chkBox);
-
-				for (var idx = 0, j = Object.keys(settings.tableHeader),
-                        k = j.length; idx < k; idx++) {
-					var tableCell = new Element('td');
-                    
-					if (obj[j[idx]]) {
-                        tableCell.appendText(this.parse(obj[j[idx]]));
-					}
-                    
-					tableRow.adopt(tableCell);
-				}
-
-				tableRow.addEvent('mouseenter',
-                    View.Map.highlightMarker.bind(tableRow));
-				tableRow.addEvent('mouseleave',
-                    View.Map.dehighlightMarker.bind(tableRow));
-                tableRow.addEvent('click', this.getChannels.bind(tableRow));
-				el.adopt(tableRow);
-			},
-			clear: function () {
-				el.empty();
-				this.writeHeader();
-			},
-            getChannels: function () {
-                global.Model.Channels.update(this.retrieve('evid'),
-                    this.retrieve('siteId'));
-            },
-			parse: function (obj) {
-				// @@TODO: Parse data into readable format
-				if (~obj.toString().indexOf('UTC')) {
-					obj = obj.toString().replace(' (UTC)', '');
-				}
-				return obj;
-			},
-			render: function () {
-				this.clear();
-
-				var tblData = data.getEvents();
-				for (var idx = 0, l = tblData.length; idx < l; idx++) {
-					this.addRow(tblData[idx]);
-				}
-			},
-			update: function (obj) {
-				data = obj;
-				this.render();
-			},
-			writeHeader: function () {
-				var
-					tHead	=	new Element('thead'),
-					tRow	=	new Element('tr');
-
-				tRow.adopt(new Element('th')); // Empty col for chkboxes
-
-				for (var idx = 0, j = Object.values(settings.tableHeader),
-                        l = j.length; idx < l; idx++) {
-					var
-						headCol = new Element('th', {
-							text: j[idx]
-						});
-					headCol.store('idx', idx);
-					headCol.addEvent('click', function (evt) {
-                        var sortMarkers = evt.target.getElements('span.sort');
-                        if (sortMarkers) {
-                            sortMarkers.toggleClass('asc');
-                            sortMarkers.toggleClass('desc');
-                        } else {
-                            $$('.sort').destroy();
-                            
-                            evt.target.adopt('span', {
-                                'class': 'sort desc'
-                            });
-                        }
-						global.Model.Data.sortBy(
-                            Object.keys(settings.tableHeader)[
-                                evt.target.retrieve('idx')
-                            ]
-                        );
-					});
-					tRow.adopt(headCol);
-				}
-				tHead.adopt(tRow);
-				el.adopt(tHead);
-			}
-		});
-	}) ();
 
 	var ChannelBox = (function () {
 		var
@@ -291,13 +289,6 @@ var app     =   window.app || (window.app = {}),
             
             hide: function () {
                 el.wrap.fade('hide');
-            },
-            onResize: function () {
-                el.wrap.setStyles({
-                    top: getOffsets().y + 'px',
-                    height: (window.getSize().y - getOffsets().y) + 'px',
-                    left: getOffsets().x + 'px'
-                });
             },
             render: function () {
                 var

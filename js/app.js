@@ -1,37 +1,26 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jshint mootools:true */
-this.app    =   this.app || {};
-    
-var PubSub  =   window.PubSub;
+var app     =   window.app || (window.app = {}),
+    PubSub  =   window.PubSub,
+    Toggle  =   window.Toggle;
 
 (function () {
     'use strict';
     
     app.version = '0.0.0';
     
-    PubSub.subscribe('inputChanged', function (data) {
-        app.Models.Events.fetch(data);
+    window.addEvent('domready', function () {
+        $$('.toggle').each(function (toggle) {
+            new Toggle(toggle.getElements('.toggle-title')[0],
+                        toggle.getElements('.toggle-target')[0]);
+        });
+        
+        app.Controller.Input.init();
+        app.Controller.Input.getInput();
+        app.Controller.TableNav.init();
     });
     
     // @@TODO hook up PubSubs
     // @@TODO initialize controllers
     
-    /*
-    // Initialize objects
-	document.addEvent('domready', function () {
-		[global.Controller, global.View, global.Model].invoke('initialize');
-
-		global.Controller.attach(global.Model.Data);
-        global.Model.Channels.attach(global.View.ChannelBox);
-		global.Model.Data.attach(global.View.Map, global.View.Info,
-            global.Model.Events);
-		global.Model.Events.attach(global.View.Map, global.View.Table);
-
-		global.Controller.update();
-
-		$$('.toggle:not(.active)').retrieve('slide').invoke('hide');
-		$('site').focus();
-	});
-    */
-
 }) ();

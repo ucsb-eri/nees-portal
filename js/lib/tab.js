@@ -21,16 +21,24 @@ var _ = window._;
             _.bindAll(Tabs);
             this._wrap = wrap;
             
+            this._tabCounter = 0;
+            
             this._bar = new Element('div');
             this._bar.set('id', 'tabBar');
             this._wrap.adopt(this._bar);
             
             this._view = new Element('div');
             this._view.set('id', 'tabView');
-            this._wrap.adopt(this._wrap);
+            this._wrap.adopt(this._view);
             
-            window.addEvent('resize', this.refreshSize);
-            this.refreshSize();
+            window.addEvent('resize', this._updateSize.bind(this));
+            this._updateSize();
+        },
+        // Adjusts the size of the contextPane when parent element is resized.
+        _updateSize: function () {
+            var size = this._wrap.getCoordinates();
+            this._bar.setStyle('height', '25px');
+            this._view.setStyle('height', Math.max(size.height - 25, 0) + 'px');
         },
         // Adds a tab with a title specified by name and returns the contentPane
         //   of the tab.
@@ -43,19 +51,26 @@ var _ = window._;
                 'class': 'tabTitle',
                 'text': name
             });
-            title.addEvent('click', function () {
-                wrap.getElements('.tabTitle, .tabView').removeClass('active');
-                $$(title, view).addClass('active');
-            });
+            title.store('tabNum', this._tabCounter);
+            this._tabCounter++;
+            title.addEvent('click', function (evt) {
+                this.select(evt.target.retrieve('tabNum'));
+            }.bind(this));
+            this._bar.adopt(title);
             
             view.set('class', 'tabView');
+            this._view.adopt(view);
             
+            this.select(0);
+            
+            return view;
         },
-        // Adjusts the size of the contextPane when parent element is resized.
-        updateSize: function () {
-            var size = this._wrap.getCoordinates();
-            this._bar.setStyle('height', '25px');
-            this._view.setStyle('height', Math.max(size.height - 25, 0) + 'px');
+        select: function (idx) {
+            this._wrap.getElements('.tabTitle, .tabView').removeClass('active');
+            this._wrap.getElements('.tabTitle')[idx].addClass('active');
+            this._wrap.getElements('.tabView')[idx].addClass('active');
         }
     });
+    
+    exports.Tabs = Tabs;
 }) (window);
