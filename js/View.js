@@ -101,7 +101,7 @@ var app         =   window.app || (window.app = {}),
         },
         setup: function () {
             this._markers = [];
-            this._el = tabs.add('map');
+            this._el = tabs.add('Map');
             this._mapObj = new google.maps.Map(this._el, {
                 center: new google.maps.LatLng(0, 0),
 				mapTypeId: google.maps.MapTypeId.TERRAIN,
@@ -137,7 +137,7 @@ var app         =   window.app || (window.app = {}),
             
             metaData = app.Models.Events.getMeta();
             $('query-result').set('text', 'Found ' + metaData.rows + ' results.');
-            $('table-ctrl-page').set('text', metaData.pageNum);
+            $('table-ctrl-page').set('value', metaData.pageNum + 1);
             $('table-ctrl-total').set('text', metaData.totalPages);
         },
         _onSort: function (tbody, sortIndex) {
@@ -160,7 +160,6 @@ var app         =   window.app || (window.app = {}),
             var modelNum    =   row.get('modelNum'),
                 evid        =   app.Models.Events.toArray()[modelNum].evid;
                 
-            console.log(row);
             this._el.getElements('tr').removeClass('selected');
             row.addClass('selected');
             
@@ -204,12 +203,12 @@ var app         =   window.app || (window.app = {}),
     
     cart = new View({
         setup: function () {
-            this._el = $('app-cart');
+            var appCart = this._el = $('app-cart');
             
             this._el.fade('hide');
-            $('view-cart').addEvent('click', function () {
-                this._el.fade('in');
-            }.bind(this));
+            $('view-cart').addEvent('click', appCart.fade.pass('in', appCart));
+            $('cart-close').addEvent('click',
+                appCart.fade.pass('out', appCart));
         }
     });
     
@@ -218,6 +217,7 @@ var app         =   window.app || (window.app = {}),
             'channelsUpdated': '_loadChannels'
         },
         _loadChannels: function (models) {
+            this._slideObj.hide();
             this._grid.empty();
             for (var i = 0, j = models.length; i < j; i++) {
                 this._grid.push(Object.values(
@@ -226,6 +226,7 @@ var app         =   window.app || (window.app = {}),
                     modelNum: i
                 });
             }
+            this._slideObj.slideIn();
         },
         _adjustSize: function () {
             var titleH = $('app-title').getSize().y,
@@ -255,6 +256,12 @@ var app         =   window.app || (window.app = {}),
             
             window.addEvent('resize', this._adjustSize);
             this._adjustSize();
+            
+            this._slideObj = new Fx.Slide(this._el, {
+                hideOverflow: false,
+                mode: 'horizontal'
+            });
+            this._slideObj.hide();
         }
     });
     

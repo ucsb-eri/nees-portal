@@ -112,23 +112,27 @@ var app     =   window.app || (window.app = {}),
             var metaData = app.Models.Events.getMeta();
             this._currPage = metaData.pageNum;
             this._maxPage = metaData.totalPages;
+            
+            this.checkBounds();
         }.bind(this));
+        
+        this.checkBounds();
     });
     Controller.TableNav.checkBounds = (function () {
         if (this._currPage === 0) {
-            $$('.event-table-ctrl.left-motion').addClass('disabled');
+            $$('.table-ctrl.left-motion').addClass('disabled');
         } else {
-            $$('.event-table-ctrl.left-motion').removeClass('disabled');
+            $$('.table-ctrl.left-motion').removeClass('disabled');
         }
         
         if (this._currPage == this._maxPage - 1) {
-            $$('.event-table-ctrl.right-motion').addClass('disabled');
+            $$('.table-ctrl.right-motion').addClass('disabled');
         } else {
-            $$('.event-table-ctrl.right-motion').removeClass('disabled');
+            $$('.table-ctrl.right-motion').removeClass('disabled');
         }
     });
     Controller.TableNav.nav = (function (offset) {
-        switch (offset) {
+        switch (parseInt(offset, 10)) {
         case -2:
             this._currPage = 0;
             break;
@@ -143,9 +147,8 @@ var app     =   window.app || (window.app = {}),
             break;
         }
         
-        this.checkBounds();
-        
         app.Controller.Input._input.page = this._currPage;
+        app.Controller.Input._input.maxPages = this._maxPage;
         app.Models.Events.fetch(app.Controller.Input._input);
     });
     Controller.TableNav.navOnClick = (function (evt, btn) {
