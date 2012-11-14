@@ -89,6 +89,7 @@ var app     =   window.app || (window.app = {}),
         },
         fetchOn: 'eventSelected',
         url: 'channels.json'
+        //url: 'channels.php'
     });
     app.Models.Events = Events;
     
