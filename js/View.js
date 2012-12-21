@@ -226,10 +226,12 @@ var app         =   window.app || (window.app = {}),
         clearSelection: function () {
             this._el.getElements('tr').removeClass('selected');
         },
-	filter: function (arr) {
+	filter: function (oldArr) {
+		var newArr = [];
 		for (var i = 0, j = arr.length; i < j; i++) {
-			arr[i] = arr[i].replace(' (UTC)');
+			newArr[i] = oldArr[i].replace(' (UTC)');
 		}
+		return newArr;
 	},
         setup: function () {
             _.bindAll(this);
