@@ -229,7 +229,9 @@ var app         =   window.app || (window.app = {}),
 	filter: function (oldArr) {
 		var newArr = [];
 		for (var i = 0, j = oldArr.length; i < j; i++) {
-			newArr[i] = oldArr[i].replace(' (UTC)', '');
+			if (typeof oldArr[i] === 'string') {
+				newArr[i] = oldArr[i].replace(' (UTC)', '');
+			}
 		}
 		return newArr;
 	},
