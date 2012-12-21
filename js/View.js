@@ -149,9 +149,14 @@ var app         =   window.app || (window.app = {}),
                 
             this._grid.empty();
             for (var i = 0, j = models.length; i < j; i++) {
-                this._grid.push(this.filter(Object.values(
-                    Object.subset(models[i], this._headers)
-                )), {
+                this._grid.push([new Element('div', {
+				'class': 'evt-item evt-item' + models[i].id,
+				'text': 'o'
+			})].append(
+			this.filter(Object.values(
+			    Object.subset(models[i], this._headers)
+			))
+		), {
                     modelNum: i
                 });
             }
