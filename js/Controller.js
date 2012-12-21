@@ -36,6 +36,10 @@ var app             =   window.app || (window.app = {}),
         
         // Set up Magnitude slider
         var dblSlider = new DoubleSlider($('testSlider'), {
+            onChange: function (firstValue, secondValue) {
+		this.knobs[0].set('title', firstValue);
+		this.knobs[1].set('title', secondValue);
+            },
             onComplete: function (firstValue, secondValue) {
                 $('minMag').set('value', firstValue);
                 $('maxMag').set('value', secondValue);
