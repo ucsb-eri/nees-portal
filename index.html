@@ -9,6 +9,9 @@
 		<link href='//fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="css/main.css">
 		<link rel="stylesheet" type="text/css" href="css/datepicker_jqui.css">
+		<link rel="stylesheet" type="text/css" href="css/DoubleSlider.css">
+		<link rel="stylesheet" type="text/css" href="css/Scrollable.css">
+
 	</head>
 	<body>
 
@@ -22,45 +25,42 @@
 			<div class="toggle">
 				<span class="toggle-title active">Input</span>
 				<div id="app-input" class="toggle-target">
-					<table>
-						<tr>
-							<td><label for="site">Station:</label></td>
-							<td>
-								<select class="app-input-flds" id="site">
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td><label for="radius">Distance(km):</label></td>
-							<td><input class="app-input-flds" id="radius"  type="text" value="10" /></td>
-						</tr>
-						<tr>
-							<td><label for="minMag">Magnitude:</label></td>
-							<td>
-                                <input class="app-input-flds" id="minMag" type="text" value="1.0" />
-                                <input class="app-input-flds" id="maxMag" type="text" value="9.0" />
-                            </td>
-						</tr>
-						<tr>
-							<td><label for="sDate">Start Date:</label></td>
-							<td><input class="app-input-flds app-input-flds-date" id="sDate" type="text" /></td>
-						</tr>
-						<tr>
-							<td><label for="eDate">End Date:</label></td>
-							<td><input class="app-input-flds app-input-flds-date" id="eDate" type="text" /></td>
-						</tr>
-						<tr>
-							<td><label for="itemsPerPage">Events/Page:</label></td>
-							<td><input class="app-input-flds" id="itemsPerPage" type="text" value='25' /></td>
-						</tr>
-						<tr>
-							<td></td>
-							<td>
-								<input id="depToEvid" type="checkbox" /><span>Replace depth with evid</span>
-							</td>
-						</tr>
-					</table>
-					<div id="query-result">&nbsp;</div>
+                    <div class="input-field">
+    					<label for="site">Station:</label>
+    					<select class="app-input-flds" id="site">
+    					</select>
+                    </div>
+                    <div class="input-field">
+    					<label for="radius">Distance(km):</label></td>
+    					<input class="app-input-flds" id="radius"  type="text" value="10" />
+                    </div>
+
+                    <div class="input-field">
+    					<label for="minMag">Magnitude:</label>
+                        <div id="testSlider" class="rangeSlider"><div></div><div></div></div>
+                        <input class="app-input-flds" id="minMag" type="hidden" value="1.0" />
+                        <input class="app-input-flds" id="maxMag" type="hidden" value="9.0" />
+                    </div>
+
+                    <div class="input-field">
+    					<label for="sDate">Start Date:</label>
+    					<input class="app-input-flds app-input-flds-date" id="sDate" type="text" />
+                    </div>
+
+                    <div class="input-field">
+    					<label for="eDate">End Date:</label>
+    					<input class="app-input-flds app-input-flds-date" id="eDate" type="text" />
+                    </div>
+
+                    <div class="input-field">
+    					<label for="itemsPerPage">Events/Page:</label>
+    					<input class="app-input-flds" id="itemsPerPage" type="text" value='25' />
+                    </div>
+
+                    <div class="input-field">
+    					<input id="depToEvid" style="float: right" type="checkbox" />
+                        <label for="depToEvid">Replace depth with evid</label>
+                    </div>
 				</div>
 			</div>
 			<div class="toggle">
@@ -75,22 +75,48 @@
 					</div>
 					<div id="app-evt-table">
 					</div>
+    				<div id="query-result">&nbsp;</div>
+
 				</div>
 			</div>
 		</div>
         <div id="app-channel-box">
-            <div id="channel-title" class="title">Channels</div>
-            <div id="channel-controls">
+            <div id="channel-title" class="title">Channels<div id="channel-close">&laquo;</div></div>
+            <div id="channel-controls" class="clearfix">
+                <div id="chn-control-view" class="chn-control">View Selected</div>
+                <div id="chn-control-add" class="chn-control">Add to Cart</div>
+
+                <div class="clearfix"></div>
             </div>
-            <div id="channel-grid">
+            <div id="channel-grid-head">
+            </div>
+            <div id="channel-grid-body">
             </div>
         </div>
         <div id="app-cart">
             <div id="cart-title" class="title">Cart</div>
-            <div id="cart-close">&#215;</div>
-            <div id="cart-ctrls">
+            <div id="cart-close">&#215;</div>
+
+            <div id="cart-left">
+                <div id="cart-ctrls">
+                </div>
+                <div id="cart-grid">
+                </div>
             </div>
-            <div id="cart-grid">
+            <div id="cart-right">
+                <div id="cart-form">
+                    <label for="cart-input-name">First Name</label>
+                    <input type="text" />
+                    
+                    <label for="cart-input-name">Last Name</label>
+
+                    <input type="text" />
+                    
+                    <label for="cart-input-name">E-mail</label>
+
+
+                    <input type="text" />
+                </div>
             </div>
         </div>
 
@@ -100,6 +126,10 @@
 		<script type="text/javascript" src="js/lib/mootools-more-1.4.0.1.js"></script>
 		<script type="text/javascript" src="js/lib/underscore.js"></script>
 		<script type="text/javascript" src="js/lib/pubsub.js"></script>
+
+		<script type="text/javascript" src="js/lib/DoubleSlider.js"></script>
+		<script type="text/javascript" src="js/lib/Scrollable.js"></script>
+
 
 		<script type="text/javascript" src="js/lib/tab.js"></script>
 		<script type="text/javascript" src="js/lib/toggle.js"></script>
