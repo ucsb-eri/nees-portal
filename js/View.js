@@ -226,6 +226,11 @@ var app         =   window.app || (window.app = {}),
         clearSelection: function () {
             this._el.getElements('tr').removeClass('selected');
         },
+	filter: function (arr) {
+		for (var i = 0, j = arr.length; i < j; i++) {
+			arr[i] = arr[i].replace(' (UTC)');
+		}
+	},
         setup: function () {
             _.bindAll(this);
             this._el = $('app-evt-table');
@@ -235,7 +240,9 @@ var app         =   window.app || (window.app = {}),
             this._grid = new HtmlTable({
                 classZebra: 'odd',
                 gridContainer : this._el,
-                headers: Object.values(app.settings.EVT_GRID_HEADER),
+                headers: this.filter(
+			Object.values(app.settings.EVT_GRID_HEADER)
+		),
                 zebra: true
             });
             this._grid.element.addEvent('click:relay(th)', this._onSort);

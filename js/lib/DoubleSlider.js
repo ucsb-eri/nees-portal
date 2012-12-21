@@ -116,9 +116,12 @@ var DoubleSlider = new Class({
 
     onComplete: function(e)
     {
+        var values = [];
         this.updateKnobRange();
         this.onChange(e);
-        this.fireEvent('complete');
+        values.push(Math.round(this.knobs[0].getStyle(this.property).toInt() / this.multiplier));
+        values.push(Math.round((this.knobs[1].getStyle(this.property).toInt() - this.knobs[0].getSize()[this.axis]) / this.multiplier));
+        this.fireEvent('complete', values);
     }
 
 });
