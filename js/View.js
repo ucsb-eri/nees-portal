@@ -149,9 +149,9 @@ var app         =   window.app || (window.app = {}),
                 
             this._grid.empty();
             for (var i = 0, j = models.length; i < j; i++) {
-                this._grid.push(Object.values(
+                this._grid.push(this.filter(Object.values(
                     Object.subset(models[i], this._headers)
-                ), {
+                )), {
                     modelNum: i
                 });
             }
@@ -229,7 +229,7 @@ var app         =   window.app || (window.app = {}),
 	filter: function (oldArr) {
 		var newArr = [];
 		for (var i = 0, j = oldArr.length; i < j; i++) {
-			newArr[i] = oldArr[i].replace(' (UTC)');
+			newArr[i] = oldArr[i].replace(' (UTC)', '');
 		}
 		return newArr;
 	},
@@ -242,9 +242,7 @@ var app         =   window.app || (window.app = {}),
             this._grid = new HtmlTable({
                 classZebra: 'odd',
                 gridContainer : this._el,
-                headers: this.filter(
-			Object.values(app.settings.EVT_GRID_HEADER)
-		),
+                headers: Object.values(app.settings.EVT_GRID_HEADER),
                 zebra: true
             });
             this._grid.element.addEvent('click:relay(th)', this._onSort);
