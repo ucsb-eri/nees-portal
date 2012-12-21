@@ -1,9 +1,10 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
-var app     =   window.app || (window.app = {}),
-    _       =   window._,
-    Picker  =   window.Picker,
-    PubSub  =   window.PubSub;
+var app             =   window.app || (window.app = {}),
+    _               =   window._,
+    DoubleSlider    =   window.DoubleSlider,
+    Picker          =   window.Picker,
+    PubSub          =   window.PubSub;
 
 /**
  * Handles user input
@@ -16,16 +17,14 @@ var app     =   window.app || (window.app = {}),
 (function () {
     'use strict';
     
-    var inputFields =   $$('.app-input-flds'),
+    // Input field elements
+    var Controller  =   {},
+        inputFields =   $$('.app-input-flds'),
         dateFields  =   $$('.app-input-flds-date');
-        
-    /**
-     * Handle user input
-     */
-    var Controller = {};
     
-    // Handle input
+    // Handle user input from Input box
     Controller.Input = {};
+    // Initialize input controls
     Controller.Input.init = (function () {
         _.bindAll(this, 'getInput', 'getSites', 'loadSites');
         
@@ -34,6 +33,14 @@ var app     =   window.app || (window.app = {}),
                 app.settings.DP_SETTINGS);
             el.store('_picker', datePicker);
         });
+        
+        // Set up Magnitude slider
+        var dblSlider = new DoubleSlider($('testSlider'), {
+            range: [1, 9],
+            start: [2, 8]
+        });
+        
+        // Set DatePicker initial values
         $('sDate').retrieve('_picker').select(app.settings.FIRST_EVENT);
         $('eDate').retrieve('_picker').select(new Date());
         
@@ -41,6 +48,7 @@ var app     =   window.app || (window.app = {}),
         
         inputFields.addEvent('change', this.getInput);
     });
+    // Prepare user input for data request
     Controller.Input.getInput = (function () {
         this._input = {};
         
@@ -52,6 +60,8 @@ var app     =   window.app || (window.app = {}),
         
         PubSub.publish('inputChanged', this._input);
     });
+    // Send request for Station data. Calls Controller.Input.loadSites when
+    //   data is received
     Controller.Input.getSites = (function () {
         new Request({
             async: false,
@@ -59,9 +69,11 @@ var app     =   window.app || (window.app = {}),
             url: 'sites.xml'
         }).get();
     });
+    // Retrieve Station data from sites.xml
     Controller.Input.loadSites = (function (txt, xml) {
         function addOption(node, level, parent) {
-            var thisEl;
+            var nbsp    =   '\u00a0', // Unicode &nbsp; character
+                thisEl;
             if (node.tagName === 'category') {
                 thisEl = new Element('optgroup', {
                     label: node.getAttribute('name'),
@@ -72,9 +84,8 @@ var app     =   window.app || (window.app = {}),
                     id: node.getAttribute('id'),
                     lat: node.getAttribute('lat'),
                     lon: node.getAttribute('lon'),
-                    // Insert Unicode &nbsp; character to create dropdown
-                    //   hierarchy
-                    text: (new Array(level + 1).join('\u00a0\u00a0')) +
+                    // Create site hierarchical structure
+                    text: (new Array(level + 1).join(nbsp + nbsp)) +
                         node.getAttribute('name') +
                             ' (' + node.getAttribute('descrip') + ')',
                     value: node.getAttribute('id')
@@ -88,6 +99,7 @@ var app     =   window.app || (window.app = {}),
                 }
             }
         }
+        
         for (var i = 0, j = xml.getElementsByTagName('category'), k = j.length;
                 i < k; i++) {
             addOption(j[i], 0, $('site'));
@@ -100,10 +112,13 @@ var app     =   window.app || (window.app = {}),
         _currPage: 0,
         _maxPage: 0
     };
+    // Initialize Table Navigation controls
     Controller.TableNav.init = (function () {
         _.bindAll(Controller.TableNav);
         $('table-ctrls').addEvent('click:relay(div.btn)',
             Controller.TableNav.navOnClick);
+        $('table-ctrl-page').addEvent('keypress',
+            Controller.TableNav.pageEntered);
         
         PubSub.subscribe('inputChanged', function () {
             Controller.TableNav._currPage = 0;
@@ -118,18 +133,24 @@ var app     =   window.app || (window.app = {}),
         
         this.checkBounds();
     });
+    // Disable buttons if max/min is reached
     Controller.TableNav.checkBounds = (function () {
-        if (this._currPage === 0) {
-            $$('.table-ctrl.left-motion').addClass('disabled');
-        } else {
-            $$('.table-ctrl.left-motion').removeClass('disabled');
-        }
+        // Wrap with Function.attempt to catch error thrown when attempting to
+        //   remove 'disabled' from Element with no class
+        Function.attempt(
+        // Check lower bound
+            Element.prototype[!this._currPage ? 'addClass' : 'removeClass'].pass(
+                $$('.table-ctrl.left-motion'), 'disabled'
+            )
+        );
         
-        if (this._currPage == this._maxPage - 1) {
-            $$('.table-ctrl.right-motion').addClass('disabled');
-        } else {
-            $$('.table-ctrl.right-motion').removeClass('disabled');
-        }
+        Function.attempt(
+        // Check upper bound
+            Element.prototype[this._currPage !== this._maxPage - 1 ?
+                    'addClass' : 'removeClass'].pass(
+                $$('.table-ctrl.right-motion'), 'disabled'
+            )
+        );
     });
     Controller.TableNav.nav = (function (offset) {
         switch (parseInt(offset, 10)) {
@@ -148,12 +169,18 @@ var app     =   window.app || (window.app = {}),
         }
         
         app.Controller.Input._input.page = this._currPage;
-        app.Controller.Input._input.maxPages = this._maxPage;
         app.Models.Events.fetch(app.Controller.Input._input);
     });
     Controller.TableNav.navOnClick = (function (evt, btn) {
         this.nav(btn.get('data-page-offset'));
         evt.preventDefault();
+    });
+    Controller.TableNav.pageEntered = (function (evt) {
+        if (evt.key === 'enter') {
+            this._currPage = $('table-ctrl-page').value - 1;
+            app.Controller.Input._input.page = this._currPage;
+            app.Models.Events.fetch(app.Controller.Input._input);
+        }
     });
     
     app.Controller = Controller;

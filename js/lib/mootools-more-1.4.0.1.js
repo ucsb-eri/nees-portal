@@ -1,6 +1,6 @@
 // MooTools: the javascript framework.
-// Load this file's selection again by visiting: http://mootools.net/more/c31279a727cad7aa0cbf19533f07c935 
-// Or build this file again with packager using: packager build More/More More/Date More/Hash More/Fx.Slide More/Drag More/HtmlTable More/HtmlTable.Zebra More/HtmlTable.Sort More/Locale.en-US.Date
+// Load this file's selection again by visiting: http://mootools.net/more/1ab3c8baf09f9fd3c79f7e6dd05b3e0e 
+// Or build this file again with packager using: packager build More/More More/Date More/Hash More/Element.Measure More/Element.Shortcuts More/Fx.Slide More/Drag More/Slider More/HtmlTable More/HtmlTable.Zebra More/HtmlTable.Sort More/Locale.en-US.Date
 /*
 ---
 
@@ -1054,6 +1054,253 @@ Hash.alias({indexOf: 'keyOf', contains: 'hasValue'});
 /*
 ---
 
+script: Element.Measure.js
+
+name: Element.Measure
+
+description: Extends the Element native object to include methods useful in measuring dimensions.
+
+credits: "Element.measure / .expose methods by Daniel Steigerwald License: MIT-style license. Copyright: Copyright (c) 2008 Daniel Steigerwald, daniel.steigerwald.cz"
+
+license: MIT-style license
+
+authors:
+  - Aaron Newton
+
+requires:
+  - Core/Element.Style
+  - Core/Element.Dimensions
+  - /MooTools.More
+
+provides: [Element.Measure]
+
+...
+*/
+
+(function(){
+
+var getStylesList = function(styles, planes){
+	var list = [];
+	Object.each(planes, function(directions){
+		Object.each(directions, function(edge){
+			styles.each(function(style){
+				list.push(style + '-' + edge + (style == 'border' ? '-width' : ''));
+			});
+		});
+	});
+	return list;
+};
+
+var calculateEdgeSize = function(edge, styles){
+	var total = 0;
+	Object.each(styles, function(value, style){
+		if (style.test(edge)) total = total + value.toInt();
+	});
+	return total;
+};
+
+var isVisible = function(el){
+	return !!(!el || el.offsetHeight || el.offsetWidth);
+};
+
+
+Element.implement({
+
+	measure: function(fn){
+		if (isVisible(this)) return fn.call(this);
+		var parent = this.getParent(),
+			toMeasure = [];
+		while (!isVisible(parent) && parent != document.body){
+			toMeasure.push(parent.expose());
+			parent = parent.getParent();
+		}
+		var restore = this.expose(),
+			result = fn.call(this);
+		restore();
+		toMeasure.each(function(restore){
+			restore();
+		});
+		return result;
+	},
+
+	expose: function(){
+		if (this.getStyle('display') != 'none') return function(){};
+		var before = this.style.cssText;
+		this.setStyles({
+			display: 'block',
+			position: 'absolute',
+			visibility: 'hidden'
+		});
+		return function(){
+			this.style.cssText = before;
+		}.bind(this);
+	},
+
+	getDimensions: function(options){
+		options = Object.merge({computeSize: false}, options);
+		var dim = {x: 0, y: 0};
+
+		var getSize = function(el, options){
+			return (options.computeSize) ? el.getComputedSize(options) : el.getSize();
+		};
+
+		var parent = this.getParent('body');
+
+		if (parent && this.getStyle('display') == 'none'){
+			dim = this.measure(function(){
+				return getSize(this, options);
+			});
+		} else if (parent){
+			try { //safari sometimes crashes here, so catch it
+				dim = getSize(this, options);
+			}catch(e){}
+		}
+
+		return Object.append(dim, (dim.x || dim.x === 0) ? {
+				width: dim.x,
+				height: dim.y
+			} : {
+				x: dim.width,
+				y: dim.height
+			}
+		);
+	},
+
+	getComputedSize: function(options){
+		
+
+		options = Object.merge({
+			styles: ['padding','border'],
+			planes: {
+				height: ['top','bottom'],
+				width: ['left','right']
+			},
+			mode: 'both'
+		}, options);
+
+		var styles = {},
+			size = {width: 0, height: 0},
+			dimensions;
+
+		if (options.mode == 'vertical'){
+			delete size.width;
+			delete options.planes.width;
+		} else if (options.mode == 'horizontal'){
+			delete size.height;
+			delete options.planes.height;
+		}
+
+		getStylesList(options.styles, options.planes).each(function(style){
+			styles[style] = this.getStyle(style).toInt();
+		}, this);
+
+		Object.each(options.planes, function(edges, plane){
+
+			var capitalized = plane.capitalize(),
+				style = this.getStyle(plane);
+
+			if (style == 'auto' && !dimensions) dimensions = this.getDimensions();
+
+			style = styles[plane] = (style == 'auto') ? dimensions[plane] : style.toInt();
+			size['total' + capitalized] = style;
+
+			edges.each(function(edge){
+				var edgesize = calculateEdgeSize(edge, styles);
+				size['computed' + edge.capitalize()] = edgesize;
+				size['total' + capitalized] += edgesize;
+			});
+
+		}, this);
+
+		return Object.append(size, styles);
+	}
+
+});
+
+})();
+
+
+/*
+---
+
+script: Element.Shortcuts.js
+
+name: Element.Shortcuts
+
+description: Extends the Element native object to include some shortcut methods.
+
+license: MIT-style license
+
+authors:
+  - Aaron Newton
+
+requires:
+  - Core/Element.Style
+  - /MooTools.More
+
+provides: [Element.Shortcuts]
+
+...
+*/
+
+Element.implement({
+
+	isDisplayed: function(){
+		return this.getStyle('display') != 'none';
+	},
+
+	isVisible: function(){
+		var w = this.offsetWidth,
+			h = this.offsetHeight;
+		return (w == 0 && h == 0) ? false : (w > 0 && h > 0) ? true : this.style.display != 'none';
+	},
+
+	toggle: function(){
+		return this[this.isDisplayed() ? 'hide' : 'show']();
+	},
+
+	hide: function(){
+		var d;
+		try {
+			//IE fails here if the element is not in the dom
+			d = this.getStyle('display');
+		} catch(e){}
+		if (d == 'none') return this;
+		return this.store('element:_originalDisplay', d || '').setStyle('display', 'none');
+	},
+
+	show: function(display){
+		if (!display && this.isDisplayed()) return this;
+		display = display || this.retrieve('element:_originalDisplay') || 'block';
+		return this.setStyle('display', (display == 'none') ? 'block' : display);
+	},
+
+	swapClass: function(remove, add){
+		return this.removeClass(remove).addClass(add);
+	}
+
+});
+
+Document.implement({
+
+	clearSelection: function(){
+		if (window.getSelection){
+			var selection = window.getSelection();
+			if (selection && selection.removeAllRanges) selection.removeAllRanges();
+		} else if (document.selection && document.selection.empty){
+			try {
+				//IE fails here if selected element is not in dom
+				document.selection.empty();
+			} catch(e){}
+		}
+	}
+
+});
+
+
+/*
+---
+
 script: Fx.Slide.js
 
 name: Fx.Slide
@@ -1462,6 +1709,272 @@ Element.implement({
 /*
 ---
 
+script: Class.Binds.js
+
+name: Class.Binds
+
+description: Automagically binds specified methods in a class to the instance of the class.
+
+license: MIT-style license
+
+authors:
+  - Aaron Newton
+
+requires:
+  - Core/Class
+  - /MooTools.More
+
+provides: [Class.Binds]
+
+...
+*/
+
+Class.Mutators.Binds = function(binds){
+	if (!this.prototype.initialize) this.implement('initialize', function(){});
+	return Array.from(binds).concat(this.prototype.Binds || []);
+};
+
+Class.Mutators.initialize = function(initialize){
+	return function(){
+		Array.from(this.Binds).each(function(name){
+			var original = this[name];
+			if (original) this[name] = original.bind(this);
+		}, this);
+		return initialize.apply(this, arguments);
+	};
+};
+
+
+/*
+---
+
+script: Slider.js
+
+name: Slider
+
+description: Class for creating horizontal and vertical slider controls.
+
+license: MIT-style license
+
+authors:
+  - Valerio Proietti
+
+requires:
+  - Core/Element.Dimensions
+  - /Class.Binds
+  - /Drag
+  - /Element.Measure
+
+provides: [Slider]
+
+...
+*/
+
+var Slider = new Class({
+
+	Implements: [Events, Options],
+
+	Binds: ['clickedElement', 'draggedKnob', 'scrolledElement'],
+
+	options: {/*
+		onTick: function(intPosition){},
+		onChange: function(intStep){},
+		onComplete: function(strStep){},*/
+		onTick: function(position){
+			this.setKnobPosition(position);
+		},
+		initialStep: 0,
+		snap: false,
+		offset: 0,
+		range: false,
+		wheel: false,
+		steps: 100,
+		mode: 'horizontal'
+	},
+
+	initialize: function(element, knob, options){
+		this.setOptions(options);
+		options = this.options;
+		this.element = document.id(element);
+		knob = this.knob = document.id(knob);
+		this.previousChange = this.previousEnd = this.step = -1;
+
+		var limit = {},
+			modifiers = {x: false, y: false};
+
+		switch (options.mode){
+			case 'vertical':
+				this.axis = 'y';
+				this.property = 'top';
+				this.offset = 'offsetHeight';
+				break;
+			case 'horizontal':
+				this.axis = 'x';
+				this.property = 'left';
+				this.offset = 'offsetWidth';
+		}
+
+		this.setSliderDimensions();
+		this.setRange(options.range);
+
+		if (knob.getStyle('position') == 'static') knob.setStyle('position', 'relative');
+		knob.setStyle(this.property, -options.offset);
+		modifiers[this.axis] = this.property;
+		limit[this.axis] = [-options.offset, this.full - options.offset];
+
+		var dragOptions = {
+			snap: 0,
+			limit: limit,
+			modifiers: modifiers,
+			onDrag: this.draggedKnob,
+			onStart: this.draggedKnob,
+			onBeforeStart: (function(){
+				this.isDragging = true;
+			}).bind(this),
+			onCancel: function(){
+				this.isDragging = false;
+			}.bind(this),
+			onComplete: function(){
+				this.isDragging = false;
+				this.draggedKnob();
+				this.end();
+			}.bind(this)
+		};
+		if (options.snap) this.setSnap(dragOptions);
+
+		this.drag = new Drag(knob, dragOptions);
+		this.attach();
+		if (options.initialStep != null) this.set(options.initialStep);
+	},
+
+	attach: function(){
+		this.element.addEvent('mousedown', this.clickedElement);
+		if (this.options.wheel) this.element.addEvent('mousewheel', this.scrolledElement);
+		this.drag.attach();
+		return this;
+	},
+
+	detach: function(){
+		this.element.removeEvent('mousedown', this.clickedElement)
+			.removeEvent('mousewheel', this.scrolledElement);
+		this.drag.detach();
+		return this;
+	},
+
+	autosize: function(){
+		this.setSliderDimensions()
+			.setKnobPosition(this.toPosition(this.step));
+		this.drag.options.limit[this.axis] = [-this.options.offset, this.full - this.options.offset];
+		if (this.options.snap) this.setSnap();
+		return this;
+	},
+
+	setSnap: function(options){
+		if (!options) options = this.drag.options;
+		options.grid = Math.ceil(this.stepWidth);
+		options.limit[this.axis][1] = this.full;
+		return this;
+	},
+
+	setKnobPosition: function(position){
+		if (this.options.snap) position = this.toPosition(this.step);
+		this.knob.setStyle(this.property, position);
+		return this;
+	},
+
+	setSliderDimensions: function(){
+		this.full = this.element.measure(function(){
+			this.half = this.knob[this.offset] / 2;
+			return this.element[this.offset] - this.knob[this.offset] + (this.options.offset * 2);
+		}.bind(this));
+		return this;
+	},
+
+	set: function(step){
+		if (!((this.range > 0) ^ (step < this.min))) step = this.min;
+		if (!((this.range > 0) ^ (step > this.max))) step = this.max;
+
+		this.step = Math.round(step);
+		return this.checkStep()
+			.fireEvent('tick', this.toPosition(this.step))
+			.end();
+	},
+
+	setRange: function(range, pos){
+		this.min = Array.pick([range[0], 0]);
+		this.max = Array.pick([range[1], this.options.steps]);
+		this.range = this.max - this.min;
+		this.steps = this.options.steps || this.full;
+		this.stepSize = Math.abs(this.range) / this.steps;
+		this.stepWidth = this.stepSize * this.full / Math.abs(this.range);
+		if (range) this.set(Array.pick([pos, this.step]).floor(this.min).max(this.max));
+		return this;
+	},
+
+	clickedElement: function(event){
+		if (this.isDragging || event.target == this.knob) return;
+
+		var dir = this.range < 0 ? -1 : 1,
+			position = event.page[this.axis] - this.element.getPosition()[this.axis] - this.half;
+
+		position = position.limit(-this.options.offset, this.full - this.options.offset);
+
+		this.step = Math.round(this.min + dir * this.toStep(position));
+
+		this.checkStep()
+			.fireEvent('tick', position)
+			.end();
+	},
+
+	scrolledElement: function(event){
+		var mode = (this.options.mode == 'horizontal') ? (event.wheel < 0) : (event.wheel > 0);
+		this.set(this.step + (mode ? -1 : 1) * this.stepSize);
+		event.stop();
+	},
+
+	draggedKnob: function(){
+		var dir = this.range < 0 ? -1 : 1,
+			position = this.drag.value.now[this.axis];
+
+		position = position.limit(-this.options.offset, this.full -this.options.offset);
+
+		this.step = Math.round(this.min + dir * this.toStep(position));
+		this.checkStep();
+	},
+
+	checkStep: function(){
+		var step = this.step;
+		if (this.previousChange != step){
+			this.previousChange = step;
+			this.fireEvent('change', step);
+		}
+		return this;
+	},
+
+	end: function(){
+		var step = this.step;
+		if (this.previousEnd !== step){
+			this.previousEnd = step;
+			this.fireEvent('complete', step + '');
+		}
+		return this;
+	},
+
+	toStep: function(position){
+		var step = (position + this.options.offset) * this.stepSize / this.full * this.steps;
+		return this.options.steps ? Math.round(step -= step % this.stepSize) : step;
+	},
+
+	toPosition: function(step){
+		return (this.full * Math.abs(this.min - step)) / (this.steps * this.stepSize) - this.options.offset;
+	}
+
+});
+
+
+/*
+---
+
 script: Class.Occlude.js
 
 name: Class.Occlude
@@ -1656,84 +2169,6 @@ var HtmlTable = new Class({
 });
 
 
-
-
-/*
----
-
-script: Element.Shortcuts.js
-
-name: Element.Shortcuts
-
-description: Extends the Element native object to include some shortcut methods.
-
-license: MIT-style license
-
-authors:
-  - Aaron Newton
-
-requires:
-  - Core/Element.Style
-  - /MooTools.More
-
-provides: [Element.Shortcuts]
-
-...
-*/
-
-Element.implement({
-
-	isDisplayed: function(){
-		return this.getStyle('display') != 'none';
-	},
-
-	isVisible: function(){
-		var w = this.offsetWidth,
-			h = this.offsetHeight;
-		return (w == 0 && h == 0) ? false : (w > 0 && h > 0) ? true : this.style.display != 'none';
-	},
-
-	toggle: function(){
-		return this[this.isDisplayed() ? 'hide' : 'show']();
-	},
-
-	hide: function(){
-		var d;
-		try {
-			//IE fails here if the element is not in the dom
-			d = this.getStyle('display');
-		} catch(e){}
-		if (d == 'none') return this;
-		return this.store('element:_originalDisplay', d || '').setStyle('display', 'none');
-	},
-
-	show: function(display){
-		if (!display && this.isDisplayed()) return this;
-		display = display || this.retrieve('element:_originalDisplay') || 'block';
-		return this.setStyle('display', (display == 'none') ? 'block' : display);
-	},
-
-	swapClass: function(remove, add){
-		return this.removeClass(remove).addClass(add);
-	}
-
-});
-
-Document.implement({
-
-	clearSelection: function(){
-		if (window.getSelection){
-			var selection = window.getSelection();
-			if (selection && selection.removeAllRanges) selection.removeAllRanges();
-		} else if (document.selection && document.selection.empty){
-			try {
-				//IE fails here if selected element is not in dom
-				document.selection.empty();
-			} catch(e){}
-		}
-	}
-
-});
 
 
 /*
@@ -2071,47 +2506,47 @@ provides: [String.Extras]
 (function(){
 
 var special = {
-	'a': /[Ã Ã¡Ã¢Ã£Ã¤Ã¥ÄƒÄ…]/g,
-	'A': /[Ã€ÃÃ‚ÃƒÃ„Ã…Ä‚Ä„]/g,
-	'c': /[Ä‡ÄÃ§]/g,
-	'C': /[Ä†ÄŒÃ‡]/g,
-	'd': /[ÄÄ‘]/g,
-	'D': /[ÄŽÃ]/g,
-	'e': /[Ã¨Ã©ÃªÃ«Ä›Ä™]/g,
-	'E': /[ÃˆÃ‰ÃŠÃ‹ÄšÄ˜]/g,
-	'g': /[ÄŸ]/g,
-	'G': /[Äž]/g,
-	'i': /[Ã¬Ã­Ã®Ã¯]/g,
-	'I': /[ÃŒÃÃŽÃ]/g,
-	'l': /[ÄºÄ¾Å‚]/g,
-	'L': /[Ä¹Ä½Å]/g,
-	'n': /[Ã±ÅˆÅ„]/g,
-	'N': /[Ã‘Å‡Åƒ]/g,
-	'o': /[Ã²Ã³Ã´ÃµÃ¶Ã¸Å‘]/g,
-	'O': /[Ã’Ã“Ã”Ã•Ã–Ã˜]/g,
-	'r': /[Å™Å•]/g,
-	'R': /[Å˜Å”]/g,
-	's': /[Å¡Å¡ÅŸ]/g,
-	'S': /[Å ÅžÅš]/g,
-	't': /[Å¥Å£]/g,
-	'T': /[Å¤Å¢]/g,
-	'ue': /[Ã¼]/g,
-	'UE': /[Ãœ]/g,
-	'u': /[Ã¹ÃºÃ»Å¯Âµ]/g,
-	'U': /[Ã™ÃšÃ›Å®]/g,
-	'y': /[Ã¿Ã½]/g,
-	'Y': /[Å¸Ã]/g,
-	'z': /[Å¾ÅºÅ¼]/g,
-	'Z': /[Å½Å¹Å»]/g,
-	'th': /[Ã¾]/g,
-	'TH': /[Ãž]/g,
-	'dh': /[Ã°]/g,
-	'DH': /[Ã]/g,
-	'ss': /[ÃŸ]/g,
-	'oe': /[Å“]/g,
-	'OE': /[Å’]/g,
-	'ae': /[Ã¦]/g,
-	'AE': /[Ã†]/g
+	'a': /[àáâãäåăą]/g,
+	'A': /[ÀÁÂÃÄÅĂĄ]/g,
+	'c': /[ćčç]/g,
+	'C': /[ĆČÇ]/g,
+	'd': /[ďđ]/g,
+	'D': /[ĎÐ]/g,
+	'e': /[èéêëěę]/g,
+	'E': /[ÈÉÊËĚĘ]/g,
+	'g': /[ğ]/g,
+	'G': /[Ğ]/g,
+	'i': /[ìíîï]/g,
+	'I': /[ÌÍÎÏ]/g,
+	'l': /[ĺľł]/g,
+	'L': /[ĹĽŁ]/g,
+	'n': /[ñňń]/g,
+	'N': /[ÑŇŃ]/g,
+	'o': /[òóôõöøő]/g,
+	'O': /[ÒÓÔÕÖØ]/g,
+	'r': /[řŕ]/g,
+	'R': /[ŘŔ]/g,
+	's': /[ššş]/g,
+	'S': /[ŠŞŚ]/g,
+	't': /[ťţ]/g,
+	'T': /[ŤŢ]/g,
+	'ue': /[ü]/g,
+	'UE': /[Ü]/g,
+	'u': /[ùúûůµ]/g,
+	'U': /[ÙÚÛŮ]/g,
+	'y': /[ÿý]/g,
+	'Y': /[ŸÝ]/g,
+	'z': /[žźż]/g,
+	'Z': /[ŽŹŻ]/g,
+	'th': /[þ]/g,
+	'TH': /[Þ]/g,
+	'dh': /[ð]/g,
+	'DH': /[Ð]/g,
+	'ss': /[ß]/g,
+	'oe': /[œ]/g,
+	'OE': /[Œ]/g,
+	'ae': /[æ]/g,
+	'AE': /[Æ]/g
 },
 
 tidy = {
@@ -2175,7 +2610,7 @@ String.implement({
 
 	truncate: function(max, trail, atChar){
 		var string = this;
-		if (trail == null && arguments.length == 1) trail = 'â€¦';
+		if (trail == null && arguments.length == 1) trail = '…';
 		if (string.length > max){
 			string = string.substring(0, max);
 			if (atChar){
@@ -2539,4 +2974,3 @@ HtmlTable.defineParsers = function(parsers){
 		HtmlTable.ParserPriority.unshift(parser);
 	}
 };
-

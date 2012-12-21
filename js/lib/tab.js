@@ -16,7 +16,9 @@ var _ = window._;
 (function (exports) {
     'use strict';
     
-    var Tabs = new Class({
+    var Tabs;
+    
+    Tabs = new Class({
         initialize: function (wrap) {
             _.bindAll(Tabs);
             this._wrap = wrap;
@@ -37,15 +39,14 @@ var _ = window._;
         // Adjusts the size of the contextPane when parent element is resized.
         _updateSize: function () {
             var size = this._wrap.getCoordinates();
-            this._bar.setStyle('height', '25px');
-            this._view.setStyle('height', Math.max(size.height - 25, 0) + 'px');
+            this._bar.setStyle('height', '45px');
+            this._view.setStyle('height', Math.max(size.height - 45, 0) + 'px');
         },
         // Adds a tab with a title specified by name and returns the contentPane
         //   of the tab.
         add: function (name) {
             var title   =   new Element('div'),
-                view    =   new Element('div'),
-                wrap    =   this._wrap;
+                view    =   new Element('div');
             
             title.set({
                 'class': 'tabTitle',
