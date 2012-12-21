@@ -150,7 +150,7 @@ var app         =   window.app || (window.app = {}),
             this._grid.empty();
             for (var i = 0, j = models.length; i < j; i++) {
                 this._grid.push([new Element('div', {
-				'class': 'evt-item evt-item' + models[i].id,
+				'class': 'evt-item evt-item-' + models[i].id,
 				'text': 'o'
 			})].append(
 			this.filter(Object.values(
@@ -251,7 +251,8 @@ var app         =   window.app || (window.app = {}),
             this._grid = new HtmlTable({
                 classZebra: 'odd',
                 gridContainer : this._el,
-                headers: Object.values(app.settings.EVT_GRID_HEADER),
+                headers: [''].append( // blank header for cart indicator
+			Object.values(app.settings.EVT_GRID_HEADER)),
                 zebra: true
             });
             this._grid.element.addEvent('click:relay(th)', this._onSort);
