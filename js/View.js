@@ -231,6 +231,8 @@ var app         =   window.app || (window.app = {}),
 		for (var i = 0, j = oldArr.length; i < j; i++) {
 			if (typeof oldArr[i] === 'string') {
 				newArr[i] = oldArr[i].replace(' (UTC)', '');
+			} else {
+				newArr[i] = oldArr[i];
 			}
 		}
 		return newArr;
