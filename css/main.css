@@ -1,26 +1,33 @@
 /*	NEES Data Portal Stylesheet	*/
 
 html, body {
-	margin: 0;
+    background-color: #101214;
+    margin: 0;
 	height: 100%;
 	padding: 0;
 	width: 100%;
 }
 
 body {
-	background-color: #222;
 	color: #EEE;
 	font-family: 'Ubuntu', sans-serif; 
 	font-size: 12px;
 	overflow: hidden;
 }
-
+/*
 .clearfix:after {
 	clear: both;
 	content: '.';
 	height: 0;
 	visibility: hidden;
 	font-size: 0;
+}
+*/
+.clearfix {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
 #app-title {
@@ -62,7 +69,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
     color: #FFF;
 }
 #app-evt-table thead {
-	background-color: #595959; /*AAA */
+	background-color: #002e3e;
 	color: #CCC;
 	text-align: left;
 	width: 100%;
@@ -71,7 +78,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	padding: 5px;
 }
 #app-evt-table th {
-	border-left: 1px solid #333;
+	border-left: 1px solid #335865;
 	color: #DDD;
 	font-weight: normal;
 	padding: 5px;
@@ -80,102 +87,94 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	border: 0;
 }
 #app-grid {
-	background-color: #222;
-	float: left;
+    background-color: #101214;
+    float: left;
 	height: 92%;
-	overflow: auto;
     position: relative;
 	width: 35%;
     z-index: 2;
 }
 .toggle {
-	margin-top: 1.4em;
+    margin: 10px 5px;
 }
 .toggle .toggle-title {
-	background-color: #333;
-	color: #94B6DB;
+    border-bottom: 2px solid #4E4E4E;
+	color: #c9c9c9;
 	display: block;
 	font-size: 18px;
 	height: 30px;
 	line-height: 30px;
 	padding: 2px 15px;
-	margin: 0 15px;
 }
-.toggle .toggle-title:before {
-	background: url(../img/tango/list-add.png) no-repeat center center;
-	content: " ";
+.toggle .toggle-title:after {
+    content: '▾';
 	display: block;
-	float: left;
-	height: 16px;
-	margin-right: 5px;
-	margin-top: 6px;
-	width: 16px;
-}
-.toggle .toggle-title.active:before {
-	background: url(../img/tango/list-remove.png) no-repeat center center;
-}
-.toggle .toggle-target {
-	background-color: #444;
-	margin: 25px 15px;
-	margin-top: 0;
-}
-#app-input {
-	background-color: #444;
-}
-#app-input table {
-	margin: auto;
-	padding: 5px 5%;
-	width: 90%;
-}
-#app-input table label {
-	color: #CCC;
 	float: right;
-	padding-right: 5px;
+	margin-right: 5px;
+	margin-top: -2px;
+}
+.toggle .toggle-title.active:after {
+    content: '▴';   
+}
+.toggle-target {
+    border-bottom: 1px solid #252525;
+    padding-bottom: 15px;
+}
+.input-field {
+    margin: 8px 25px;
+}
+.input-field input {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #555;
+    color: #eee;
+}
+.input-field label {
+    color: #909090;
 }
 #app-viewport {
-	background-color: #CCC;
-	float: right;
+    background-color: #101214;
+    float: right;
 	height: 92%;
+    overflow: hidden;
 	width: 65%;
 }
-
 
 #tabView, #tabBar, .tabView {
 	width: 100%;
 }
 .tabTitle {
-	background-color: #857C5E;
-	color: #543;
+    border-bottom: 5px solid #333;
+	color: #FFF;
 	float: left;
-	font-weight: bold;
-	height: 100%;
-	line-height: 25px;
-	margin-left: 5px;
-	padding: 0 15px;
+    font-size: 16px;
+    height: 40px;
+    line-height: 50px;
+	margin-left: 15px;
+	padding: 0 30px;
 }
 .tabTitle.active {
-	background-color: #D1C394;
-	color: #530;
-	font-weight: bold;
+    border-bottom: 5px solid #33b5e5;
 }
 .tabView {
 }
 .tabView.active {
+    background-color: #FFF;
 	height: 100%;
 }
 #tabBar {
-	background-color: #222;
-	border-bottom: 2px solid #D1C394;
-	padding-top: 5px;
-	padding-left: 10px;
+    background-color: #333;
 }
 #table-ctrls {
-	background-color: #444; /* #CCC */
 	color: #FFF; /* #555 */
 	height: 30px;
 	line-height: 25px;
+    margin-bottom: 5px;
 	padding: 2px 10px;
 	text-align: center
+}
+#app-input {
+    padding-top: 15px;
 }
 .app-input-flds {
 	margin: 3px 0;
@@ -211,23 +210,9 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 #table-ctrl-page {
 	width: 2.5em;
 }
-#app-input input[type=text] {
-	border: 2px inset;
-	height: 14px;
-}
-#app-input input[type=text]#minMag {
-	float: left;
-	width: 45%;
-}
-#app-input input[type=text]#maxMag {
-	float: right;
-	position: relative;
-	left: 4px;
-	width: 45%;
-}
 #query-result {
-	background-color: #334;
-	padding: 5px 0;
+    color: gray;
+	padding: 15px 0;
 	text-align: center;
 }
 #app-channel-box {
@@ -241,13 +226,11 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
     width: 100%;
 }
 #app-channel-box thead tr {
-    background-color: #333;
-    color: #DDD;
-}
-#app-channel-box thead tr {
+    background-color: #595959;
     border: 1px solid #111;
     border-top: 0;
     border-bottom: 0;
+    color: #DDD;
     padding: 10px 15px;
     text-align: left;
 }
@@ -265,17 +248,37 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
     background-color: #AAA;
 }
 #app-channel-box th {
+    border-left: 1px solid #333;
     padding: 5px;
+}
+#app-channel-box th:first-child {
+    border: 0;
+}
+#channel-close {
+    background-color: #CCC;
+    color: #333;
+    float: right;
+    font-size: 0.8em;
+    padding: 2px 8px;
+}
+#channel-close:hover, #channel-close:active {
+    background-color: #AAA;
+    cursor: pointer;
+}
+#channel-grid-body {
+    height: 200px;
+    overflow: auto;
+}
+.sort:after {
+    content: '▴';   
+    font-size: 16px;
 }
 .sort.desc:after {
     content: '▾';
 }
-.sort.asc:after {
-    content: '▴';   
-}
 
 #app-cart {
-    background-color: #FFF;
+    background-color: #333;
     height: 100%;
     width: 100%;
     position: absolute;
@@ -294,7 +297,6 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
     top: 15px;
 }
 .title {
-    border-bottom: 1px solid #CCC;
 }
 #cart-close {
     color: #CCC;
@@ -308,7 +310,8 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
     cursor: pointer;
 }
 #cart-title {
-    color: #888;
+    border-bottom: 1px solid #555;
+    color: #CCC;
     font-size: 3em;
     padding: 20px 25px;
     padding-bottom: 5px;
@@ -320,4 +323,18 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 .btn.disabled {
     visibility: hidden;
+}
+#channel-controls {
+    background-color: #444;
+    height: 35px;
+}
+.chn-control {
+    cursor: pointer;
+    float: left;
+    margin: 5px 15px;
+    background-color: #555;
+    padding: 5px 15px;
+}
+.chn-control:hover, .chn-control:active {
+    background-color: #333
 }
