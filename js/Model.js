@@ -13,7 +13,7 @@ var app     =   window.app || (window.app = {}),
  * Model
  */
 (function () {
-    var Collection, Sites, Events, Channels;
+    var Collection, events, channels, cart;
     
     // Initialize app.Models namespace
     app.Models = {};
@@ -73,7 +73,7 @@ var app     =   window.app || (window.app = {}),
         }
     });
     
-    Events = new Collection({
+    events = new Collection({
         changed: function (data) {
             PubSub.publish('eventsUpdated', data);
         },
@@ -81,9 +81,9 @@ var app     =   window.app || (window.app = {}),
         url: 'events.json'
         //url: 'events.php'
     });
-    app.Models.Events = Events;
+    app.Models.Events = events;
     
-    Channels = new Collection({
+    channels = new Collection({
         changed: function (data) {
             PubSub.publish('channelsUpdated', data);
         },
@@ -91,6 +91,26 @@ var app     =   window.app || (window.app = {}),
         url: 'channels.json'
         //url: 'channels.php'
     });
-    app.Models.Events = Events;
+    app.Models.Channels = channels;
+    
+    cart = {
+        _data: {},
+        add: function (evt, chn) {
+            this._data[evt] || (this._data[evt] = {});
+            this._data[evt][chn] = true;
+            PubSub.publish('cartUpdated', this._data);
+        },
+        get: function (evt) {
+            if (!this._data[evt] || this._data[evt] == {}) {
+                return null;
+            }
+            return this._data[evt];
+        },
+        remove: function (evt, chn) {
+            delete this._data[evt][chn];
+            PubSub.publish('cartUpdated', this._data);
+        }
+    };
+    app.Models.Cart = cart;
     
 }) ();

@@ -13,7 +13,6 @@ var app         =   window.app || (window.app = {}),
     var cart,
         channelBox,
         info,
-        infoTab,
         map,
         tabs,
         evtGrid,
@@ -56,25 +55,37 @@ var app         =   window.app || (window.app = {}),
                 var loc		=	new google.maps.LatLng(data[i].lat,
                                     data[i].lng),
                     marker	=	new google.maps.Marker({
+                        flat: true,
                         icon: Object.append({
                             path: google.maps.SymbolPath.CIRCLE,
-                            fillOpacity: 0.5,
                             fillColor: 'orange',
                             strokeOpacity: 0,
                         }, app.settings.getMarkerOptions(data[i].ml)),
                         position: loc,
-                        zIndex: 1
+                        zIndex: -1
                     });
+                
+                marker.setShadow({
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillColor: 'black',
+                    fillOpacity: 1,
+                    scale: marker.getIcon().scale
+                });
     
                 marker.setMap(this._mapObj);
                 this._markers.push(marker);
             }
         },
-        _highlightMarker: function () {
-            // @@TODO: Fill in code
+        _highlightMarker: function (index) {
+            this._markers.each(function(marker) {
+                marker.setVisible(false);
+            });
+            this._markers[index].setVisible(true);
         },
-        _dehighlightMarker: function () {
-            // @@TODO: Fill in code
+        _dehighlightMarker: function (index) {
+            this._markers.each(function(marker) {
+                marker.setVisible(true);
+            });
         },
         _resetMarkers: function () {
 			for (var i = this._markers.length - 1; i >= 0; i--) {
@@ -101,7 +112,7 @@ var app         =   window.app || (window.app = {}),
         },
         setup: function () {
             this._markers = [];
-            this._el = tabs.add('Map');
+            this._el = tabs.add('MAP');
             this._mapObj = new google.maps.Map(this._el, {
                 center: new google.maps.LatLng(0, 0),
 				mapTypeId: google.maps.MapTypeId.TERRAIN,
@@ -114,14 +125,24 @@ var app         =   window.app || (window.app = {}),
         }
     });
     
-    infoTab = tabs.add('Info');
     info = new View({
-        _el: infoTab
+        setup: function () {
+            this._el = tabs.add('INFO');
+            this._el.set('text', 'test');
+        }
     });
     
     evtGrid = new View({
         _events: {
             'eventsUpdated': '_loadEvents'
+        },
+        _highlightSelected: function () {
+            for (var i = 0, j = app.Model.Events.toArray(), k = j.length;
+                    i < k; i++) {
+                if (app.Model.Cart.toArray().contains(j[i])) {
+                    // @@TODO: highlight index i of evtGrid
+                }
+            }
         },
         _loadEvents: function (models) {
             var metaData;
@@ -141,32 +162,53 @@ var app         =   window.app || (window.app = {}),
             $('table-ctrl-total').set('text', metaData.totalPages);
         },
         _onSort: function (tbody, sortIndex) {
-            var input = app.Controller.Input._input;
-            if (input.sortBy === this._headers[sortIndex]) {
+            var input   =   app.Controller.Input._input,
+                colName =   Object.keyOf(app.settings.EVT_GRID_HEADER,
+                                sortIndex.get('text'));
+                
+            this._grid.head.getElements('th').removeClass('sort').removeClass('desc');
+            
+            if (input.sortBy && input.sortBy === colName) {
                 if (input.desc) {
                     delete input.sortBy;
                     delete input.desc;
                 } else {
+                    sortIndex.addClass('sort');
+                    sortIndex.addClass('desc');
                     input.desc = true;
                 }
             } else {
-                input.sortBy = this._headers[sortIndex];
+                sortIndex.addClass('sort');
+                input.sortBy = colName;
+                if (input.desc) delete input.desc;
             }
+            input.page = 0;
             
             app.Models.Events.fetch(input);
-            // Trigger onSort
+            
+        },
+        _rowOver: function (evt, row) {
+            map._highlightMarker(parseInt(row.get('modelNum'), 10));
+        },
+        _rowOut: function (evt, row) {
+            map._dehighlightMarker(parseInt(row.get('modelNum'), 10));
         },
         _rowSelected: function (evt, row) {
             var modelNum    =   row.get('modelNum'),
-                evid        =   app.Models.Events.toArray()[modelNum].evid;
+                date        =   app.Models.Events.toArray()[modelNum].date,
+                evid        =   app.Models.Events.toArray()[modelNum].siteEvt,
                 
-            this._el.getElements('tr').removeClass('selected');
+                evtObj      =   {
+                    evid: evid,
+                    date: date,
+                    siteId: $(app.Controller.Input._input.site).get('id')
+                };
+                
+            this.clearSelection();
             row.addClass('selected');
             
-            PubSub.publish('eventSelected', {
-                evid: evid,
-                siteId: $(app.Controller.Input._input.site).get('id')
-            });
+            channelBox.setCurrentEvent(evtObj);
+            PubSub.publish('eventSelected', evtObj);
         },
         _toggleDepEvid: function () {
             var hasDepth    =   this._headers.contains('depth'),
@@ -180,6 +222,9 @@ var app         =   window.app || (window.app = {}),
             this._grid.set('headers', headerText);
             
             this._loadEvents(app.Models.Events.toArray());
+        },
+        clearSelection: function () {
+            this._el.getElements('tr').removeClass('selected');
         },
         setup: function () {
             _.bindAll(this);
@@ -195,6 +240,8 @@ var app         =   window.app || (window.app = {}),
             });
             this._grid.element.addEvent('click:relay(th)', this._onSort);
             this._grid.body.addEvent('click:relay(tr)', this._rowSelected);
+            this._grid.body.addEvent('mouseover:relay(tr)', this._rowOver);
+            this._grid.body.addEvent('mouseout:relay(tr)', this._rowOut);
             this._grid.inject(this._el);
             
             $('depToEvid').addEvent('click', this._toggleDepEvid);
@@ -214,35 +261,62 @@ var app         =   window.app || (window.app = {}),
     
     channelBox = new View({
         _events: {
-            'channelsUpdated': '_loadChannels'
+            'channelsUpdated': '_loadChannels',
+            'eventsUpdated': '_hide'
         },
         _loadChannels: function (models) {
+            var i, j,
+                bodyRow,
+                headRow;
+            
             this._slideObj.hide();
             this._grid.empty();
-            for (var i = 0, j = models.length; i < j; i++) {
+            for (i = 0, j = models.length; i < j; i++) {
                 this._grid.push(Object.values(
                     Object.subset(models[i], this._headers)
                 ), {
                     modelNum: i
                 });
             }
+            
+            if (models.length > 0) {
+                // Synchronize table col width
+                bodyRow = this._grid.body.getElement('tr').getElements('td');
+                headRow = this._grid.head.getElements('th');
+                for (i = 0, j = headRow.length - 1; i < j; i++) {
+                    headRow[i].setStyle('width', bodyRow[i].offsetWidth -
+                        parseInt(bodyRow[i].getStyle('padding'), 10) * 2 + 'px');
+                }
+            } else {
+                this._grid.push(['No channels availible']);
+            }
+            
             this._slideObj.slideIn();
         },
         _adjustSize: function () {
             var titleH = $('app-title').getSize().y,
+                gridH,
                 offsetH = window.getSize().y - titleH,
                 sidebarW = $('app-grid').getSize().x;
             this._el.setStyles({
-                top: titleH + 'px',
                 height: offsetH + 'px',
                 left: sidebarW + 'px'
             });
-            this._gridEl.setStyle('height', '300px');
+            
+            gridH = $('channel-title').getSize().y +
+                    $('channel-controls').getSize().y +
+                    $('channel-grid-head').getSize().y;
+            this._bodyEl.setStyle('height', offsetH - gridH);
+        },
+        _hide: function () {
+            evtGrid.clearSelection();
+            this._slideObj.slideOut();
         },
         setup: function () {
             _.bindAll(this);
             this._el = $('app-channel-box');
-            this._gridEl = $('channel-grid');
+            this._headEl = $('channel-grid-head');
+            this._bodyEl = $('channel-grid-body');
             
             this._headers = Object.keys(app.settings.CHN_GRID_HEADER);
             
@@ -252,7 +326,8 @@ var app         =   window.app || (window.app = {}),
                 headers: Object.values(app.settings.CHN_GRID_HEADER),
                 zebra: true
             });
-            this._grid.inject(this._gridEl);
+            this._headEl.adopt(new Element('table').adopt(this._grid.thead));
+            this._bodyEl.adopt(new Element('table').adopt(this._grid.body));
             
             window.addEvent('resize', this._adjustSize);
             this._adjustSize();
@@ -262,127 +337,15 @@ var app         =   window.app || (window.app = {}),
                 mode: 'horizontal'
             });
             this._slideObj.hide();
+            
+            $('channel-close').addEvent('click', this._hide);
+        },
+        getCurrentEvent: function () {
+            return this._currEvt || {};
+        },
+        setCurrentEvent: function (currEvt) {
+            this._currEvt = currEvt;
         }
     });
-    
-    /*
-
-	var ChannelBox = (function () {
-		var
-            data        =   null,
-            el          =   {},
-			settings	=	{
-				sideBar: 'app-grid',
-				titleBar: 'app-title',
-                test: false
-			};
-
-		function getOffsets() {
-			return {
-				x: $(settings.sideBar).getSize().x,
-				y: $(settings.titleBar).getSize().y
-			};
-		}
-		return new Class({
-			initialize: function () {
-                var
-                    wrap = el.wrap = new Element('div', {'id': 'channel-box'});
-                document.body.adopt(wrap);
-
-                window.addEvent('resize', this.onResize.bind(this));
-                this.onResize();
-                el.wrap.fade('hide');
-			},
-            
-            hide: function () {
-                el.wrap.fade('hide');
-            },
-            render: function () {
-                var
-                    bodyRow, headRow,
-                    
-                    scrollPane  =   new Element('div'),
-                    tBodyTable  =   new Element('table'), // Put header and body
-                    tHeadTable  =   new Element('table'), // in separate tables
-                    tBody       =   new Element('tbody'),
-                    tHead       =   new Element('thead'),
-                    tHeadRow    =   new Element('tr');
-
-                el.wrap.empty();
-
-                // Write header
-                tHeadRow.adopt(new Element('th', { text: '?' })); // Checkbox cl
-                for (var i = 0, j = data.$meta.headers, k = j.length; i < k;
-                        i++) {
-                    tHeadRow.adopt(new Element('th', {
-                        text: data.$meta.headers[i]
-                    }));
-                }
-                
-                tHead.adopt(tHeadRow);
-                tHeadTable.adopt(tHead);
-                el.wrap.adopt(tHeadTable);
-
-                // Write table
-                for (var i = 0, j = data.$data, k = j.length; i < k; i++) {
-                    var
-                        tRow = new Element('tr'),
-                        chkBox = new Element('td');
-                        
-                    chkBox.adopt(new Element('input', {
-                        type: 'checkbox'
-                    }));
-                    tRow.adopt(chkBox);
-                    
-                    for (var p = 0, q = j[i], r = q.length; p < r; p++) {
-                        tRow.adopt(new Element('td', {
-                            text: q[p]
-                        }));
-                    }
-
-                    tRow.addClass(i % 2 === 0 ? 'even' : 'odd');
-                    tBody.adopt(tRow);
-                }
-                tBodyTable.adopt(tBody);
-                tBodyTable.setStyle('width', '100%');
-                scrollPane.adopt(tBodyTable);
-                scrollPane.setStyle('overflow', 'auto');
-                scrollPane.setStyle('padding-bottom', '2em');
-                scrollPane.setStyle('width', '100%');
-                el.wrap.adopt(scrollPane);
-                
-                window.addEvent('resize', function () {
-                    scrollPane.setStyle('height',
-                        ($('channel-box').getSize().y - tHeadRow.getSize().y) + 'px');
-                });
-                scrollPane.setStyle('height',
-                    ($('channel-box').getSize().y - tHeadRow.getSize().y) + 'px');
-
-                if (tBodyTable.getElements('tr').length > 0) {
-                    // sync thead and tbody widths
-                    bodyRow =   tBodyTable.getElements('tr')[0],
-                    headRow =   tHeadTable.getElements('tr')[0];
-
-                    for (var i = 0, j = bodyRow.getElements('td'),
-                            k = headRow.getElements('th'), l = j.length;
-                            i < l; i++) {
-                        $$(j[i], k[i]).setStyle('width', j[i].getSize().x + 'px');
-                    }
-
-                    tHeadTable.set('width', tBodyTable.getSize().x + 'px');
-                }
-
-                this.show();
-            },
-            show: function () {
-                el.wrap.fade('show');
-            },
-            update: function (obj) {
-                data = obj.getChannels();
-                this.render();
-            }
-		});
-	}) ();
-    */
 
 }) ();
