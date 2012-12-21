@@ -36,6 +36,11 @@ var app             =   window.app || (window.app = {}),
         
         // Set up Magnitude slider
         var dblSlider = new DoubleSlider($('testSlider'), {
+            onComplete: function (firstValue, secondValue) {
+                $('minMag').set('value', firstValue);
+                $('maxMag').set('value', secondValue);
+                $$('#minMag, #maxMag').fireEvent('change');
+            },
             range: [1, 9],
             start: [2, 8]
         });
@@ -153,20 +158,7 @@ var app             =   window.app || (window.app = {}),
         );
     });
     Controller.TableNav.nav = (function (offset) {
-        switch (parseInt(offset, 10)) {
-        case -2:
-            this._currPage = 0;
-            break;
-        case -1:
-            this._currPage--;
-            break;
-        case 1:
-            this._currPage++;
-            break;
-        case 2:
-            this._currPage = this._maxPage - 1;
-            break;
-        }
+        this._currPage += parseInt(offset, 10);
         
         app.Controller.Input._input.page = this._currPage;
         app.Models.Events.fetch(app.Controller.Input._input);
