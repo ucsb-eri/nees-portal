@@ -20,5 +20,6 @@ var app         =   window.app || (window.app = {}),
         app.Controller.TableNav.init();
         
         new Scrollable($('app-grid'));
+        new Scrollable($('channel-grid-body'));
     });
 }) ();
