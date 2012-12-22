@@ -283,7 +283,6 @@ var	app		=	window.app || (window.app = {}),
 	
 	channelBox = new View({
 		_events: {
-			'channelsUpdated': 'hide',
 			'channelsUpdated': '_loadChannels',
 			'eventsUpdated': 'hide'
 		},

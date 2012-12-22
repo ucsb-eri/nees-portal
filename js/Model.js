@@ -112,7 +112,7 @@ var app	 =   window.app || (window.app = {}),
 		remove: function (evt, chn) {
 			if (!this._data[evt] || !this._data[evt][chn]) return;
 			delete this._data[evt][chn];
-			if (this._data[evt] == {}) {
+			if (Object.getLength(this._data[evt]) == 0) {
 				delete this._data[evt];
 			}
 		},
