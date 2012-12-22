@@ -216,7 +216,10 @@ var	app		=	window.app || (window.app = {}),
 			var hasDepth	=   this._headers.contains('depth'),
 				headerText  =   Object.values(app.settings.EVT_GRID_HEADER);
 				
-			this._headers = Object.keys(app.settings.EVT_GRID_HEADER);
+			this._headers = [''].append(
+				Object.keys(app.settings.EVT_GRID_HEADER)
+			);
+
 			if (hasDepth) {
 				headerText[headerText.indexOf('Depth (km)')] = 'Evid';
 				this._headers[this._headers.indexOf('depth')] = 'evid';
