@@ -314,11 +314,14 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 #view-cart {
 	border-left: 1px solid #CCC;
-	cursor: default;
+	cursor: pointer;
 	padding: 5px 15px;
 	position: absolute;
 	right: 25px;
 	top: 15px;
+}
+#view-cart:hover {
+	text-decoration: underline;
 }
 #cart-close {
 	color: #CCC;
@@ -349,14 +352,14 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 #channel-controls {
 	background-color: #101214;
-	height: 35px;
+	height: 40px;
 }
 .chn-control {
 	border-radius: 5px;
 	border: 1px solid #101214;
 	cursor: pointer;
 	float: left;
-	margin: 10px 15px;
+	margin: 8px 15px;
 	padding: 5px 15px;
 }
 .chn-control:hover, .chn-control:active {
