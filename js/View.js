@@ -196,7 +196,7 @@ var	app		=	window.app || (window.app = {}),
 			map._dehighlightMarker(parseInt(row.get('modelNum'), 10));
 		},
 		_rowSelected: function (evt, row) {
-			var modelNum	=   Integer.parseInt(row.get('modelNum'), 10),
+			var modelNum	=   parseInt(row.get('modelNum'), 10),
 				date		=   app.Models.Events.toArray()[modelNum].date,
 				evid		=   app.Models.Events.toArray()[modelNum].siteEvt,
 				
