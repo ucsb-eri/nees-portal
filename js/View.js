@@ -1,16 +1,16 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
-var app		 =   window.app || (window.app = {}),
+var	app		=	window.app || (window.app = {}),
 
-	_		   =   window._,
-	google	  =   window.google,
-	PubSub	  =   window.PubSub,
-	Tabs		=   window.Tabs;
+	_		=	window._,
+	google	=	window.google,
+	PubSub	=	window.PubSub,
+	Tabs	=	window.Tabs;
 
 (function () {
 	'use strict';
 	
-	var cart,
+	var	cart,
 		channelBox,
 		info,
 		map,
@@ -139,9 +139,7 @@ var app		 =   window.app || (window.app = {}),
 		_highlightSelected: function () {
 			for (var i = 0, j = app.Model.Events.toArray(), k = j.length;
 					i < k; i++) {
-				if (app.Model.Cart.toArray().contains(j[i])) {
-					// @@TODO: highlight index i of evtGrid
-				}
+				// @@TODO: highlight index i of evtGrid
 			}
 		},
 		_loadEvents: function (models) {
@@ -308,8 +306,8 @@ var app		 =   window.app || (window.app = {}),
 				}
 
 				// Set up clickable items
-				$$('.wv-item, .cart-item').addEvent('click', function (evt, item) {
-					item.toggleClass('active');
+				$$('.wv-item, .cart-item').addEvent('click', function () {
+					this.toggleClass('active');
 				});
 			} else {
 				this._grid.push(['No channels availible']);
