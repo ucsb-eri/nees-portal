@@ -146,6 +146,7 @@ var app             =   window.app || (window.app = {}),
         );
     });
     Controller.TableNav.nav = (function (offset) {
+	PubSub.publish('clearTable', {});
         this._currPage += parseInt(offset, 10);
         
         app.Controller.Input._input.page = this._currPage;
