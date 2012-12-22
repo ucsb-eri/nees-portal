@@ -344,11 +344,6 @@ var	app		=	window.app || (window.app = {}),
 				chnIndex	=	[''].append(Object.values(
 					app.settings.CHN_GRID_HEADER)).indexOf('Channel');
 
-			if (active.length === 0) {
-				alert('No channels selected!');
-				return;
-			}
-
 			if (chnIndex == -1) throw 'Could not find header index';
 			
 			for (var i = 0, j = active.length; i < j; i++) {
