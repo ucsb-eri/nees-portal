@@ -136,24 +136,18 @@ var	app		=	window.app || (window.app = {}),
 		_events: {
 			'eventsUpdated': '_loadEvents'
 		},
-		_highlightSelected: function () {
-			for (var i = 0, j = app.Model.Events.toArray(), k = j.length;
-					i < k; i++) {
-				// @@TODO: highlight index i of evtGrid
-			}
-		},
 		_loadEvents: function (models) {
 			var metaData;
 				
 			this._grid.empty();
 			for (var i = 0, j = models.length; i < j; i++) {
 				this._grid.push([new Element('div', {
-				'class': 'evt-item evt-item-' + models[i].id
-			})].append(
-			this.filter(Object.values(
-				Object.subset(models[i], this._headers)
-			))
-		), {
+						'class': 'evt-item evt-item-' + models[i].id
+					})].append(
+					this.filter(Object.values(
+						Object.subset(models[i], this._headers)
+					))
+				), {
 					modelNum: i
 				});
 			}
@@ -162,6 +156,12 @@ var	app		=	window.app || (window.app = {}),
 			$('query-result').set('text', 'Found ' + metaData.rows + ' results.');
 			$('table-ctrl-page').set('value', metaData.pageNum + 1);
 			$('table-ctrl-total').set('text', metaData.totalPages);
+			PubSub.subscribe('cartUpdated', function () {
+				$$('.evt-item').removeClass('active');
+				for (var i = 0, j = Object.keys(app.Models.Cart.toObj()), k = j.length; i < k; i++) {
+					$$('.evt-item-' + j[i]).addClass('active');
+				}
+			});
 		},
 		_onSort: function (tbody, sortIndex) {
 			var input   =   app.Controller.Input._input,
@@ -209,7 +209,7 @@ var	app		=	window.app || (window.app = {}),
 			this.clearSelection();
 			row.addClass('selected');
 			
-			channelBox.setCurrentEvent(evtObj.siteId);
+			channelBox.setCurrentEvent(evtObj);
 			PubSub.publish('eventSelected', evtObj);
 		},
 		_toggleDepEvid: function () {
@@ -350,15 +350,13 @@ var	app		=	window.app || (window.app = {}),
 			}
 
 			if (chnIndex == -1) throw 'Could not find header index';
-			console.log(chnIndex);
 			
 			for (var i = 0, j = active.length; i < j; i++) {
-				app.Models.Cart.add(this.getCurrentEvent(),
+				app.Models.Cart.add(this.getCurrentEvent().siteId,
 					active[i].getElements('td')[chnIndex].get('text'));
-				console.log(active[i].getElements('td')[chnIndex].get('text'));
 			}
 			for (var i = 0, j = inactive.length; i < j; i++) {
-				app.Models.Cart.remove(this.getCurrentEvent(),
+				app.Models.Cart.remove(this.getCurrentEvent().siteId,
 					inactive[i].getElements('td')[chnIndex].get('text'));
 			}
 
