@@ -111,6 +111,9 @@ var app	 =   window.app || (window.app = {}),
 		},
 		remove: function (evt, chn) {
 			delete this._data[evt][chn];
+			if (this._data[evt] == {}) {
+				delete this._data[evt];
+			}
 			PubSub.publish('cartUpdated', this._data);
 		},
 		toObj: function () {

@@ -290,9 +290,9 @@ var	app		=	window.app || (window.app = {}),
 			this._grid.empty();
 			for (i = 0, j = models.length; i < j; i++) {
 				this._grid.push([$$(
-			new Element('div', { 'class': 'cart-item' }),
-			new Element('div', { 'class': 'wv-item' })
-		)].append(Object.values(
+					new Element('div', { 'class': 'cart-item' }),
+					new Element('div', { 'class': 'wv-item' })
+				)].append(Object.values(
 					Object.subset(models[i], this._headers)
 				), {
 					modelNum: i
@@ -338,11 +338,23 @@ var	app		=	window.app || (window.app = {}),
 			this._slideObj.slideOut();
 		},
 		_addToCart: function () {
-			var selectedChannels = $$('.cart-item.active ! tr');
-			if (selectedChannels.length === 0) {
+			var	active = $$('.cart-item.active ! tr'),
+				inactive = $$('.cart-item:not(.active) ! tr');
+
+			if (chns.length === 0) {
 				alert('No channels selected!');
 				return;
 			}
+
+			for (var i = 0, j = active.length; i < j; i++) {
+				app.Models.Cart.add(this.getCurrentEvent(),
+					active[i].retrieve('evid'));
+			}
+			for (var i = 0, j = inactive.length; i < j; i++) {
+				app.Models.Cart.remove(this.getCurrentEvent(),
+					inactive[i].retrieve('evid'));
+			}
+			console.log(app.Models.Cart.toObj());
 
 			// @@TODO: Add to cart
 		},
