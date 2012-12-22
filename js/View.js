@@ -59,7 +59,7 @@ var	app		=	window.app || (window.app = {}),
 						icon: Object.append({
 							path: google.maps.SymbolPath.CIRCLE,
 							fillColor: 'orange',
-							strokeOpacity: 0,
+							strokeOpacity: 0
 						}, app.settings.getMarkerOptions(data[i].ml)),
 						position: loc,
 						zIndex: -1
@@ -204,7 +204,7 @@ var	app		=	window.app || (window.app = {}),
 				date		=   app.Models.Events.toArray()[modelNum].time,
 				evid		=   app.Models.Events.toArray()[modelNum].id,
 				
-				evtObj	  =   {
+				evtObj		=   {
 					evid: evid,
 					date: date,
 					siteId: $(app.Controller.Input._input.site).get('id')
@@ -292,7 +292,7 @@ var	app		=	window.app || (window.app = {}),
 			
 			this._slideObj.hide();
 			this._grid.empty();
-			for (i = 0, j = models.length; i < j; i++) {
+			for (var i = 0, j = models.length; i < j; i++) {
 				this._grid.push([$$(
 					new Element('div', { 'class': 'cart-item' }),
 					new Element('div', { 'class': 'wv-item' })
@@ -342,7 +342,7 @@ var	app		=	window.app || (window.app = {}),
 		},
 		_addToCart: function () {
 			var	active		=	$$('.cart-item.active ! tr'),
-				inactive	=	$$('.cart-item:not(.active) ! tr'),
+				inactive	=	$$('.cart-item:not(.active) ! tr');
 			
 			for (var i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent().evid,
