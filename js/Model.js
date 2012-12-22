@@ -110,6 +110,7 @@ var app	 =   window.app || (window.app = {}),
 			return !!this.data[evt] && !!this._data[evt][chn];
 		},
 		remove: function (evt, chn) {
+			if (!this._data[evt] || !this._data[evt][chn]) return;
 			delete this._data[evt][chn];
 			if (this._data[evt] == {}) {
 				delete this._data[evt];
