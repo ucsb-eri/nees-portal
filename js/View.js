@@ -209,11 +209,12 @@ var	app		=	window.app || (window.app = {}),
 					date: date,
 					siteId: $(app.Controller.Input._input.site).get('id')
 				};
+
+			channelBox.hide();
 				
 			this.clearSelection();
 			row.addClass('selected');
 			
-			channelBox.hide();
 			channelBox.setCurrentEvent(evtObj);
 			PubSub.publish('eventSelected', evtObj);
 		},
