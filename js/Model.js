@@ -96,7 +96,6 @@ var app	 =   window.app || (window.app = {}),
 	cart = {
 		_data: {},
 		add: function (evt, chn) {
-			console.log(evt + ',' + chn);
 			this._data[evt] || (this._data[evt] = {});
 			this._data[evt][chn] = true;
 			PubSub.publish('cartUpdated', this._data);
