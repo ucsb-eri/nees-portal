@@ -196,7 +196,7 @@ var	app		=	window.app || (window.app = {}),
 			map._dehighlightMarker(parseInt(row.get('modelNum'), 10));
 		},
 		_rowSelected: function (evt, row) {
-			var modelNum	=   row.get('modelNum'),
+			var modelNum	=   Integer.parseInt(row.get('modelNum'), 10),
 				date		=   app.Models.Events.toArray()[modelNum].date,
 				evid		=   app.Models.Events.toArray()[modelNum].siteEvt,
 				
@@ -351,7 +351,7 @@ var	app		=	window.app || (window.app = {}),
 			if (chnIndex == -1) throw 'Could not find header index';
 			
 			for (var i = 0, j = active.length; i < j; i++) {
-				app.Models.Cart.add(this.getCurrentEvent().siteId,
+				app.Models.Cart.add(this.getCurrentEvent().evid,
 					active[i].getElements('td')[chnIndex].get('text'));
 			}
 /*
