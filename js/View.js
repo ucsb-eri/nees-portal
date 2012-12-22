@@ -295,6 +295,7 @@ var	app		=	window.app || (window.app = {}),
 				)].append(Object.values(
 					Object.subset(models[i], this._headers)
 				), {
+					chn: models[i].chan,
 					modelNum: i
 				}));
 			}
@@ -348,11 +349,11 @@ var	app		=	window.app || (window.app = {}),
 
 			for (var i = 0, j = active.length; i < j; i++) {
 				app.Models.Cart.add(this.getCurrentEvent(),
-					active[i].retrieve('evid'));
+					active[i].retrieve('chn'));
 			}
 			for (var i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent(),
-					inactive[i].retrieve('evid'));
+					inactive[i].retrieve('chn'));
 			}
 			console.log(app.Models.Cart.toObj());
 
