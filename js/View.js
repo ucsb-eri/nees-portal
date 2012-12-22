@@ -339,21 +339,24 @@ var	app		=	window.app || (window.app = {}),
 			this._slideObj.slideOut();
 		},
 		_addToCart: function () {
-			var	active = $$('.cart-item.active ! tr'),
-				inactive = $$('.cart-item:not(.active) ! tr');
+			var	active		=	$$('.cart-item.active ! tr'),
+				inactive	=	$$('.cart-item:not(.active) ! tr'),
+				chnIndex	=	Object.values(app.settings.CHN_GRID_HEADER).indexOf('Channel');
 
 			if (active.length === 0) {
 				alert('No channels selected!');
 				return;
 			}
 
+			if (chnIndex == -1) throw 'Could not find header index';
+			
 			for (var i = 0, j = active.length; i < j; i++) {
 				app.Models.Cart.add(this.getCurrentEvent(),
-					active[i].setProperty('chn'));
+					active[i].getElements('td')[chnIndex].get('text'));
 			}
 			for (var i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent(),
-					inactive[i].setProperty('chn'));
+					inactive[i].getElements('td')[chnIndex].get('text'));
 			}
 			console.log(app.Models.Cart.toObj());
 
@@ -380,8 +383,8 @@ var	app		=	window.app || (window.app = {}),
 				classZebra: 'odd',
 				gridContainer : this._gridEl,
 				headers: [''].append(
-			Object.values(app.settings.CHN_GRID_HEADER)
-		),
+					Object.values(app.settings.CHN_GRID_HEADER)
+				),
 				zebra: true
 			});
 			this._headEl.adopt(new Element('table').adopt(this._grid.thead));
