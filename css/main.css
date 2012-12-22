@@ -301,8 +301,13 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	width: 45%;
 }
 #cart-left {
-	background: #EEE;
+	background-color: #EEE;
 	border-radius: 5px;
+	color: #333;
+	font-size: 18px;
+	height: 60%;
+	overflow: auto;
+	padding: 25px 0px;
 }
 #cart-right {
 	padding: 35px 0;
