@@ -210,8 +210,6 @@ var	app		=	window.app || (window.app = {}),
 					siteId: $(app.Controller.Input._input.site).get('id')
 				};
 
-			channelBox.hide();
-				
 			this.clearSelection();
 			row.addClass('selected');
 			
