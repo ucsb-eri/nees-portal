@@ -128,7 +128,7 @@ var	app		=	window.app || (window.app = {}),
 	info = new View({
 		setup: function () {
 			this._el = tabs.add('INFO');
-			this._el.set('text', 'test');
+			this._el.set('text', '');
 		}
 	});
 	
