@@ -288,11 +288,14 @@ var app         =   window.app || (window.app = {}),
             this._slideObj.hide();
             this._grid.empty();
             for (i = 0, j = models.length; i < j; i++) {
-                this._grid.push(Object.values(
+                this._grid.push([
+			new Element('div', { 'class': 'cart-item' }),
+			new Element('div', { 'class': 'wv-item' })
+		].append(Object.values(
                     Object.subset(models[i], this._headers)
                 ), {
                     modelNum: i
-                });
+                }));
             }
             
             if (models.length > 0) {
@@ -339,7 +342,9 @@ var app         =   window.app || (window.app = {}),
             this._grid = new HtmlTable({
                 classZebra: 'odd',
                 gridContainer : this._gridEl,
-                headers: Object.values(app.settings.CHN_GRID_HEADER),
+                headers: ['', ''].append(
+			Object.values(app.settings.CHN_GRID_HEADER)
+		),
                 zebra: true
             });
             this._headEl.adopt(new Element('table').adopt(this._grid.thead));

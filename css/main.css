@@ -335,6 +335,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 #channel-title {
 	background-color: #000;
+	border-bottom: #555;
 	font-size: 1.6em;
 	padding: 5px 15px;
 }
@@ -342,7 +343,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	visibility: hidden;
 }
 #channel-controls {
-	background-color: #444;
+	background-color: #000;
 	height: 35px;
 }
 .chn-control {
