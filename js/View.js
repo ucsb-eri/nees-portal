@@ -298,10 +298,10 @@ var	app		=	window.app || (window.app = {}),
 					new Element('div', { 'class': 'wv-item' })
 				)].append(Object.values(
 					Object.subset(models[i], this._headers)
-				), {
+				)), {
 					'id': 'chn-item-' + models[i].id,
 					'modelNum': i
-				}));
+				});
 			}
 			
 			if (models.length > 0) {
