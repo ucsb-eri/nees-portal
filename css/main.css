@@ -64,11 +64,11 @@ tr.odd {
 	cursor: pointer;
 }
 tr.selected, #app-evt-table tbody tr.selected:hover {
-	background-color: #025;
+	background-color: #002e3e;
 	color: #FFF;
 }
 #app-evt-table thead {
-	background-color: #002e3e;
+	border-bottom: 1px solid #555;
 	color: #CCC;
 	text-align: left;
 	width: 100%;
@@ -132,7 +132,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	margin: auto 15px;
 }
 .input-field .double-field {
-	width: 45px;
+	width: 35%;
 }
 .input-field label {
 	color: #909090;
