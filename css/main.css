@@ -300,21 +300,29 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	width: 45%;
 }
 #cart-right {
-	padding: 15px 0;
+	padding: 35px 0;
 	text-align: center;
 }
 #cart-right .input-field {
+	color: #333;
 	font-size: 16px;
 	margin-bottom: 1.6em;
 	text-align: left;
 }
+#cart-right .input-field label {
+	color: #555;
+}
 #cart-right button {
+	height: 35px;
 	margin: auto;
+	margin-top: 5px;
+	width: 80%;
 }
 #app-cart input[type=text] {
 	background: transparent;
 	border: 0;
-	border-bottom: 1px solid #555;
+	border-bottom: 1px solid #AAA;
+	margin-top: 8px;
 	width: 100%;
 }
 #view-cart {
@@ -342,7 +350,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 #cart-title {
 	background-color: #222;
 	border-bottom: 5px solid #1b1b1b;
-	color: #CCC;
+	color: #FFF;
 	font-size: 48px;
 	padding: 25px;
 	padding-bottom: 10px;
