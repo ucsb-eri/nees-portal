@@ -223,7 +223,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	width: 100%;
 }
 #app-channel-box thead tr {
-	background-color: #595959;
+	background-color: #101214;
 	border: 1px solid #111;
 	border-top: 0;
 	border-bottom: 0;
@@ -245,7 +245,6 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	background-color: #AAA;
 }
 #app-channel-box th {
-	border-left: 1px solid #333;
 	padding: 5px;
 }
 #app-channel-box th:first-child {
@@ -333,7 +332,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 #channel-title {
 	background-color: #101214;
-	border-bottom: #555;
+	border-bottom: 1px solid #555;
 	font-size: 1.6em;
 	padding: 5px 15px;
 }
