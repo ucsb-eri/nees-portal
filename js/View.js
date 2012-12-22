@@ -341,7 +341,7 @@ var	app		=	window.app || (window.app = {}),
 			var	active = $$('.cart-item.active ! tr'),
 				inactive = $$('.cart-item:not(.active) ! tr');
 
-			if (chns.length === 0) {
+			if (active.length === 0) {
 				alert('No channels selected!');
 				return;
 			}
