@@ -136,7 +136,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	width: 35%;
 }
 .input-field label {
-	color: #909090;
+	color: #A0A0A0;
 	display: block;
 }
 #app-viewport {
@@ -272,7 +272,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 #channel-grid-body {
 	height: 200px;
-	overflow: auto;
+	overflow: hidden;
 }
 .sort:after {
 	content: '▴';   
