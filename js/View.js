@@ -354,10 +354,12 @@ var	app		=	window.app || (window.app = {}),
 				app.Models.Cart.add(this.getCurrentEvent().siteId,
 					active[i].getElements('td')[chnIndex].get('text'));
 			}
+/*
 			for (var i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent().siteId,
 					inactive[i].getElements('td')[chnIndex].get('text'));
 			}
+*/
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
 
 			// @@TODO: Add to cart
