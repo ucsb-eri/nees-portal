@@ -268,6 +268,8 @@ var	app		=	window.app || (window.app = {}),
 	cart = new View({
 		setup: function () {
 			var appCart = this._el = $('app-cart');
+
+			new Tree($('cart-left'));
 			
 			this._el.fade('hide');
 			$('view-cart').addEvent('click', appCart.fade.pass('in', appCart));

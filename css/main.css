@@ -296,6 +296,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	z-index: 3;
 }
 #cart-left, #cart-right {
+	float: left;
 	margin: 15px 2.5%;
 	width: 45%;
 }
