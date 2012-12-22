@@ -20,6 +20,5 @@ var app         =   window.app || (window.app = {}),
         app.Controller.TableNav.init();
         
         new Scrollable($('app-grid'));
-	new FloatingTips('.has-tip');
     });
 }) ();
