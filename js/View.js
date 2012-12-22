@@ -134,12 +134,13 @@ var	app		=	window.app || (window.app = {}),
 	
 	evtGrid = new View({
 		_events: {
-			'eventsUpdated': '_loadEvents'
+			'eventsUpdated': '_loadEvents',
+			'clearTable': '_empty'
 		},
 		_loadEvents: function (models) {
 			var metaData;
 				
-			this._grid.empty();
+			this._empty();
 			for (var i = 0, j = models.length; i < j; i++) {
 				this._grid.push([new Element('div', {
 						'class': 'evt-item evt-item-' + models[i].id
@@ -157,11 +158,14 @@ var	app		=	window.app || (window.app = {}),
 			$('table-ctrl-page').set('value', metaData.pageNum + 1);
 			$('table-ctrl-total').set('text', metaData.totalPages);
 			PubSub.subscribe('cartUpdated', function () {
+				$$('.evt-item').setStyle('background-color', 'grey');
 				for (var i = 0, j = Object.keys(app.Models.Cart.toObj()), k = j.length; i < k; i++) {
-					$$('.evt-item').setStyle('background-color', 'grey');
 					$$('.evt-item-' + j[i]).setStyle('background-color', 'red');
 				}
 			});
+		},
+		_empty: function () {
+			this._grid.empty();
 		},
 		_onSort: function (tbody, sortIndex) {
 			var input   =   app.Controller.Input._input,
@@ -209,6 +213,7 @@ var	app		=	window.app || (window.app = {}),
 			this.clearSelection();
 			row.addClass('selected');
 			
+			channelBox.hide();
 			channelBox.setCurrentEvent(evtObj);
 			PubSub.publish('eventSelected', evtObj);
 		},
@@ -231,17 +236,17 @@ var	app		=	window.app || (window.app = {}),
 		clearSelection: function () {
 			this._el.getElements('tr').removeClass('selected');
 		},
-	filter: function (oldArr) {
-		var newArr = [];
-		for (var i = 0, j = oldArr.length; i < j; i++) {
-			if (typeof oldArr[i] === 'string') {
-				newArr[i] = oldArr[i].replace(' (UTC)', '');
-			} else {
-				newArr[i] = oldArr[i];
+		filter: function (oldArr) {
+			var newArr = [];
+			for (var i = 0, j = oldArr.length; i < j; i++) {
+				if (typeof oldArr[i] === 'string') {
+					newArr[i] = oldArr[i].replace(' (UTC)', '');
+				} else {
+					newArr[i] = oldArr[i];
+				}
 			}
-		}
-		return newArr;
-	},
+			return newArr;
+		},
 		setup: function () {
 			_.bindAll(this);
 			this._el = $('app-evt-table');
@@ -278,8 +283,9 @@ var	app		=	window.app || (window.app = {}),
 	
 	channelBox = new View({
 		_events: {
+			'channelsUpdated': 'hide',
 			'channelsUpdated': '_loadChannels',
-			'eventsUpdated': '_hide'
+			'eventsUpdated': 'hide'
 		},
 		_loadChannels: function (models) {
 			var	i, j,
@@ -333,10 +339,6 @@ var	app		=	window.app || (window.app = {}),
 					$('channel-grid-head').getSize().y;
 			this._bodyEl.setStyle('height', offsetH - gridH);
 		},
-		_hide: function () {
-			evtGrid.clearSelection();
-			this._slideObj.slideOut();
-		},
 		_addToCart: function () {
 			var	active		=	$$('.cart-item.active ! tr'),
 				inactive	=	$$('.cart-item:not(.active) ! tr'),
@@ -373,6 +375,10 @@ var	app		=	window.app || (window.app = {}),
 
 			// @@TODO: Open Waveform Viewer
 		},
+		hide: function () {
+			evtGrid.clearSelection();
+			this._slideObj.slideOut();
+		},
 		setup: function () {
 			_.bindAll(this);
 			this._el = $('app-channel-box');
@@ -401,7 +407,7 @@ var	app		=	window.app || (window.app = {}),
 			});
 			this._slideObj.hide();
 			
-			$('channel-close').addEvent('click', this._hide);
+			$('channel-close').addEvent('click', this.hide);
 			$('chn-control-view').addEvent('click', this._viewSelected);
 			$('chn-control-add').addEvent('click', this._addToCart);
 		},
