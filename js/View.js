@@ -157,9 +157,13 @@ var	app		=	window.app || (window.app = {}),
 			$('table-ctrl-page').set('value', metaData.pageNum + 1);
 			$('table-ctrl-total').set('text', metaData.totalPages);
 			PubSub.subscribe('cartUpdated', function () {
-				$$('.evt-item').removeClass('active');
+				$$('.evt-item').each(function (el) {
+					el.removeClass('active');
+				});
 				for (var i = 0, j = Object.keys(app.Models.Cart.toObj()), k = j.length; i < k; i++) {
-					$$('.evt-item-' + j[i]).addClass('active');
+					$$('.evt-item-' + j[i]).each(function (el) {
+						el.addClass('active');
+					});
 				}
 			});
 		},
@@ -295,7 +299,6 @@ var	app		=	window.app || (window.app = {}),
 				)].append(Object.values(
 					Object.subset(models[i], this._headers)
 				), {
-					chn: models[i].chan,
 					modelNum: i
 				}));
 			}
