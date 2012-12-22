@@ -355,7 +355,7 @@ var	app		=	window.app || (window.app = {}),
 			}
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
 
-			// @@TODO: Add to cart
+			// @@TODO: Figure out what to do about channels/how to uniquely identify channels
 		},
 		_viewSelected: function () {
 			var selectedChannels = $$('.wv-item.active ! tr');
