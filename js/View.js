@@ -319,7 +319,7 @@ var app         =   window.app || (window.app = {}),
                 sidebarW = $('app-grid').getSize().x;
             this._el.setStyles({
                 height: offsetH + 'px',
-                left: (sidebarW + 5) + 'px'
+                left: sidebarW + 'px'
             });
             
             gridH = $('channel-title').getSize().y +
