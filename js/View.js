@@ -164,11 +164,6 @@ var app         =   window.app || (window.app = {}),
             $('query-result').set('text', 'Found ' + metaData.rows + ' results.');
             $('table-ctrl-page').set('value', metaData.pageNum + 1);
             $('table-ctrl-total').set('text', metaData.totalPages);
-
-            // Set up clickable items
-            $$('.wv-item, .cart-item').addEvent('click', function (evt, item) {
-                item.toggleClass('active');
-            });
         },
         _onSort: function (tbody, sortIndex) {
             var input   =   app.Controller.Input._input,
@@ -311,6 +306,11 @@ var app         =   window.app || (window.app = {}),
                     headRow[i].setStyle('width', bodyRow[i].offsetWidth -
                         parseInt(bodyRow[i].getStyle('padding'), 10) * 2 + 'px');
                 }
+
+                // Set up clickable items
+                $$('.wv-item, .cart-item').addEvent('click', function (evt, item) {
+                    item.toggleClass('active');
+                });
             } else {
                 this._grid.push(['No channels availible']);
             }
