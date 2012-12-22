@@ -136,6 +136,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 .input-field label {
 	color: #909090;
+	display: block;
 }
 #app-viewport {
 	background-color: #101214;

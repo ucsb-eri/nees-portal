@@ -2,7 +2,6 @@
 /*jslint mootools:true */
 var app             =   window.app || (window.app = {}),
     _               =   window._,
-    DoubleSlider    =   window.DoubleSlider,
     Picker          =   window.Picker,
     PubSub          =   window.PubSub;
 
@@ -32,21 +31,6 @@ var app             =   window.app || (window.app = {}),
             var datePicker = new Picker.Date(el,
                 app.settings.DP_SETTINGS);
             el.store('_picker', datePicker);
-        });
-        
-        // Set up Magnitude slider
-        var dblSlider = new DoubleSlider($('testSlider'), {
-            onChange: function (firstValue, secondValue) {
-		this.knobs[0].set('title', firstValue);
-		this.knobs[1].set('title', secondValue);
-            },
-            onComplete: function (firstValue, secondValue) {
-                $('minMag').set('value', firstValue);
-                $('maxMag').set('value', secondValue);
-                $$('#minMag, #maxMag').fireEvent('change');
-            },
-            range: [1, 9],
-            start: [2, 8]
         });
         
         // Set DatePicker initial values
