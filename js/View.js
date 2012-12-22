@@ -157,14 +157,8 @@ var	app		=	window.app || (window.app = {}),
 			$('table-ctrl-page').set('value', metaData.pageNum + 1);
 			$('table-ctrl-total').set('text', metaData.totalPages);
 			PubSub.subscribe('cartUpdated', function () {
-				$$('.evt-item').each(function (el) {
-					el.removeClass('active');
-				});
-				for (var i = 0, j = Object.keys(app.Models.Cart.toObj()), k = j.length; i < k; i++) {
-					$$('.evt-item-' + j[i]).each(function (el) {
-						el.addClass('active');
-					});
-				}
+				$$('.evt-item').setStyle('background-color', 'grey');
+				$$('.evt-item-' + j[i]).setStyle('background-color', 'red');
 			});
 		},
 		_onSort: function (tbody, sortIndex) {
