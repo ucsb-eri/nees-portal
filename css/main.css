@@ -286,7 +286,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 
 #app-cart {
-	background-color: #1A1A1A;
+	background-color: #FFF;
 	height: 100%;
 	width: 100%;
 	position: absolute;
@@ -304,6 +304,8 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	text-align: center;
 }
 #cart-right .input-field {
+	font-size: 16px;
+	margin-bottom: 1.6em;
 	text-align: left;
 }
 #cart-right button {
@@ -328,9 +330,9 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 #cart-close {
 	color: #CCC;
-	font-size: 3em;
+	font-size: 72px;
 	position: absolute;
-	right: 15px;
+	right: 25px;
 	top: 5px;
 }
 #cart-close:hover {
@@ -338,10 +340,11 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	cursor: pointer;
 }
 #cart-title {
-	border-bottom: 2px solid #999;
+	background-color: #222;
+	border-bottom: 5px solid #1b1b1b;
 	color: #CCC;
-	font-size: 32px;
-	padding: 25px 45px;
+	font-size: 48px;
+	padding: 25px;
 	padding-bottom: 10px;
 }
 #channel-title {
