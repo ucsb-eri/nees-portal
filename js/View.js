@@ -338,7 +338,7 @@ var	app		=	window.app || (window.app = {}),
 			this._slideObj.slideOut();
 		},
 		_addToCart: function () {
-			var selectedChannels = $$('#channel-grid-body tr ! .cart-item.active');
+			var selectedChannels = $$('.cart-item.active ! tr');
 			if (selectedChannels.length === 0) {
 				alert('No channels selected!');
 				return;
@@ -347,7 +347,7 @@ var	app		=	window.app || (window.app = {}),
 			// @@TODO: Add to cart
 		},
 		_viewSelected: function () {
-			var selectedChannels = $$('#channel-grid-body tr ! .wv-item.active');
+			var selectedChannels = $$('.wv-item.active ! tr');
 			if (selectedChannels.length === 0) {
 				alert('No channels selected for viewing!');
 				return;
