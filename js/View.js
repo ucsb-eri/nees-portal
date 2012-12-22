@@ -213,12 +213,12 @@ var	app		=	window.app || (window.app = {}),
 			PubSub.publish('eventSelected', evtObj);
 		},
 		_toggleDepEvid: function () {
-			var hasDepth	=   this._headers.contains('depth'),
-				headerText  =   Object.values(app.settings.EVT_GRID_HEADER);
+			var	hasDepth	=	this._headers.contains('depth'),
+				headerText	=	[''].append(
+					Object.values(app.settings.EVT_GRID_HEADER));
 				
 			this._headers = [''].append(
-				Object.keys(app.settings.EVT_GRID_HEADER)
-			);
+				Object.keys(app.settings.EVT_GRID_HEADER));
 
 			if (hasDepth) {
 				headerText[headerText.indexOf('Depth (km)')] = 'Evid';

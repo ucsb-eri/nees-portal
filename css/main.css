@@ -103,7 +103,6 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	display: block;
 	font-size: 18px;
 	height: 35px;
-	line-height: 30px;
 	padding: 2px 15px;
 }
 .toggle .toggle-title img {
