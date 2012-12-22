@@ -252,14 +252,14 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	border: 0;
 }
 #channel-close {
-	background-color: #CCC;
-	color: #333;
+	border-radius: 5px;
+	color: #CCC;
 	float: right;
 	font-size: 0.8em;
 	padding: 2px 8px;
 }
 #channel-close:hover, #channel-close:active {
-	background-color: #AAA;
+	border: 1px solid #555;
 	cursor: pointer;
 }
 #channel-grid-body {
@@ -313,8 +313,6 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	right: 25px;
 	top: 15px;
 }
-.title {
-}
 #cart-close {
 	color: #CCC;
 	font-size: 3em;
@@ -334,7 +332,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	padding-bottom: 10px;
 }
 #channel-title {
-	background-color: #000;
+	background-color: #101214;
 	border-bottom: #555;
 	font-size: 1.6em;
 	padding: 5px 15px;
@@ -343,16 +341,17 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	visibility: hidden;
 }
 #channel-controls {
-	background-color: #000;
+	background-color: #101214;
 	height: 35px;
 }
 .chn-control {
+	border-radius: 5px;
+	border 1px solid transparent;
 	cursor: pointer;
 	float: left;
 	margin: 5px 15px;
-	background-color: #555;
 	padding: 5px 15px;
 }
 .chn-control:hover, .chn-control:active {
-	background-color: #333
+	border: 1px solid #333;
 }
