@@ -282,7 +282,7 @@ var	app		=	window.app || (window.app = {}),
 			'eventsUpdated': '_hide'
 		},
 		_loadChannels: function (models) {
-			var i, j,
+			var	i, j,
 				bodyRow,
 				headRow;
 			
@@ -349,11 +349,11 @@ var	app		=	window.app || (window.app = {}),
 
 			for (var i = 0, j = active.length; i < j; i++) {
 				app.Models.Cart.add(this.getCurrentEvent(),
-					active[i].retrieve('chn'));
+					active[i].setProperty('chn'));
 			}
 			for (var i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent(),
-					inactive[i].retrieve('chn'));
+					inactive[i].setProperty('chn'));
 			}
 			console.log(app.Models.Cart.toObj());
 
