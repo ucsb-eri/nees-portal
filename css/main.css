@@ -365,11 +365,20 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 
 .cart-item {
 	background-color: blue;
+	float: left;
 	height: 20px;
 	width: 20px;
 }
+.cart-item.active {
+	background-color: yellow;
+}
 .wv-item {
 	background-color: green;
+	float: left;
 	height: 20px;
+	margin-left: 5px;
 	width: 20px;
+}
+.wv-item.active {
+	background-color: orange;
 }
