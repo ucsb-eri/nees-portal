@@ -139,7 +139,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	width: 35%;
 }
 .input-field label {
-	color: #A0A0A0;
+	color: #AAA;
 	display: block;
 }
 #app-viewport {
@@ -286,7 +286,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 
 #app-cart {
-	background-color: #FFF;
+	background-color: #222;
 	height: 100%;
 	width: 100%;
 	position: absolute;
@@ -299,6 +299,10 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	float: left;
 	margin: 15px 2.5%;
 	width: 45%;
+}
+#cart-left {
+	background: #EEE;
+	border-radius: 5px;
 }
 #cart-right {
 	padding: 35px 0;
@@ -338,7 +342,6 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	text-decoration: underline;
 }
 #cart-close {
-	color: #CCC;
 	font-size: 72px;
 	position: absolute;
 	right: 25px;
@@ -349,8 +352,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	cursor: pointer;
 }
 #cart-title {
-	background-color: #222;
-	border-bottom: 5px solid #1b1b1b;
+	border-bottom: 5px solid #1B1B1B;
 	color: #FFF;
 	font-size: 48px;
 	padding: 25px;
