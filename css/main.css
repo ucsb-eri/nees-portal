@@ -353,14 +353,14 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 .chn-control {
 	border-radius: 5px;
-	border 1px solid #101214;
+	border: 1px solid #101214;
 	cursor: pointer;
 	float: left;
-	margin: 5px 15px;
+	margin: 10px 15px;
 	padding: 5px 15px;
 }
 .chn-control:hover, .chn-control:active {
-	border: 1px solid #333;
+	border: 1px solid #888;
 }
 
 .evt-item {
