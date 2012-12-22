@@ -209,7 +209,7 @@ var	app		=	window.app || (window.app = {}),
 			this.clearSelection();
 			row.addClass('selected');
 			
-			channelBox.setCurrentEvent(evtObj);
+			channelBox.setCurrentEvent(evtObj.siteId);
 			PubSub.publish('eventSelected', evtObj);
 		},
 		_toggleDepEvid: function () {
@@ -341,7 +341,8 @@ var	app		=	window.app || (window.app = {}),
 		_addToCart: function () {
 			var	active		=	$$('.cart-item.active ! tr'),
 				inactive	=	$$('.cart-item:not(.active) ! tr'),
-				chnIndex	=	Object.values(app.settings.CHN_GRID_HEADER).indexOf('Channel');
+				chnIndex	=	[''].append(Object.values(
+					app.settings.CHN_GRID_HEADER)).indexOf('Channel');
 
 			if (active.length === 0) {
 				alert('No channels selected!');
