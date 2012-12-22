@@ -107,7 +107,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 .toggle .toggle-title img {
 	vertical-align: middle;
-	margin-right: 15px;
+	margin-right: 5px;
 }
 .toggle .toggle-title:after {
 	content: '▾';
