@@ -349,16 +349,17 @@ var	app		=	window.app || (window.app = {}),
 			}
 
 			if (chnIndex == -1) throw 'Could not find header index';
+			console.log(chnIndex);
 			
 			for (var i = 0, j = active.length; i < j; i++) {
 				app.Models.Cart.add(this.getCurrentEvent(),
 					active[i].getElements('td')[chnIndex].get('text'));
+				console.log(active[i].getElements('td')[chnIndex].get('text'));
 			}
 			for (var i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent(),
 					inactive[i].getElements('td')[chnIndex].get('text'));
 			}
-			console.log(app.Models.Cart.toObj());
 
 			// @@TODO: Add to cart
 		},
