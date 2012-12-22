@@ -346,7 +346,7 @@ var	app		=	window.app || (window.app = {}),
 			
 			for (var i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent().evid,
-					inactive[i].get('id').replace('chn-item-'), '');
+					inactive[i].get('id').replace('chn-item-', ''));
 			}
 			for (var i = 0, j = active.length; i < j; i++) {
 				app.Models.Cart.add(this.getCurrentEvent().evid,
