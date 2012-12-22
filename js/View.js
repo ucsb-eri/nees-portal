@@ -160,7 +160,7 @@ var	app		=	window.app || (window.app = {}),
 				for (var i = 0, j = app.Models.Cart.toObj(), k = j.length; i < k; i++) {
 					$$('.evt-item').setStyle('background-color', 'grey');
 					$$('.evt-item-' + j[i]).setStyle('background-color', 'red');
-				{
+				}
 			});
 		},
 		_onSort: function (tbody, sortIndex) {
