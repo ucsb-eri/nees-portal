@@ -102,9 +102,13 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	color: #c9c9c9;
 	display: block;
 	font-size: 18px;
-	height: 30px;
+	height: 35px;
 	line-height: 30px;
 	padding: 2px 15px;
+}
+.toggle .toggle-title img {
+	vertical-align: middle;
+	margin-right: 15px;
 }
 .toggle .toggle-title:after {
 	content: '▾';
