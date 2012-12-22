@@ -299,7 +299,7 @@ var	app		=	window.app || (window.app = {}),
 				)].append(Object.values(
 					Object.subset(models[i], this._headers)
 				)), {
-					'chnId': models[i].id,
+					'chnId': 'chn-' + models[i].id,
 					'modelNum': i
 				});
 			}
@@ -352,11 +352,11 @@ var	app		=	window.app || (window.app = {}),
 			
 			for (var i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent().evid,
-					'' + inactive[i].get('id'));
+					'chn-' + inactive[i].get('id'));
 			}
 			for (var i = 0, j = active.length; i < j; i++) {
 				app.Models.Cart.add(this.getCurrentEvent().evid,
-					'' + active[i].get('id'));
+					'chn-' + active[i].get('id'));
 			}
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
 
