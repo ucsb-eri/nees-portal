@@ -197,8 +197,8 @@ var	app		=	window.app || (window.app = {}),
 		},
 		_rowSelected: function (evt, row) {
 			var modelNum	=   parseInt(row.get('modelNum'), 10),
-				date		=   app.Models.Events.toArray()[modelNum].date,
-				evid		=   app.Models.Events.toArray()[modelNum].siteEvt,
+				date		=   app.Models.Events.toArray()[modelNum].time,
+				evid		=   app.Models.Events.toArray()[modelNum].id,
 				
 				evtObj	  =   {
 					evid: evid,

@@ -97,6 +97,7 @@ var app	 =   window.app || (window.app = {}),
 		_data: {},
 		add: function (evt, chn) {
 			this._data[evt] || (this._data[evt] = {});
+			if (this._data[evt][chn]) return;
 			this._data[evt][chn] = true;
 		},
 		get: function (evt) {
