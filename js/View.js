@@ -299,6 +299,7 @@ var	app		=	window.app || (window.app = {}),
 				)].append(Object.values(
 					Object.subset(models[i], this._headers)
 				), {
+					id: 'chn-item-' + models[i].id,
 					modelNum: i
 				}));
 			}
@@ -307,10 +308,12 @@ var	app		=	window.app || (window.app = {}),
 				// Synchronize table col width
 				bodyRow = this._grid.body.getElement('tr').getElements('td');
 				headRow = this._grid.head.getElements('th');
-				for (i = 0, j = headRow.length - 1; i < j; i++) {
+				for (var i = 0, j = headRow.length - 1; i < j; i++) {
 					headRow[i].setStyle('width', bodyRow[i].offsetWidth -
 						parseInt(bodyRow[i].getStyle('padding'), 10) * 2 + 'px');
 				}
+
+				// @@TODO: Highlight channels already in cart
 
 				// Set up clickable items
 				$$('.wv-item, .cart-item').addEvent('click', function () {
@@ -340,22 +343,18 @@ var	app		=	window.app || (window.app = {}),
 		_addToCart: function () {
 			var	active		=	$$('.cart-item.active ! tr'),
 				inactive	=	$$('.cart-item:not(.active) ! tr'),
-				chnIndex	=	[''].append(Object.values(
-					app.settings.CHN_GRID_HEADER)).indexOf('Channel');
-
-			if (chnIndex == -1) throw 'Could not find header index';
 			
 			for (var i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent().evid,
-					inactive[i].getElements('td')[chnIndex].get('text'));
+					inactive[i].get('id').replace('chn-item-'));
 			}
 			for (var i = 0, j = active.length; i < j; i++) {
 				app.Models.Cart.add(this.getCurrentEvent().evid,
-					active[i].getElements('td')[chnIndex].get('text'));
+					active[i].get('id').replace('chn-item-'));
 			}
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
 
-			// @@TODO: Figure out what to do about channels/how to uniquely identify channels
+			// @@TODO: Use chanId to differentiate
 		},
 		_viewSelected: function () {
 			var selectedChannels = $$('.wv-item.active ! tr');
