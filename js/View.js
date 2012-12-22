@@ -299,7 +299,7 @@ var	app		=	window.app || (window.app = {}),
 				)].append(Object.values(
 					Object.subset(models[i], this._headers)
 				)), {
-					'id': 'chn-item-' + models[i].id,
+					'chnId': models[i].id,
 					'modelNum': i
 				});
 			}
@@ -313,7 +313,13 @@ var	app		=	window.app || (window.app = {}),
 						parseInt(bodyRow[i].getStyle('padding'), 10) * 2 + 'px');
 				}
 
-				// @@TODO: Highlight channels already in cart
+				for (var i = 0, j = $$('#channel-grid-body tr'), k = j.length;
+						i < k; i++) {
+					if (app.Models.Cart.has(this.getCurrentEvent().evid,
+							j[i].get('chnId'))) {
+						j[i].getElement('.cart-item').addClass('active');
+					}
+				}
 
 				// Set up clickable items
 				$$('.wv-item, .cart-item').addEvent('click', function () {
@@ -346,11 +352,11 @@ var	app		=	window.app || (window.app = {}),
 			
 			for (var i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent().evid,
-					inactive[i].get('id').replace('chn-item-', ''));
+					'' + inactive[i].get('id'));
 			}
 			for (var i = 0, j = active.length; i < j; i++) {
 				app.Models.Cart.add(this.getCurrentEvent().evid,
-					active[i].get('id').replace('chn-item-', ''));
+					'' + active[i].get('id'));
 			}
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
 
