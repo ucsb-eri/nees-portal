@@ -157,7 +157,7 @@ var	app		=	window.app || (window.app = {}),
 			$('table-ctrl-page').set('value', metaData.pageNum + 1);
 			$('table-ctrl-total').set('text', metaData.totalPages);
 			PubSub.subscribe('cartUpdated', function () {
-				for (var i = 0, j = app.Models.Cart.toObj(), k = j.length; i < k; i++) {
+				for (var i = 0, j = Object.keys(app.Models.Cart.toObj()), k = j.length; i < k; i++) {
 					$$('.evt-item').setStyle('background-color', 'grey');
 					$$('.evt-item-' + j[i]).setStyle('background-color', 'red');
 				}
@@ -358,6 +358,7 @@ var	app		=	window.app || (window.app = {}),
 				app.Models.Cart.remove(this.getCurrentEvent().siteId,
 					inactive[i].getElements('td')[chnIndex].get('text'));
 			}
+			PubSub.publish('cartUpdated', app.Models.Cart._data);
 
 			// @@TODO: Add to cart
 		},

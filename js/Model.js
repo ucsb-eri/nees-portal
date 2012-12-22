@@ -98,7 +98,6 @@ var app	 =   window.app || (window.app = {}),
 		add: function (evt, chn) {
 			this._data[evt] || (this._data[evt] = {});
 			this._data[evt][chn] = true;
-			PubSub.publish('cartUpdated', this._data);
 		},
 		get: function (evt) {
 			if (!this._data[evt] || this._data[evt] == {}) {
@@ -115,7 +114,6 @@ var app	 =   window.app || (window.app = {}),
 			if (this._data[evt] == {}) {
 				delete this._data[evt];
 			}
-			PubSub.publish('cartUpdated', this._data);
 		},
 		toObj: function () {
 			return this._data;
