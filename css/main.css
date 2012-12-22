@@ -218,8 +218,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 #query-result {
 	color: gray;
-	padding: 15px 0;
-	text-align: center;
+	padding: 0 2px;
 }
 #app-channel-box {
 	border: 5px solid transparent;
