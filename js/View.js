@@ -288,10 +288,10 @@ var app         =   window.app || (window.app = {}),
             this._slideObj.hide();
             this._grid.empty();
             for (i = 0, j = models.length; i < j; i++) {
-                this._grid.push([
+                this._grid.push([$$(
 			new Element('div', { 'class': 'cart-item' }),
 			new Element('div', { 'class': 'wv-item' })
-		].append(Object.values(
+		)].append(Object.values(
                     Object.subset(models[i], this._headers)
                 ), {
                     modelNum: i
@@ -342,7 +342,7 @@ var app         =   window.app || (window.app = {}),
             this._grid = new HtmlTable({
                 classZebra: 'odd',
                 gridContainer : this._gridEl,
-                headers: ['', ''].append(
+                headers: [''].append(
 			Object.values(app.settings.CHN_GRID_HEADER)
 		),
                 zebra: true
