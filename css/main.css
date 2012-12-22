@@ -79,6 +79,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 #app-evt-table th {
 	color: #DDD;
+	cursor: pointer;
 	font-weight: normal;
 	padding: 5px;
 }
@@ -176,9 +177,10 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	color: #FFF; /* #555 */
 	height: 30px;
 	line-height: 25px;
+	margin: auto;
 	margin-bottom: 5px;
 	padding: 2px 10px;
-	text-align: center
+	width: 250px;
 }
 #app-input {
 	padding-top: 15px;
@@ -312,8 +314,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	width: 100%;
 }
 #view-cart {
-	background-color: #333;
-	border: 1px solid black;
+	border-left: 1px solid #CCC;
 	cursor: default;
 	padding: 5px 15px;
 	position: absolute;
@@ -363,6 +364,14 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	border: 1px solid #333;
 }
 
+.evt-item {
+	background-color: grey;
+	height: 20px;
+	width: 20px;
+}
+.evt-item.active {
+	background-color: #600;
+}
 .cart-item {
 	background-color: blue;
 	float: left;
