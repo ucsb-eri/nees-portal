@@ -372,7 +372,6 @@ var	app		=	window.app || (window.app = {}),
 			// @@TODO: Open Waveform Viewer
 		},
 		hide: function () {
-			evtGrid.clearSelection();
 			this._slideObj.slideOut();
 		},
 		setup: function () {
