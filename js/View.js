@@ -51,6 +51,8 @@ var	app		=	window.app || (window.app = {}),
 			this._mapCirc.setMap(this._mapObj);
 		},
 		_drawMarkers: function (data) {
+			this._resetMarkers();
+
 			for (var i = 0, j = data.length; i < j; i++) {
 				var loc		=	new google.maps.LatLng(data[i].lat,
 									data[i].lng),
