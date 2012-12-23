@@ -145,8 +145,8 @@ var	app		=	window.app || (window.app = {}),
 			this._empty();
 			for (var i = 0, j = models.length; i < j; i++) {
 				this._grid.push([new Element('div', {
-						'class': 'evt-item evt-item-' + models[i].id
-					})].append(
+					'class': 'evt-item evt-item-' + models[i].id
+				})].append(
 					this.filter(Object.values(
 						Object.subset(models[i], this._headers)
 					))
@@ -154,17 +154,19 @@ var	app		=	window.app || (window.app = {}),
 					modelNum: i
 				});
 			}
+
+			// Re-mark evt items on load
+			for (var i = 0, j = $$('.evt-item'), k = j.length; i < k; i++) {
+				if (!!app.Models.Cart.get(j[i].getParent().get('modelNum'))) {
+					j[i].addClass('active');
+				}
+			}
 			
 			metaData = app.Models.Events.getMeta();
-			$('query-result').set('text', 'Found ' + metaData.rows + ' results.');
+			$('query-result').set('text', 'Found ' + metaData.rows +
+				' results.');
 			$('table-ctrl-page').set('value', metaData.pageNum + 1);
 			$('table-ctrl-total').set('text', metaData.totalPages);
-			PubSub.subscribe('cartUpdated', function () {
-				$$('.evt-item').setStyle('background-color', 'grey');
-				for (var i = 0, j = Object.keys(app.Models.Cart.toObj()), k = j.length; i < k; i++) {
-					$$('.evt-item-' + j[i]).setStyle('background-color', 'red');
-				}
-			});
 		},
 		_empty: function () {
 			this._grid.empty();
@@ -266,6 +268,14 @@ var	app		=	window.app || (window.app = {}),
 			this._grid.body.addEvent('mouseover:relay(tr)', this._rowOver);
 			this._grid.body.addEvent('mouseout:relay(tr)', this._rowOut);
 			this._grid.inject(this._el);
+
+			PubSub.subscribe('cartUpdated', function () {
+				$$('.evt-item').setStyle('background-color', 'grey');
+				for (var i = 0, j = Object.keys(app.Models.Cart.toObj()),
+						k = j.length; i < k; i++) {
+					$$('.evt-item-' + j[i]).setStyle('background-color', 'red');
+				}
+			});
 			
 			$('depToEvid').addEvent('click', this._toggleDepEvid);
 		}
@@ -315,6 +325,7 @@ var	app		=	window.app || (window.app = {}),
 						parseInt(bodyRow[i].getStyle('padding'), 10) * 2 + 'px');
 				}
 
+				// Re-mark channel cart items on load
 				for (var i = 0, j = $$('#channel-grid-body tr'), k = j.length;
 						i < k; i++) {
 					if (app.Models.Cart.has(this.getCurrentEvent().evid,
