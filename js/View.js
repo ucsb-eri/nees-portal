@@ -156,10 +156,10 @@ var	app		=	window.app || (window.app = {}),
 			}
 
 			// Re-mark evt items on load
-			for (var i = 0, j = $$('.evt-item'), k = j.length; i < k; i++) {
-				if (!!app.Models.Cart.get(j[i].getParent().get('modelNum'))) {
-					j[i].addClass('active');
-				}
+			$$('.evt-item').setStyle('background-color', 'grey');
+			for (var i = 0, j = Object.keys(app.Models.Cart.toObj()),
+					k = j.length; i < k; i++) {
+				$$('.evt-item-' + j[i]).setStyle('background-color', 'red');
 			}
 			
 			metaData = app.Models.Events.getMeta();
