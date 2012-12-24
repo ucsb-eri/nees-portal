@@ -367,7 +367,7 @@ var	app		=	window.app || (window.app = {}),
 				});
 
 				$$('.wv-item').addEvent('click', function () {
-					if ($$('.wv-item').length > 4) {
+					if ($$('.wv-item.active').length > 4) {
 						this.removeClass('active');
 						alert('Can only view 4 items at a time.');
 					}
@@ -432,7 +432,7 @@ var	app		=	window.app || (window.app = {}),
 				}
 			}
 
-			// @@TODO: Open Waveform Viewer
+			// Open WF Viewer
 			window.open(app.settings.constructWF(
 				$('site').options[$('site').selectedIndex].get('site'),
 				chanArr,
