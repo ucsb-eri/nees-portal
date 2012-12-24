@@ -336,6 +336,7 @@ var	app		=	window.app || (window.app = {}),
 				)].append(Object.values(
 					Object.subset(models[i], this._headers)
 				)), {
+					'chan': models[i].chan,
 					'chnId': models[i].id,
 					'modelNum': i,
 					'nsamp': models[i].nsamp,
