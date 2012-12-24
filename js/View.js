@@ -282,6 +282,9 @@ var	app		=	window.app || (window.app = {}),
 	});
 	
 	cart = new View({
+		_events: {
+			'cartUpdated': '_loadCart',
+		},
 		_loadCart: function () {
 			var	cartItems	=	app.Models.Cart.toObj(),
 				pane		=	$('cart-left');
@@ -298,6 +301,7 @@ var	app		=	window.app || (window.app = {}),
 				for (var p = 0, q = evtChns.length; p < q; p++) {
 					chnList.adopt(new Element('li', { 'text': evtChns[p] }));
 				}
+
 				pane.adopt(chnList);
 			}
 		},
