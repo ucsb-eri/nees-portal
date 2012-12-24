@@ -410,7 +410,7 @@ var	app		=	window.app || (window.app = {}),
 		_viewSelected: function () {
 			var	evtTime, nsamp, srate,
 				chanArr				=	[],
-				selectedChannels	=	$$('.wv-item.active ! tr'),
+				selectedChannels	=	$$('.wv-item.active ! tr');
 
 			if (selectedChannels.length === 0) {
 				alert('No channels selected for viewing!');
