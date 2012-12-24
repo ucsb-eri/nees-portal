@@ -59,7 +59,7 @@ var app	 =   window.app || (window.app = {});
 			scale: 3 + Math.pow(2 * ml, 1.5)
 		};
 	};
-	settings.getWaveformURL = function (site, stations, time, nsamp, srate) {
+	settings.constructWF = function (site, stations, time, nsamp, srate) {
 		var	endTime	=	time + (nsamp - 1) / srate,
 			staStr	=	stations.join('|'),
 			params	=	[site, staStr, time, endTime];

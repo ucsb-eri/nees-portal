@@ -321,7 +321,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	text-align: left;
 }
 #cart-right .input-field label {
-	color: #AAA;
+	color: #555;
 }
 #cart-right button {
 	height: 35px;
@@ -360,7 +360,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	cursor: pointer;
 }
 #cart-title {
-	background-color: #06A
+	background-color: #06A;
 	border-bottom: 5px solid #09F;
 	color: #FFF;
 	font-size: 48px;
