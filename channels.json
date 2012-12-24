@@ -1,3 +1,253 @@
+{
+	"$meta": {
+		"results": 49
+	},
+	"$data": [
+		{ 
+			"id": 70977, 
+			"sta": 5210, 
+			"chan": "HDD_60", 
+			"snr": 9.22222, 
+			"peaka": 0.000000, 
+			"dfile": "NP_5210_HDD_60_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70978, 
+			"sta": 5210, 
+			"chan": "HNE_00", 
+			"snr": 307.521, 
+			"peaka": 1.083800, 
+			"dfile": "NP_5210_HNE_00_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70979, 
+			"sta": 5210, 
+			"chan": "HNE_01", 
+			"snr": 236.291, 
+			"peaka": 0.456874, 
+			"dfile": "NP_5210_HNE_01_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70980, 
+			"sta": 5210, 
+			"chan": "HNE_02", 
+			"snr": 311.467, 
+			"peaka": 0.480783, 
+			"dfile": "NP_5210_HNE_02_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70981, 
+			"sta": 5210, 
+			"chan": "HNN_00", 
+			"snr": 408.19, 
+			"peaka": 1.345310, 
+			"dfile": "NP_5210_HNN_00_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70982, 
+			"sta": 5210, 
+			"chan": "HNN_01", 
+			"snr": 238.396, 
+			"peaka": 0.416210, 
+			"dfile": "NP_5210_HNN_01_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70983, 
+			"sta": 5210, 
+			"chan": "HNN_02", 
+			"snr": 339.19, 
+			"peaka": 0.491167, 
+			"dfile": "NP_5210_HNN_02_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70984, 
+			"sta": 5210, 
+			"chan": "HNZ_00", 
+			"snr": 608.896, 
+			"peaka": 2.010160, 
+			"dfile": "NP_5210_HNZ_00_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70985, 
+			"sta": 5210, 
+			"chan": "HNZ_01", 
+			"snr": 490.285, 
+			"peaka": 0.782299, 
+			"dfile": "NP_5210_HNZ_01_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70986, 
+			"sta": 5210, 
+			"chan": "HNZ_02", 
+			"snr": 449.426, 
+			"peaka": 0.628252, 
+			"dfile": "NP_5210_HNZ_02_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70987, 
+			"sta": "SAAR", 
+			"chan": "HDD_61", 
+			"snr": 49.7692, 
+			"peaka": 0.000000, 
+			"dfile": "SB_SAAR_HDD_61_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70988, 
+			"sta": "SAAR", 
+			"chan": "HDD_62", 
+			"snr": 27.7097, 
+			"peaka": 0.000000, 
+			"dfile": "SB_SAAR_HDD_62_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70989, 
+			"sta": "WLA", 
+			"chan": "HNE_00", 
+			"snr": 431.171, 
+			"peaka": 1.428900, 
+			"dfile": "SB_WLA_HNE_00_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70990, 
+			"sta": "WLA", 
+			"chan": "HNE_06", 
+			"snr": 465.968, 
+			"peaka": 0.442125, 
+			"dfile": "SB_WLA_HNE_06_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70991, 
+			"sta": "WLA", 
+			"chan": "HNN_00", 
+			"snr": 516.376, 
+			"peaka": 1.667570, 
+			"dfile": "SB_WLA_HNN_00_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70992, 
+			"sta": "WLA", 
+			"chan": "HNN_06", 
+			"snr": 729.315, 
+			"peaka": 0.653785, 
+			"dfile": "SB_WLA_HNN_06_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70993, 
+			"sta": "WLA", 
+			"chan": "HNZ_00", 
+			"snr": 529.682, 
+			"peaka": 1.583070, 
+			"dfile": "SB_WLA_HNZ_00_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70994, 
+			"sta": "WLA", 
+			"chan": "HNZ_06", 
+			"snr": 381.705, 
+			"peaka": 0.295983, 
+			"dfile": "SB_WLA_HNZ_06_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70995, 
+			"sta": "WLA", 
+			"chan": "HDD_61", 
+			"snr": 5.45455, 
+			"peaka": 0.000000, 
+			"dfile": "SB_WLA_HDD_61_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70996, 
+			"sta": "WLA", 
+			"chan": "HDD_64", 
+			"snr": 50.0909, 
+			"peaka": 0.000000, 
+			"dfile": "SB_WLA_HDD_64_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70997, 
+			"sta": "WLA", 
+			"chan": "HDD_66", 
+			"snr": 5.23077, 
+			"peaka": 0.000000, 
+			"dfile": "SB_WLA_HDD_66_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70998, 
+			"sta": "WLA", 
+			"chan": "HNE_10", 
+			"snr": 314.168, 
+			"peaka": 1.369360, 
+			"dfile": "SB_WLA_HNE_10_37088203", 
+			"srate": 200, 
+			"nsamp": 14400, 
+			"flags": "PI"
+		},
+		{ 
+			"id": 70999, 
+			"sta": "WLA", 
 			"chan": "HNN_10", 
 			"snr": 409.041, 
 			"peaka": 1.240800, 
