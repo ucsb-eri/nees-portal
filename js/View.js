@@ -427,8 +427,8 @@ var	app		=	window.app || (window.app = {}),
 
 			for (var i = 0, j = app.Models.Events.toArray(), k = j.length;
 					i < k; i++) {
-				if (j[i].get('id') === this.getCurrentEvent().evid) {
-					evtTime = j[i].get('time');
+				if (j[i].id === this.getCurrentEvent().evid) {
+					evtTime = j[i].time;
 				}
 			}
 
