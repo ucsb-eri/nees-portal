@@ -19,9 +19,10 @@ var app	 =   window.app || (window.app = {});
 	'use strict';
 	
 	var	// Constant primatives
-		FIRST_EVENT_UTC	 =   979439174, // UTC time of first event
+		FIRST_EVENT_UTC		=	979439174, // UTC time of first event
+		WAVEFORM_BASE_URL	=	'http://nees.ucsb.edu:8888/wf/',
 		// Initialize settings object
-		settings		=   {};
+		settings			=   {};
 		
 	// Constant objects
 	settings.DP_SETTINGS	=   { // DatePicker opts
@@ -52,12 +53,18 @@ var app	 =   window.app || (window.app = {});
 	settings.FIRST_EVENT.setUTCSeconds(FIRST_EVENT_UTC);
 
 	// Algorithm used to determine Map marker size based on event magnitude
-	settings.getMarkerOptions = (function (ml) {
+	settings.getMarkerOptions = function (ml) {
 		return {
 			fillOpacity: 1,
 			scale: 3 + Math.pow(2 * ml, 1.5)
 		};
-	});
+	};
+	settings.getWaveformURL = function (site, stations, time, nsamp, srate) {
+		var	endTime	=	time + (nsamp - 1) / srate,
+			staStr	=	stations.join('|'),
+			params	=	[site, staStr, time, endTime];
+		return settings.WAVEFORM_BASE_URL + params.join('/');
+	};
 	
 	app.settings = settings;
 	
