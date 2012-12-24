@@ -436,7 +436,7 @@ var	app		=	window.app || (window.app = {}),
 			window.open(app.settings.constructWF(
 				$('site').options[$('site').selectedIndex].get('site'),
 				chanArr,
-				evtTime,
+				new Date().parse(evtTime).getTime(),
 				nsamp,
 				srate
 			));
