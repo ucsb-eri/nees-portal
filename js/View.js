@@ -289,8 +289,10 @@ var	app		=	window.app || (window.app = {}),
 			var	cartItems	=	app.Models.Cart.toObj(),
 				pane		=	$('cart-left');
 
+			pane.empty();
+
 			for (var i = 0, j = Object.keys(cartItems),
-					k = Object.values(cartItems), l = j.length; i < k; i++) {
+					k = Object.values(cartItems), l = j.length; i < l; i++) {
 				var	chnList	=	new Element('ul'),
 					evtChns	=	Object.keys(k[i]);
 
