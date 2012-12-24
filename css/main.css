@@ -310,17 +310,18 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	padding: 25px 0px;
 }
 #cart-right {
+	background-color:#EEE;
+	border-radius:5px;
 	padding: 35px 0;
 	text-align: center;
 }
 #cart-right .input-field {
-	color: #333;
 	font-size: 16px;
 	margin-bottom: 1.6em;
 	text-align: left;
 }
 #cart-right .input-field label {
-	color: #555;
+	color: #AAA;
 }
 #cart-right button {
 	height: 35px;
@@ -331,8 +332,11 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 #app-cart input[type=text] {
 	background: transparent;
 	border: 0;
-	border-bottom: 1px solid #AAA;
+	border-bottom: 1px solid #555;
+	color: #333;
+	font-size: 25px;
 	margin-top: 8px;
+	padding: 15px 5px;
 	width: 100%;
 }
 #view-cart {
@@ -353,13 +357,14 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	top: 5px;
 }
 #cart-close:hover {
-	color: #888;
 	cursor: pointer;
 }
 #cart-title {
-	border-bottom: 5px solid #1B1B1B;
+	background-color: #06A
+	border-bottom: 5px solid #09F;
 	color: #FFF;
 	font-size: 48px;
+	margin-bottom: 25px;
 	padding: 25px;
 	padding-bottom: 10px;
 }
