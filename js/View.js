@@ -337,7 +337,9 @@ var	app		=	window.app || (window.app = {}),
 					Object.subset(models[i], this._headers)
 				)), {
 					'chnId': models[i].id,
-					'modelNum': i
+					'modelNum': i,
+					'nsamp': models[i].nsamp,
+					'srate': models[i].srate
 				});
 			}
 			
@@ -362,6 +364,13 @@ var	app		=	window.app || (window.app = {}),
 				// Set up clickable items
 				$$('.wv-item, .cart-item').addEvent('click', function () {
 					this.toggleClass('active');
+				});
+
+				$$('.wv-item').addEvent('click', function () {
+					if ($$('.wv-item').length > 4) {
+						this.removeClass('active');
+						alert('Can only view 4 items at a time.');
+					}
 				});
 			} else {
 				this._grid.push(['No channels availible']);
@@ -397,17 +406,40 @@ var	app		=	window.app || (window.app = {}),
 					'' + active[i].get('chnId'));
 			}
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
-
-			// @@TODO: Use chanId to differentiate
 		},
 		_viewSelected: function () {
-			var selectedChannels = $$('.wv-item.active ! tr');
+			var	evtTime, nsamp, srate,
+				chanArr				=	[],
+				selectedChannels	=	$$('.wv-item.active ! tr'),
+
 			if (selectedChannels.length === 0) {
 				alert('No channels selected for viewing!');
 				return;
 			}
 
+			$$('.wf-item.active ! tr').each(function (row) {
+				chanArr.push(row.get('chan'));
+
+				// nsamp and srate appear not to vary per chn
+				nsamp = row.get('nsamp');
+				srate = row.get('srate');
+			});
+
+			for (var i = 0, j = app.Models.Events.toArray(), k = j.length;
+					i < k; i++) {
+				if (j[i].get('id') === this.getCurrentEvent().evid) {
+					evtTime = j[i].get('time');
+				}
+			}
+
 			// @@TODO: Open Waveform Viewer
+			window.open(app.settings.constructWF(
+				$('site').options[$('site').selectedIndex].get('site'),
+				chanArr,
+				evtTime,
+				nsamp,
+				srate
+			));
 		},
 		hide: function () {
 			this._slideObj.slideOut();
