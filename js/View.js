@@ -287,7 +287,8 @@ var	app		=	window.app || (window.app = {}),
 		},
 		_loadCart: function () {
 			var	cartItems	=	app.Models.Cart.toObj(),
-				pane		=	$('cart-left');
+				pane		=	$('cart-left'),
+				tree		=	new Element('ul');
 
 			pane.empty();
 
@@ -296,13 +297,14 @@ var	app		=	window.app || (window.app = {}),
 				var	chnList	=	new Element('ul'),
 					evtChns	=	Object.keys(k[i]);
 
-				pane.adopt(new Element('li', { 'text': j[i] }));
+				tree.adopt(new Element('li', { 'text': 'Event ' + j[i] }));
 
 				for (var p = 0, q = evtChns.length; p < q; p++) {
-					chnList.adopt(new Element('li', { 'text': evtChns[p] }));
+					chnList.adopt(new Element('li', { 'text': 'Channel' + evtChns[p] }));
 				}
 
-				pane.adopt(chnList);
+				tree.adopt(chnList);
+				pane.adopt(tree);
 			}
 		},
 		setup: function () {
