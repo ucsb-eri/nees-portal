@@ -283,13 +283,11 @@ var	app		=	window.app || (window.app = {}),
 	
 	cart = new View({
 		_events: {
-			'cartUpdated': '_loadCart',
+			'cartUpdated': '_loadCart'
 		},
 		_loadCart: function () {
 			var	cartItems	=	app.Models.Cart.toObj(),
 				pane		=	$('cart-left');
-
-			pane.empty();
 
 			for (var i = 0, j = Object.keys(cartItems),
 					k = Object.values(cartItems), l = j.length; i < k; i++) {
