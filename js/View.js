@@ -417,7 +417,7 @@ var	app		=	window.app || (window.app = {}),
 				return;
 			}
 
-			$$('.wf-item.active ! tr').each(function (row) {
+			$$('.wv-item.active ! tr').each(function (row) {
 				chanArr.push(row.get('chan'));
 
 				// nsamp and srate appear not to vary per chn
