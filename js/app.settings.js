@@ -63,7 +63,7 @@ var app	 =   window.app || (window.app = {});
 		var	endTime	=	time + (nsamp - 1) / srate,
 			staStr	=	stations.join('|'),
 			params	=	[site, staStr, time, endTime];
-		return settings.WAVEFORM_BASE_URL + params.join('/');
+		return WAVEFORM_BASE_URL + params.join('/');
 	};
 	
 	app.settings = settings;
