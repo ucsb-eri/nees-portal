@@ -63,6 +63,11 @@ var app	 =   window.app || (window.app = {});
 		var	endTime	=	time + (nsamp - 1) / srate,
 			staStr	=	stations.join('|'),
 			params	=	[site, staStr, time, endTime];
+
+		// Convert epoch ms to sec
+		time	/=	1000;
+		endTime	/=	1000;
+
 		return WAVEFORM_BASE_URL + params.join('/');
 	};
 	
