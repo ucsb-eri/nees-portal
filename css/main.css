@@ -312,26 +312,13 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	padding: 25px 0px;
 }
 #cart-right {
-	background-color:#EEE;
-	border-radius:5px;
 	padding: 35px 0;
-	text-align: center;
 }
 #cart-right button {
 	height: 35px;
 	margin: auto;
 	margin-top: 5px;
 	width: 80%;
-}
-#app-cart input[type=text] {
-	background: transparent;
-	border: 0;
-	border-bottom: 1px solid #555;
-	color: #333;
-	font-size: 25px;
-	margin-top: 8px;
-	padding: 15px 5px;
-	width: 100%;
 }
 #view-cart {
 	border-left: 1px solid #CCC;
@@ -354,13 +341,9 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	cursor: pointer;
 }
 #cart-title {
-	background-color: #06A;
-	border-bottom: 5px solid #09F;
 	color: #FFF;
-	font-size: 48px;
+	font-size: 21px;
 	margin-bottom: 25px;
-	padding: 25px;
-	padding-bottom: 10px;
 }
 #channel-title {
 	background-color: #101214;
