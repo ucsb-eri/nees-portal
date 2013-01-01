@@ -322,9 +322,14 @@ var	app		=	window.app || (window.app = {}),
 			$$(this._el, this._overlay).fade('hide');
 
 			$('view-cart').addEvent('click',
-				$$(appCart, cartOverlay).fade.pass('in', appCart));
+				appCart.fade.pass('in', appCart));
+			$('view-cart').addEvent('click',
+				cartOverlay.fade.pass('in', cartOverlay));
+
 			$('cart-close').addEvent('click',
-				$$(appCart, cartOverlay).fade.pass('out', appCart));
+				appCart.fade.pass('out', appCart));
+			$('cart-close').addEvent('click',
+				cartOverlay.fade.pass('out', cartOverlay));
 		}
 	});
 	
