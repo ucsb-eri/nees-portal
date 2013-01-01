@@ -309,8 +309,8 @@ var	app		=	window.app || (window.app = {}),
 		},
 		setup: function () {
 			var	appCart		=	this._el		=	$('app-cart'),
-				cartOverlay	=	this._overlay	=	new Element('div' {
-					styles: {
+				cartOverlay	=	this._overlay	=	new Element('div', {
+					'styles': {
 						'background-color': 'rgba(0,0,0,0.8)',
 						'left': 0,
 						'position': 'absolute',
