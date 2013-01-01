@@ -308,12 +308,23 @@ var	app		=	window.app || (window.app = {}),
 			}
 		},
 		setup: function () {
-			var appCart = this._el = $('app-cart');
+			var	appCart		=	this._el		=	$('app-cart'),
+				cartOverlay	=	this._overlay	=	new Element('div' {
+					styles: {
+						'background-color': 'rgba(0,0,0,0.8)',
+						'left': 0,
+						'position': 'absolute',
+						'top': 0,
+						'z-index': 99
+					}
+				});
 
-			this._el.fade('hide');
-			$('view-cart').addEvent('click', appCart.fade.pass('in', appCart));
+			$$(this._el, this._overlay).fade('hide');
+
+			$('view-cart').addEvent('click',
+				$$(appCart, cartOverlay).fade.pass('in', appCart));
 			$('cart-close').addEvent('click',
-				appCart.fade.pass('out', appCart));
+				$$(appCart, cartOverlay).fade.pass('out', appCart));
 		}
 	});
 	
@@ -437,7 +448,7 @@ var	app		=	window.app || (window.app = {}),
 			window.open(app.settings.constructWF(
 				$('site').options[$('site').selectedIndex].get('site'),
 				chanArr,
-				(new Date().parse(evtTime).getTime())/1000,
+				(Date.parse(evtTime.replace('(UTC)', 'UTC')))/1000,
 				nsamp,
 				srate
 			));
