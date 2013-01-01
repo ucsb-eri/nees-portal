@@ -287,13 +287,13 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 
 #app-cart {
 	background-color: #222;
-	height: 100%;
-	width: 100%;
+	height: 350px;
+	width: 500px;
 	position: absolute;
 	left: 0;
 	top: 0;
 	visibility: hidden;
-	z-index: 3;
+	z-index: 100;
 }
 #cart-left, #cart-right {
 	float: left;
