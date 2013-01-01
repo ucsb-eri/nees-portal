@@ -289,9 +289,10 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	background-color: #222;
 	height: 350px;
 	left: 50%;
-	margin-left: 250px;
+	margin-left: -250px;
+	margin-top: -175px;
 	position: absolute;
-	top: 0;
+	top: 50%;
 	visibility: hidden;
 	width: 500px;
 	z-index: 100;
@@ -315,14 +316,6 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	border-radius:5px;
 	padding: 35px 0;
 	text-align: center;
-}
-#cart-right .input-field {
-	font-size: 16px;
-	margin-bottom: 1.6em;
-	text-align: left;
-}
-#cart-right .input-field label {
-	color: #555;
 }
 #cart-right button {
 	height: 35px;
