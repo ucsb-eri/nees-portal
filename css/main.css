@@ -288,11 +288,12 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 #app-cart {
 	background-color: #222;
 	height: 350px;
-	width: 500px;
+	left: 50%;
+	margin-left: 250px;
 	position: absolute;
-	left: 0;
 	top: 0;
 	visibility: hidden;
+	width: 500px;
 	z-index: 100;
 }
 #cart-left, #cart-right {
