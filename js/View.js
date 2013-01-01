@@ -312,12 +312,16 @@ var	app		=	window.app || (window.app = {}),
 				cartOverlay	=	this._overlay	=	new Element('div', {
 					'styles': {
 						'background-color': 'rgba(0,0,0,0.8)',
+						'height': '100%',
 						'left': 0,
 						'position': 'absolute',
 						'top': 0,
+						'width': '100%',
 						'z-index': 99
 					}
 				});
+
+			document.body.adopt(cartOverlay);
 
 			$$(this._el, this._overlay).fade('hide');
 
