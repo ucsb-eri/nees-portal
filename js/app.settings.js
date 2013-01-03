@@ -23,7 +23,7 @@ var app	 =   window.app || (window.app = {});
 		WAVEFORM_BASE_URL	=	'http://nees.ucsb.edu:8888/wf/',
 		// Initialize settings object
 		settings			=   {};
-		
+
 	// Constant objects
 	settings.DP_SETTINGS	=   { // DatePicker opts
 		format: '%x',

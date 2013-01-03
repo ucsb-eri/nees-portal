@@ -56,10 +56,11 @@ var app			 =   window.app || (window.app = {}),
 	// Send request for Station data. Calls Controller.Input.loadSites when
 	//   data is received
 	Controller.Input.getSites = (function () {
+		var reqUrl = 'sites.' + (app.DEBUG ? 'xml' : 'php');
 		new Request({
 			async: false,
 			onSuccess: this.loadSites,
-			url: 'sites.xml'
+			url: reqUrl
 		}).get();
 	});
 	// Retrieve Station data from sites.xml

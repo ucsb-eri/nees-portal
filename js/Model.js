@@ -60,10 +60,10 @@ var app	 =   window.app || (window.app = {}),
 			var queryString = obj ? this._objToStr(obj) : '';
 			
 			new Request.JSON({
+				method: app.DEBUG ? 'GET' : 'POST',
 				onSuccess: this._processData,
-				url: this.options.url
-			// }).post(queryString);
-			}).get(queryString);
+				url: this.options.url + (app.DEBUG ? '.json' : '.php')
+			}).send(queryString);
 		},
 		getMeta: function () {
 			return this._meta;
@@ -78,7 +78,7 @@ var app	 =   window.app || (window.app = {}),
 			PubSub.publish('eventsUpdated', data);
 		},
 		fetchOn: 'inputChanged',
-		url: 'events.json'
+		url: 'events'
 		//url: 'events.php'
 	});
 	app.Models.Events = events;
@@ -88,7 +88,7 @@ var app	 =   window.app || (window.app = {}),
 			PubSub.publish('channelsUpdated', data);
 		},
 		fetchOn: 'eventSelected',
-		url: 'channels.json'
+		url: 'channels'
 		//url: 'channels.php'
 	});
 	app.Models.Channels = channels;
