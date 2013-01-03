@@ -135,22 +135,23 @@ var app			 =   window.app || (window.app = {}),
 		//   remove 'disabled' from Element with no class
 		Function.attempt(
 		// Check lower bound
-			Element.prototype[!this._currPage ? 'addClass' : 'removeClass'].pass(
-				$$('.table-ctrl.left-motion'), 'disabled'
-			)
+			Element.prototype[this._currPage < 1 ? 'addClass' : 'removeClass']
+				.pass($$('.table-ctrl.left-motion'), 'disabled')
 		);
 		
 		Function.attempt(
 		// Check upper bound
-			Element.prototype[this._currPage !== this._maxPage - 1 ?
+			Element.prototype[this._currPage >= this._maxPage - 1 ?
 					'addClass' : 'removeClass'].pass(
 				$$('.table-ctrl.right-motion'), 'disabled'
 			)
 		);
 	});
 	Controller.TableNav.nav = (function (offset) {
-	PubSub.publish('clearTable', {});
+		PubSub.publish('clearTable', {});
 		this._currPage += parseInt(offset, 10);
+
+		if (this._currPage < 0 || this._currPage >= this._maxPage) return;
 		
 		app.Controller.Input._input.page = this._currPage;
 		app.Models.Events.fetch(app.Controller.Input._input);

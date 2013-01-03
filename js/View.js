@@ -178,24 +178,18 @@ var	app		=	window.app || (window.app = {}),
 				
 			this._grid.head.getElements('th').removeClass('sort').removeClass('desc');
 			
-			if (input.sortBy && input.sortBy === colName) {
-				if (input.desc) {
-					delete input.sortBy;
-					delete input.desc;
-				} else {
-					sortIndex.addClass('sort');
-					sortIndex.addClass('desc');
-					input.desc = true;
-				}
+			if (input.sortBy && !input.desc) {
+				sortIndex.addClass('sort');
+				sortIndex.addClass('desc');
+				input.desc = true;
 			} else {
 				sortIndex.addClass('sort');
 				input.sortBy = colName;
-				if (input.desc) delete input.desc;
+				if (!input.desc) delete input.desc;
 			}
 			input.page = 0;
 			
 			app.Models.Events.fetch(input);
-			
 		},
 		_rowOver: function (evt, row) {
 			map._highlightMarker(parseInt(row.get('modelNum'), 10));
