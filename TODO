@@ -1,0 +1,7 @@
+@@TODO:
+* Add units to peak values
+* Prepend 'sta' value to channel name in the channel box
+* Figure out way to sort channels in channel box
+* Make cart more readable
+* Abstract wf viewer construction into app.settings
+* Implement thumbnail previews
