@@ -297,13 +297,13 @@ var	app		=	window.app || (window.app = {}),
 				var	chnList	=	new Element('ul'),
 					evtChns	=	Object.keys(k[i]);
 
-				tree.adopt(new Element('li', { 'text': 'Event ' + j[i] }));
-
 				for (var p = 0, q = evtChns.length; p < q; p++) {
-					chnList.adopt(new Element('li', { 'text': 'Channel' + evtChns[p] }));
+					chnList.adopt(new Element('li',
+						{ 'text': 'Channel' + evtChns[p] }));
 				}
 
-				tree.adopt(chnList);
+				tree.adopt((new Element('li', { 'text': 'Event ' + j[i] }))
+					.adopt(chnList));
 				pane.adopt(tree);
 			}
 		},
@@ -424,7 +424,7 @@ var	app		=	window.app || (window.app = {}),
 			}
 			for (var i = 0, j = active.length; i < j; i++) {
 				app.Models.Cart.add(this.getCurrentEvent().evid,
-					'' + active[i].get('chnId'));
+					'' + active[i].get('chnId'), {});
 			}
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
 		},

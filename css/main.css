@@ -304,12 +304,10 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 #cart-left {
 	background-color: #CCC;
-	border-radius: 5px;
 	color: #333;
-	font-size: 18px;
-	height: 60%;
+	font-size: 12px;
+	height: 250px;
 	overflow: auto;
-	padding: 25px 0px;
 }
 #cart-right {
 	text-align: center;
@@ -347,7 +345,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	font-size: 36px;
 	position: absolute;
 	right: 25px;
-	top: 5px;
+	top: 4px;
 }
 #cart-close:hover {
 	color: #555;
