@@ -95,10 +95,10 @@ var app	 =   window.app || (window.app = {}),
 	
 	cart = {
 		_data: {},
-		add: function (evt, chn) {
+		add: function (evt, chn, data) {
 			this._data[evt] || (this._data[evt] = {});
 			if (this._data[evt][chn]) return;
-			this._data[evt][chn] = true;
+			this._data[evt][chn] = data;
 		},
 		get: function (evt) {
 			if (!this._data[evt] || this._data[evt] == {}) {
