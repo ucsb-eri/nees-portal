@@ -136,7 +136,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	margin: auto 15px;
 }
 .input-field .double-field {
-	width: 35%;
+	width: 45px;
 }
 .input-field label {
 	color: #AAA;
