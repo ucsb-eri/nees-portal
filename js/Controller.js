@@ -131,27 +131,25 @@ var app			 =   window.app || (window.app = {}),
 	});
 	// Disable buttons if max/min is reached
 	Controller.TableNav.checkBounds = (function () {
-		// Wrap with Function.attempt to catch error thrown when attempting to
-		//   remove 'disabled' from Element with no class
-		Function.attempt(
 		// Check lower bound
-			Element.prototype[this._currPage < 1 ? 'addClass' : 'removeClass']
-				.pass($$('.table-ctrl.left-motion'), 'disabled')
-		);
+		if (this._currPage > -1) {
+			$('table-ctrl-prev').addClass('disabled');
+		} else if ($('table-ctrl-prev').hasClass('disabled')) {
+			$('table-ctrl-prev').removeClass('disabled');
+		};
 		
-		Function.attempt(
 		// Check upper bound
-			Element.prototype[this._currPage >= this._maxPage - 1 ?
-					'addClass' : 'removeClass'].pass(
-				$$('.table-ctrl.right-motion'), 'disabled'
-			)
-		);
+		if (this._currPage >= this._maxPage - 1) {
+		} else if ($('table-ctrl-next').hasClass('disabled')) {
+			$('table-ctrl-next').removeClass('disabled');
+		}
 	});
 	Controller.TableNav.nav = (function (offset) {
 		PubSub.publish('clearTable', {});
 		this._currPage += parseInt(offset, 10);
 
-		if (this._currPage < 0 || this._currPage >= this._maxPage) return;
+		this._currPage = Math.max(0, this._currPage);
+		this._currPage = Math.min(this.currPage, this._maxPage - 1);
 		
 		app.Controller.Input._input.page = this._currPage;
 		app.Models.Events.fetch(app.Controller.Input._input);
