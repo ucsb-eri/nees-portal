@@ -19,7 +19,7 @@ var app	 =   window.app || (window.app = {});
 	'use strict';
 	
 	var	// Constant primatives
-		FIRST_EVENT_UTC		=	979439174, // UTC time of first event
+		FIRST_EVENT_UTC		=	1072944000, // UTC time of first event
 		WAVEFORM_BASE_URL	=	'http://nees.ucsb.edu:8888/wf/',
 		// Initialize settings object
 		settings			=   {};

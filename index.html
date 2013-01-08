@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Data Portal &mdash; &beta;eta</title>
+		<title>NEES@UCSB Data Portal</title>
 
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 
@@ -10,13 +10,14 @@
 		<link rel="stylesheet" type="text/css" href="css/main.css">
 		<link rel="stylesheet" type="text/css" href="css/datepicker_jqui.css">
 		<link rel="stylesheet" type="text/css" href="css/DoubleSlider.css">
-		<link rel="stylesheet" type="text/css" href="css/Scrollable.css">
+		<link rel="stylesheet" type="text/css" href="css/Scrollable.css">
+
 
 	</head>
 	<body>
 
 		<div id="app-title" class="clearfix">
-			<h1>NEES Data Portal</h1>
+			<h1>NEES@UCSB Data Portal</h1>
 			<div id="view-cart">Open Cart</div>
 		</div>
 		<div id="app-viewport">
@@ -32,16 +33,11 @@
 					</div>
 					<div class="input-field">
 						<label for="radius">Distance(km):</label></td>
-						<input class="app-input-flds" id="radius"  type="text" value="10" />
+						<input class="app-input-flds" id="radius"  type="text" value="100" />
 					</div>
 
 					<div class="input-field">
 						<label for="minMag">Magnitude:</label>
-<!--
-						<div id="testSlider" class="rangeSlider"><div></div><div></div></div>
-						<input class="app-input-flds" id="minMag" type="hidden" value="1.0" />
-						<input class="app-input-flds" id="maxMag" type="hidden" value="9.0" />
--->
 						<input class="app-input-flds double-field" id="minMag" type="text" value="1.0" />
 						<span class="spacer">to</span>
 						<input class="app-input-flds double-field" id="maxMag" type="text" value="9.0" />
