@@ -55,8 +55,7 @@ var app	 =   window.app || (window.app = {});
 	// Algorithm used to determine Map marker size based on event magnitude
 	settings.getMarkerOptions = function (ml) {
 		return {
-			fillOpacity: 1,
-			scale: 3 + Math.pow(2 * ml, 1.5)
+			scale: 4 + 0.5 * Math.pow(ml, 2)
 		};
 	};
 	settings.constructWF = function (site, stations, time, nsamp, srate) {

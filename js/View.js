@@ -60,34 +60,31 @@ var	app		=	window.app || (window.app = {}),
 						flat: true,
 						icon: Object.append({
 							path: google.maps.SymbolPath.CIRCLE,
-							fillColor: 'orange',
-							strokeOpacity: 0
+							fillColor: 'yellow',
+                            fillOpacity: 0.6,
+							strokeWeight: 1
 						}, app.settings.getMarkerOptions(data[i].ml)),
 						position: loc,
+                        title: 'Evid: ' + data[i].evid + '\nML: ' + data[i].ml,
 						zIndex: -1
 					});
-				
-				marker.setShadow({
-					path: google.maps.SymbolPath.CIRCLE,
-					fillColor: 'black',
-					fillOpacity: 1,
-					scale: marker.getIcon().scale
-				});
-	
 				marker.setMap(this._mapObj);
 				this._markers.push(marker);
 			}
 		},
 		_highlightMarker: function (index) {
-			this._markers.each(function(marker) {
-				marker.setVisible(false);
-			});
-			this._markers[index].setVisible(true);
+            var marker      =   this._markers[index],
+                markerIcon  =   marker.getIcon();
+                
+            markerIcon.fillColor = 'red';
+			marker.setIcon(markerIcon);
 		},
 		_dehighlightMarker: function (index) {
-			this._markers.each(function(marker) {
-				marker.setVisible(true);
-			});
+            var marker      =   this._markers[index],
+                markerIcon  =   marker.getIcon();
+                
+            markerIcon.fillColor = 'yellow';
+			marker.setIcon(markerIcon);
 		},
 		_resetMarkers: function () {
 			for (var i = this._markers.length - 1; i >= 0; i--) {
@@ -140,10 +137,11 @@ var	app		=	window.app || (window.app = {}),
 			'clearTable': '_empty'
 		},
 		_loadEvents: function (models) {
-			var metaData;
+			var i, j, k,
+                metaData;
 				
 			this._empty();
-			for (var i = 0, j = models.length; i < j; i++) {
+			for (i = 0, j = models.length; i < j; i++) {
 				this._grid.push([new Element('div', {
 					'class': 'evt-item evt-item-' + models[i].id
 				})].append(
@@ -157,7 +155,7 @@ var	app		=	window.app || (window.app = {}),
 
 			// Re-mark evt items on load
 			$$('.evt-item').setStyle('background-color', 'grey');
-			for (var i = 0, j = Object.keys(app.Models.Cart.toObj()),
+			for (i = 0, j = Object.keys(app.Models.Cart.toObj()),
 					k = j.length; i < k; i++) {
 				$$('.evt-item-' + j[i]).setStyle('background-color', 'red');
 			}
@@ -337,24 +335,21 @@ var	app		=	window.app || (window.app = {}),
 			'eventsUpdated': 'hide'
 		},
 		_loadChannels: function (models) {
-			var	i, j,
+			var	i, j, k,
 				bodyRow,
 				headRow;
 			
 			this._slideObj.hide();
+            this._el.fade('hide');
 			this._grid.empty();
-			for (var i = 0, j = models.length; i < j; i++) {
+			for (i = 0, j = models.length; i < j; i++) {
 				this._grid.push([$$(
 					new Element('div', { 'class': 'cart-item' }),
 					new Element('div', { 'class': 'wv-item' })
 				)].append(Object.values(
 					Object.subset(models[i], this._headers)
 				)), {
-					'chan': models[i].chan,
-					'chnId': models[i].id,
-					'modelNum': i,
-					'nsamp': models[i].nsamp,
-					'srate': models[i].srate
+					'chan': models[i].chan
 				});
 			}
 			
@@ -362,13 +357,13 @@ var	app		=	window.app || (window.app = {}),
 				// Synchronize table col width
 				bodyRow = this._grid.body.getElement('tr').getElements('td');
 				headRow = this._grid.head.getElements('th');
-				for (var i = 0, j = headRow.length - 1; i < j; i++) {
+				for (i = 0, j = headRow.length - 1; i < j; i++) {
 					headRow[i].setStyle('width', bodyRow[i].offsetWidth -
 						parseInt(bodyRow[i].getStyle('padding'), 10) * 2 + 'px');
 				}
 
 				// Re-mark channel cart items on load
-				for (var i = 0, j = $$('#channel-grid-body tr'), k = j.length;
+				for (i = 0, j = $$('#channel-grid-body tr'), k = j.length;
 						i < k; i++) {
 					if (app.Models.Cart.has(this.getCurrentEvent().evid,
 							j[i].get('chnId'))) {
@@ -378,8 +373,9 @@ var	app		=	window.app || (window.app = {}),
 
 				// Set up clickable items
 				$$('.wv-item, .cart-item').addEvent('click', function () {
-					this.toggleClass('active');
-				});
+                    this.toggleClass('active');
+                });
+				$$('.cart-item').addEvent('click', this._addToCart);
 
 				$$('.wv-item').addEvent('click', function () {
 					if ($$('.wv-item.active').length > 4) {
@@ -391,6 +387,7 @@ var	app		=	window.app || (window.app = {}),
 				this._grid.push(['No channels availible']);
 			}
 			
+            this._el.fade('in');
 			this._slideObj.slideIn();
 		},
 		_adjustSize: function () {
@@ -409,16 +406,24 @@ var	app		=	window.app || (window.app = {}),
 			this._bodyEl.setStyle('height', offsetH - gridH);
 		},
 		_addToCart: function () {
-			var	active		=	$$('.cart-item.active ! tr'),
+			var i, j,
+                active		=	$$('.cart-item.active ! tr'),
 				inactive	=	$$('.cart-item:not(.active) ! tr');
 			
-			for (var i = 0, j = inactive.length; i < j; i++) {
+			for (i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent().evid,
-					'' + inactive[i].get('chnId'));
+					'' + inactive[i].get('chan'));
 			}
-			for (var i = 0, j = active.length; i < j; i++) {
+            
+			for (i = 0, j = active.length; i < j; i++) {
+                var evid    =   this.getCurrentEvent().evid,
+                    evt     =   app.Models.Events.get(evid);
+                
 				app.Models.Cart.add(this.getCurrentEvent().evid,
-					'' + active[i].get('chnId'), {});
+					{
+                        time: evt.time,
+                        siteId: evt.id
+					}, '' + active[i].get('chan'));
 			}
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
 		},
@@ -433,11 +438,13 @@ var	app		=	window.app || (window.app = {}),
 			}
 
 			$$('.wv-item.active ! tr').each(function (row) {
+                var currChn;
 				chanArr.push(row.get('chan'));
 
 				// nsamp and srate appear not to vary per chn
-				nsamp = row.get('nsamp');
-				srate = row.get('srate');
+                currChn = app.Models.Channels.get(row.get('chan'));
+				nsamp = currChn.nsamp;
+				srate = currChn.srate;
 			});
 
 			for (var i = 0, j = app.Models.Events.toArray(), k = j.length;
@@ -458,6 +465,7 @@ var	app		=	window.app || (window.app = {}),
 		},
 		hide: function () {
 			this._slideObj.slideOut();
+            this._el.fade('out');
 		},
 		setup: function () {
 			_.bindAll(this);
@@ -485,6 +493,7 @@ var	app		=	window.app || (window.app = {}),
 				hideOverflow: false,
 				mode: 'horizontal'
 			});
+            this._el.fade('hide');
 			this._slideObj.hide();
 			
 			$('channel-close').addEvent('click', this.hide);
