@@ -78,6 +78,7 @@ var	app		=	window.app || (window.app = {}),
                 
             markerIcon.fillColor = 'red';
 			marker.setIcon(markerIcon);
+            marker.setZIndex(2);
 		},
 		_dehighlightMarker: function (index) {
             var marker      =   this._markers[index],
@@ -85,6 +86,7 @@ var	app		=	window.app || (window.app = {}),
                 
             markerIcon.fillColor = 'yellow';
 			marker.setIcon(markerIcon);
+            marker.setZIndex(1);
 		},
 		_resetMarkers: function () {
 			for (var i = this._markers.length - 1; i >= 0; i--) {
@@ -277,6 +279,7 @@ var	app		=	window.app || (window.app = {}),
 		_events: {
 			'cartUpdated': '_loadCart'
 		},
+        _emailRegex: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i,
 		_loadCart: function () {
 			var	cartItems	=	app.Models.Cart.toObj(),
 				pane		=	$('cart-left'),
@@ -308,6 +311,53 @@ var	app		=	window.app || (window.app = {}),
                 }
             }
 		},
+        submit: function () {
+            var	cartData, formatData, userData,
+				name	=	$('cart-input-name').value,
+                email   =   $('cart-input-email').value,
+                format;
+            
+            // Simple validation of email
+            if (!this._emailRegex.test(email)) {
+                alert('Please enter a valid e-mail address!');
+                return;
+            }
+            
+            cartData = {};
+            
+            userData			=	{};
+            userData.name		=	name;
+            userData.email		=	email;
+            cartData.userData	=	userData;
+            
+            formatData			=	{};
+            $$('#cart-input-format tbody tr').each(function (tableRow) {
+            	if (tableRow.getElement('.format-toggle').checked) {
+            		var f, formatName =
+            			tableRow.getElement('.format-name').get('text');
+            		
+            		f			=	formatData[formatName]	=	{};
+            		f.calibrate	=
+            			tableRow.getElement('.calib-calib').checked ?
+            				'calib'	:	'counts';
+            		f.time	=
+            			tableRow.getElement('.time-absolute').checked ?
+            				'absolute'	:	'relative';
+            	}
+            });
+            cartData.formatData	=	formatData;
+            
+            cartData.evtData	=	app.Models.Cart.toObj();
+            
+            console.log(JSON.encode(cartData));
+            
+        /*
+            new Request({
+            	method: 'post',
+            	url: app.settings.CART_SUBMIT_URL
+            }).send(cartData);
+        */
+        },
 		setup: function () {
 			var	appCart		=	this._el		=	$('app-cart'),
 				cartOverlay	=	this._overlay	=	new Element('div', {
@@ -321,9 +371,77 @@ var	app		=	window.app || (window.app = {}),
 						'z-index': 99
 					}
 				});
+				
+			for (var i = 0, j = app.settings.formats, k = Object.getLength(j);
+					i < k; i++) {
+				var	formatName	=	Object.keys(j)[i],
+					formatProps	=	Object.values(j)[i],
+					tableRow	=	new Element('tr');
+				
+				tableRow.adopt(
+					new Element('td').adopt(
+						new Element('input', {
+							class: 'format-toggle',
+							type: 'checkbox'
+						})
+					),
+					new Element('td', {
+						class: 'format-name',
+						text: formatName
+					}),
+					new Element('td').adopt(
+						new Element('input', {
+							class: 'calib-calib',
+							disabled: !formatProps.calibrate.calib,
+							name: formatName + '-calib',
+							type: 'radio'
+						}),
+						new Element('span', {
+							text: 'Calib'
+						}),
+						new Element('br'),
+						new Element('input', {
+							class: 'calib-counts',
+							disabled: !formatProps.calibrate.counts,
+							name: formatName + '-calib',
+							type: 'radio'
+						}),
+						new Element('span', {
+							text: 'Counts'
+						})
+					),
+					new Element('td').adopt(
+						new Element('input', {
+							class: 'time-absolute',
+							disabled: !formatProps.time.absolute,
+							name: formatName + '-time',
+							type: 'radio'
+						}),
+						new Element('span', {
+							text: 'Absolute'
+						}),
+						new Element('br'),
+						new Element('input', {
+							class: 'time-relative',
+							disabled: !formatProps.time.relative,
+							name: formatName + '-time',
+							type: 'radio'
+						}),
+						new Element('span', {
+							text: 'Relative'
+						})
+					)
+				);
+				
+				$('cart-input-format').tBodies[0].adopt(tableRow);
+			}
+			
+			$$('#cart-input-format td').each(function (tableCell) {
+				var enabledRBtns = tableCell.getElements('input:enabled[type=radio]');
+				if (enabledRBtns.length > 0) enabledRBtns[0].set('checked', true);
+			});
 
 			document.body.adopt(cartOverlay);
-
 			$$(this._el, this._overlay).fade('hide');
 
 			$('view-cart').addEvent('click',
@@ -335,6 +453,7 @@ var	app		=	window.app || (window.app = {}),
 				appCart.fade.pass('out', appCart));
 			$('cart-close').addEvent('click',
 				cartOverlay.fade.pass('out', cartOverlay));
+            $('cart-submit').addEvent('click', this.submit);
 		}
 	});
 	

@@ -96,17 +96,27 @@
     			</div>
     			<div id="cart-right">
     				<div class="input-field">
-    					<label for="cart-input-name">Name</label>
+    					<label for="cart-input-name">Name (optional)</label>
     					<input id="cart-input-name" type="text" />
     				</div>
     				<div class="input-field">
-    					<label for="cart-input-email">E-mail</label>
+    					<label for="cart-input-email">E-mail (required)</label>
     					<input id="cart-input-email" type="text" />
     				</div>
                     <div class="input-field">
-                        <label for="cart-input-format">Format</label>
+                        <div id="cart-input-format-wrap">
+	                        <table id="cart-input-format">
+	                        	<thead>
+	                        		<th></th>
+	                        		<th>Format</th>
+	                        		<th>Calibrate</th>
+	                        		<th>Time</th>
+	                        	</thead>
+	                        	<tbody></tbody>
+	                        </table>
+                        </div>
                     </div>
-    				<button>Submit</button>
+    				<button id="cart-submit">Submit</button>
     			</div>
     		</div>
         </div>

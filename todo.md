@@ -2,7 +2,6 @@
 
 ## IMPORTANT
 * Figure out how we want to sort channels in channel box
-* Validate E-mail
 * Cart format selection
 * Submit cart
 
@@ -18,3 +17,4 @@
 * Put border around markers
 * Make cart more readable
 * Put min width & height on window
+* Validate E-mail

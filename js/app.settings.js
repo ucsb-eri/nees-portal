@@ -23,7 +23,62 @@ var app	 =   window.app || (window.app = {});
 		WAVEFORM_BASE_URL	=	'http://nees.ucsb.edu:8888/wf/',
 		// Initialize settings object
 		settings			=   {};
-
+		
+	settings.CART_SUBMIT_URL	=	'test.php';
+	
+	settings.formats		=	{
+		'ASCII': {
+			calibrate: {
+				counts: true,
+				calib: true
+			},
+			time: {
+				absolute: true,
+				relative: true
+			}
+		},
+		'COSMOS': {
+			calibrate: {
+				counts: true,
+				calib: true
+			},
+			time: {
+				absolute: true,
+				relative: false
+			}
+		},
+		'MINISEED': {
+			calibrate: {
+				counts: true,
+				calib: false
+			},
+			time: {
+				absolute: true,
+				relative: false
+			}
+		},
+		'RDV': {
+			calibrate: {
+				counts: true,
+				calib: true
+			},
+			time: {
+				absolute: true,
+				relative: true
+			}
+		},
+		'SAC': {
+			calibrate: {
+				counts: true,
+				calib: true
+			},
+			time: {
+				absolute: true,
+				relative: false
+			}
+		}
+	};
+	
 	// Constant objects
 	settings.DP_SETTINGS	=   { // DatePicker opts
 		format: '%x',
