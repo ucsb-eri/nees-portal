@@ -332,18 +332,18 @@ var	app		=	window.app || (window.app = {}),
             
             formatData			=	{};
             $$('#cart-input-format tbody tr').each(function (tableRow) {
-            	if (tableRow.getElement('.format-toggle').checked) {
-            		var f, formatName =
-            			tableRow.getElement('.format-name').get('text');
-            		
-            		f			=	formatData[formatName]	=	{};
-            		f.calibrate	=
-            			tableRow.getElement('.calib-calib').checked ?
-            				'calib'	:	'counts';
-            		f.time	=
-            			tableRow.getElement('.time-absolute').checked ?
-            				'absolute'	:	'relative';
-            	}
+				if (tableRow.getElement('.format-toggle').checked) {
+					var f, formatName =
+						tableRow.getElement('.format-name').get('text');
+						
+					f			=	formatData[formatName]	=	{};
+					f.calibrate	=
+						tableRow.getElement('.calib-calib').checked ?
+							'calib'	:	'counts';
+					f.time	=
+						tableRow.getElement('.time-absolute').checked ?
+							'absolute'	:	'relative';
+				}
             });
             cartData.formatData	=	formatData;
             
@@ -351,12 +351,10 @@ var	app		=	window.app || (window.app = {}),
             
             console.log(JSON.encode(cartData));
             
-        /*
             new Request({
-            	method: 'post',
-            	url: app.settings.CART_SUBMIT_URL
+				method: 'post',
+				url: app.settings.CART_SUBMIT_URL
             }).send(cartData);
-        */
         },
 		setup: function () {
 			var	appCart		=	this._el		=	$('app-cart'),
@@ -437,8 +435,8 @@ var	app		=	window.app || (window.app = {}),
 			}
 			
 			$$('#cart-input-format td').each(function (tableCell) {
-				var enabledRBtns = tableCell.getElements('input:enabled[type=radio]');
-				if (enabledRBtns.length > 0) enabledRBtns[0].set('checked', true);
+				var b = tableCell.getElements('input:enabled[type=radio]');
+				if (b.length > 0) b[0].set('checked', true);
 			});
 
 			document.body.adopt(cartOverlay);
