@@ -354,7 +354,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	color: #555;
     font-weight: bold;
 }
-#cart-right .input-field input {
+#cart-right .input-field input[type=text] {
     background-color: #FFF;
 	border: 1px solid #CCC;
 	color: #000;
@@ -366,6 +366,37 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	margin: auto;
 	margin-top: 0.4em;
 	width: 80%;
+}
+#cart-input-format-wrap {
+	background-color: #FFF;
+	border: 1px solid #CCC;
+	margin: 15px 0;
+	overflow: auto;
+	height: 150px;
+}
+#cart-input-format {
+	border-collapse: collapse;
+	color: #333;
+	height: 100px;
+	overflow: auto;
+	width: 100%;
+}
+#cart-input-format th {
+	background-color: #333;
+	color: #CCC;
+}
+#cart-input-format td, #cart-input-format th {
+	padding: 5px;
+}
+#cart-input-format tr {
+	border-top: 1px solid #EEE;
+}
+#cart-input-format tr:first-child {
+	border: 0;
+}
+#cart-input-format input[type=checkbox] {
+	margin: 0;
+	vertical-align: middle;
 }
 #view-cart {
 	border-left: 1px solid #CCC;
