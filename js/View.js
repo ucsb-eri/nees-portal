@@ -143,7 +143,8 @@ var	app		=	window.app || (window.app = {}),
 			this._empty();
 			for (i = 0, j = models.length; i < j; i++) {
 				this._grid.push([new Element('div', {
-					'class': 'evt-item evt-item-' + models[i].id
+					'class': 'evt-item evt-item-' + models[i].id,
+                    'title': 'You have selected channel(s) from this event'
 				})].append(
 					this.filter(Object.values(
 						Object.subset(models[i], this._headers)
@@ -154,14 +155,13 @@ var	app		=	window.app || (window.app = {}),
 			}
 
 			// Re-mark evt items on load
-			$$('.evt-item').setStyle('background-color', 'grey');
 			for (i = 0, j = Object.keys(app.Models.Cart.toObj()),
 					k = j.length; i < k; i++) {
-				$$('.evt-item-' + j[i]).setStyle('background-color', 'red');
+				$$('.evt-item-' + j[i]).addClass('active');
 			}
 			
 			metaData = app.Models.Events.getMeta();
-			$('query-result').set('text', 'Found ' + metaData.rows +
+			$('query-result').set('text', metaData.rows +
 				' results.');
 			$('table-ctrl-page').set('value', metaData.pageNum + 1);
 			$('table-ctrl-total').set('text', metaData.totalPages);
@@ -251,8 +251,8 @@ var	app		=	window.app || (window.app = {}),
 			this._grid = new HtmlTable({
 				classZebra: 'odd',
 				gridContainer : this._el,
-				headers: [''].append( // blank header for cart indicator
-			Object.values(app.settings.EVT_GRID_HEADER)),
+				headers: [''] // blank header for cart indicator
+                    .append(Object.values(app.settings.EVT_GRID_HEADER)),
 				zebra: true
 			});
 			this._grid.element.addEvent('click:relay(th)', this._onSort);
@@ -262,10 +262,10 @@ var	app		=	window.app || (window.app = {}),
 			this._grid.inject(this._el);
 
 			PubSub.subscribe('cartUpdated', function () {
-				$$('.evt-item').setStyle('background-color', 'grey');
+				$$('.evt-item').removeClass('active');
 				for (var i = 0, j = Object.keys(app.Models.Cart.toObj()),
 						k = j.length; i < k; i++) {
-					$$('.evt-item-' + j[i]).setStyle('background-color', 'red');
+					$$('.evt-item-' + j[i]).addClass('active');
 				}
 			});
 			
@@ -284,26 +284,35 @@ var	app		=	window.app || (window.app = {}),
 
 			pane.empty();
 
-			for (var i = 0, j = Object.keys(cartItems),
-					k = Object.values(cartItems), l = j.length; i < l; i++) {
-				var	chnList	=	new Element('ul'),
-					evtChns	=	Object.keys(k[i]);
-
-				for (var p = 0, q = evtChns.length; p < q; p++) {
-					chnList.adopt(new Element('li',
-						{ 'text': 'Channel' + evtChns[p] }));
-				}
-
-				tree.adopt((new Element('li', { 'text': 'Event ' + j[i] }))
-					.adopt(chnList));
-				pane.adopt(tree);
-			}
+            if (Object.getLength(cartItems) === 0) {
+                pane.set('html', '<div>No channels selected!</div>');
+            } else {
+                for (var i = 0, j = Object.values(cartItems), l = j.length;
+                        i < l; i++) {
+                    var	chnList	=	new Element('ul'),
+                        evtChns	=	j[i].chnList;
+    
+                    for (var p = 0, q = evtChns.length; p < q; p++) {
+                        chnList.adopt(new Element('li', {
+                            'text': evtChns[p]
+                        }));
+                    }
+    
+                    tree.adopt((new Element('li', {
+                        'html': '<b>Event</b>: ' + j[i].siteId +
+                            '<br /><b>Time</b>: ' + j[i].time +
+                            '<br /><b>Channels</b>:'
+                        }))
+                        .adopt(chnList));
+                    pane.adopt(tree);
+                }
+            }
 		},
 		setup: function () {
 			var	appCart		=	this._el		=	$('app-cart'),
 				cartOverlay	=	this._overlay	=	new Element('div', {
 					'styles': {
-						'background-color': 'rgba(0,0,0,0.8)',
+						'background-color': 'rgba(0, 0, 0, 0.8)',
 						'height': '100%',
 						'left': 0,
 						'position': 'absolute',
@@ -332,23 +341,28 @@ var	app		=	window.app || (window.app = {}),
 	channelBox = new View({
 		_events: {
 			'channelsUpdated': '_loadChannels',
-			'eventsUpdated': 'hide'
+			'eventSelected': 'hide'
 		},
 		_loadChannels: function (models) {
 			var	i, j, k,
 				bodyRow,
 				headRow;
 			
-			this._slideObj.hide();
-            this._el.fade('hide');
 			this._grid.empty();
 			for (i = 0, j = models.length; i < j; i++) {
-				this._grid.push([$$(
-					new Element('div', { 'class': 'cart-item' }),
-					new Element('div', { 'class': 'wv-item' })
-				)].append(Object.values(
+				this._grid.push([
+					new Element('div', {
+                        'class': 'cart-item',
+                        'title': 'Add/Remove from Cart'
+                    }),
+				].append(Object.values(
 					Object.subset(models[i], this._headers)
-				)), {
+				)).append([
+					new Element('div', {
+                        'class': 'wv-item',
+                        'title': 'Select for viewing'
+                    })
+                ]), {
 					'chan': models[i].chan
 				});
 			}
@@ -366,16 +380,22 @@ var	app		=	window.app || (window.app = {}),
 				for (i = 0, j = $$('#channel-grid-body tr'), k = j.length;
 						i < k; i++) {
 					if (app.Models.Cart.has(this.getCurrentEvent().evid,
-							j[i].get('chnId'))) {
+							j[i].get('chan'))) {
 						j[i].getElement('.cart-item').addClass('active');
 					}
 				}
+                
+                if ($$('.cart-item:not(#chn-add-all):not(.active)').length === 0) {
+                    $('chn-add-all').addClass('active');
+                } else {
+                    $('chn-add-all').removeClass('active');
+                }
 
 				// Set up clickable items
-				$$('.wv-item, .cart-item').addEvent('click', function () {
+				$$('.wv-item, .cart-item:not(#chn-add-all)').addEvent('click', function () {
                     this.toggleClass('active');
                 });
-				$$('.cart-item').addEvent('click', this._addToCart);
+				$$('.cart-item:not(#chn-add-all)').addEvent('click', this._addToCart);
 
 				$$('.wv-item').addEvent('click', function () {
 					if ($$('.wv-item.active').length > 4) {
@@ -391,9 +411,8 @@ var	app		=	window.app || (window.app = {}),
 			this._slideObj.slideIn();
 		},
 		_adjustSize: function () {
-			var titleH = $('app-title').getSize().y,
-				gridH,
-				offsetH = window.getSize().y - titleH,
+			var	gridH,
+				offsetH = $('app-grid').getSize().y - 5,
 				sidebarW = $('app-grid').getSize().x;
 			this._el.setStyles({
 				height: offsetH + 'px',
@@ -407,8 +426,8 @@ var	app		=	window.app || (window.app = {}),
 		},
 		_addToCart: function () {
 			var i, j,
-                active		=	$$('.cart-item.active ! tr'),
-				inactive	=	$$('.cart-item:not(.active) ! tr');
+                active		=	$$('.cart-item.active:not(#chn-add-all) ! tr'),
+				inactive	=	$$('.cart-item:not(.active):not(#chn-add-all) ! tr');
 			
 			for (i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent().evid,
@@ -425,6 +444,12 @@ var	app		=	window.app || (window.app = {}),
                         siteId: evt.id
 					}, '' + active[i].get('chan'));
 			}
+            
+            if ($$('.cart-item:not(#chn-add-all):not(.active)').length === 0) {
+                $('chn-add-all').addClass('active');
+            } else {
+                $('chn-add-all').removeClass('active');
+            }
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
 		},
 		_viewSelected: function () {
@@ -478,9 +503,15 @@ var	app		=	window.app || (window.app = {}),
 			this._grid = new HtmlTable({
 				classZebra: 'odd',
 				gridContainer : this._gridEl,
-				headers: [''].append(
-					Object.values(app.settings.CHN_GRID_HEADER)
-				),
+				headers: [
+                    new Element('div', {
+                        class: 'cart-item',
+                        id: 'chn-add-all',
+                        title: 'Add/Remove all channels'
+                    })
+                ]
+                .append(Object.values(app.settings.CHN_GRID_HEADER))
+                .append(['']),
 				zebra: true
 			});
 			this._headEl.adopt(new Element('table').adopt(this._grid.thead));
@@ -490,7 +521,9 @@ var	app		=	window.app || (window.app = {}),
 			this._adjustSize();
 			
 			this._slideObj = new Fx.Slide(this._el, {
+                duration: 'short',
 				hideOverflow: false,
+                link: 'chain',
 				mode: 'horizontal'
 			});
             this._el.fade('hide');
@@ -498,7 +531,16 @@ var	app		=	window.app || (window.app = {}),
 			
 			$('channel-close').addEvent('click', this.hide);
 			$('chn-control-view').addEvent('click', this._viewSelected);
-			$('chn-control-add').addEvent('click', this._addToCart);
+            
+            $('chn-add-all').addEvent('click', function () {
+                if ($('chn-add-all').hasClass('active')) {
+                    // Remove all from cart
+                    $$('.cart-item').removeClass('active');
+                } else {
+                    $$('.cart-item').addClass('active');
+                }
+                this._addToCart();
+            }.bind(this));
 		},
 		getCurrentEvent: function () {
 			return this._currEvt || {};
