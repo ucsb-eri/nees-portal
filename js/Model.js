@@ -123,7 +123,7 @@ var app     =   window.app || (window.app = {}),
 			return this._data[evt];
 		},
 		has: function (evt, chn) {
-			return !!this._data[evt] && !!this._data[evt][chn];
+			return !!this._data[evt] && this._data[evt].chnList.contains(chn);
 		},
 		remove: function (evt, chn) {
 			if (!this._data[evt] || !this._data[evt].chnList) return;

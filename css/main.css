@@ -12,7 +12,6 @@ body {
 	color: #EEE;
 	font-family: 'Ubuntu', sans-serif; 
 	font-size: 12px;
-	overflow: hidden;
 }
 /*
 .clearfix:after {
@@ -30,6 +29,16 @@ body {
 	width: 100%;
 }
 
+#app-wrap {
+    margin: auto;
+    width: 950px;
+    height: 95%;
+    background-color: #EEE;
+    border: 10px solid #054B81;
+    border-radius: 5px;
+    box-shadow: 5px 5px 5px black;
+    padding: 15px;
+}
 #app-title {
 	background-color: #06A;
 	border-bottom: 3px solid #09F;
@@ -136,7 +145,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	margin: auto 15px;
 }
 .input-field .double-field {
-	width: 45px;
+	width: 35%;
 }
 .input-field label {
 	color: #AAA;
@@ -287,41 +296,70 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 
 #app-cart {
 	background-color: #EEE;
-	height: 350px;
+    box-shadow: 0 0 25px 15px black;
+	height: 450px;
 	left: 50%;
-	margin-left: -250px;
-	margin-top: -175px;
+	margin-left: -400px;
+	margin-top: -225px;
 	position: absolute;
 	top: 50%;
 	visibility: hidden;
-	width: 500px;
+	width: 800px;
 	z-index: 100;
 }
 #cart-left, #cart-right {
 	float: left;
 	margin: 15px 2.5%;
-	width: 45%;
 }
 #cart-left {
-	background-color: #CCC;
+	background-color: #FFF;
+    border: 1px solid #CCC;
 	color: #333;
 	font-size: 12px;
-	height: 250px;
+	height: 350px;
 	overflow: auto;
+    width: 35%;
+}
+#cart-left div {
+    padding: 15px 25px;
+}
+#cart-left ul {
+    list-style: none;
+    margin: 0;
+    padding: 15px;
+}
+#cart-left li {
+    border-top: 1px solid #CCC;
+    padding: 15px 0;
+}
+#cart-left li:first-child {
+    border: 0;
+}
+#cart-left li ul {
+    list-style: circle;
+    padding: 5px 45px;
+}
+#cart-left li ul li {
+    border: 0;
+    padding: 0;
 }
 #cart-right {
 	text-align: center;
+    width: 54%;
 }
 #cart-right .input-field {
 	text-align: left;
 }
 #cart-right .input-field label {
 	color: #555;
+    font-weight: bold;
 }
 #cart-right .input-field input {
-	border-bottom: 1px solid #AAA;
+    background-color: #FFF;
+	border: 1px solid #CCC;
 	color: #000;
 	margin-bottom: 1.4em;
+    width: 100%;
 }
 #cart-right button {
 	height: 35px;
@@ -333,9 +371,8 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	border-left: 1px solid #CCC;
 	cursor: pointer;
 	padding: 5px 15px;
-	position: absolute;
-	right: 25px;
-	top: 15px;
+    float: right;
+    margin: 15px 25px;
 }
 #view-cart:hover {
 	text-decoration: underline;
@@ -374,7 +411,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	border-radius: 5px;
 	border: 1px solid #101214;
 	cursor: pointer;
-	float: left;
+	float: right;
 	margin: 8px 15px;
 	padding: 5px 15px;
 }
@@ -383,29 +420,31 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 
 .evt-item {
-	background-color: grey;
+	background: transparent;
 	height: 20px;
+    visibility: hidden;
 	width: 20px;
 }
 .evt-item.active {
-	background-color: #600;
+	background: transparent url(../img/nees/cartin.png) no-repeat center center;
+    visibility: visible;
 }
 .cart-item {
-	background-color: blue;
+	background: transparent url(../img/nees/cartadd.png) no-repeat center center;
 	float: left;
 	height: 20px;
 	width: 20px;
 }
 .cart-item.active {
-	background-color: yellow;
+	background: transparent url(../img/nees/cartin.png) no-repeat center center;
 }
 .wv-item {
-	background-color: green;
+	background: transparent url(../img/nees/wviewUn.png) no-repeat center center;
 	float: left;
 	height: 20px;
 	margin-left: 5px;
 	width: 20px;
 }
 .wv-item.active {
-	background-color: orange;
+	background: transparent url(../img/nees/cartin.png) no-repeat center center;
 }
