@@ -16,7 +16,8 @@ var	app		=	window.app || (window.app = {}),
 		map,
 		tabs,
 		evtGrid,
-		View;
+		View,
+		sfile, timeout, zipAvail;
 	
 	app.View = {};
 	
@@ -61,11 +62,13 @@ var	app		=	window.app || (window.app = {}),
 						icon: Object.append({
 							path: google.maps.SymbolPath.CIRCLE,
 							fillColor: 'yellow',
-                            fillOpacity: 0.6,
+							fillOpacity: 0.6,
+							strokeColor: 'black',
+							strokeOpacity: 1,
 							strokeWeight: 1
 						}, app.settings.getMarkerOptions(data[i].ml)),
 						position: loc,
-                        title: 'Evid: ' + data[i].evid + '\nML: ' + data[i].ml,
+						title: 'Evid: ' + data[i].evid + '\nML: ' + data[i].ml,
 						zIndex: -1
 					});
 				marker.setMap(this._mapObj);
@@ -73,20 +76,20 @@ var	app		=	window.app || (window.app = {}),
 			}
 		},
 		_highlightMarker: function (index) {
-            var marker      =   this._markers[index],
-                markerIcon  =   marker.getIcon();
-                
-            markerIcon.fillColor = 'red';
+			var marker	  =   this._markers[index],
+				markerIcon  =   marker.getIcon();
+				
+			markerIcon.fillColor = 'red';
 			marker.setIcon(markerIcon);
-            marker.setZIndex(2);
+			marker.setZIndex(2);
 		},
 		_dehighlightMarker: function (index) {
-            var marker      =   this._markers[index],
-                markerIcon  =   marker.getIcon();
-                
-            markerIcon.fillColor = 'yellow';
+			var marker	  =   this._markers[index],
+				markerIcon  =   marker.getIcon();
+				
+			markerIcon.fillColor = 'yellow';
 			marker.setIcon(markerIcon);
-            marker.setZIndex(1);
+			marker.setZIndex(1);
 		},
 		_resetMarkers: function () {
 			for (var i = this._markers.length - 1; i >= 0; i--) {
@@ -123,12 +126,36 @@ var	app		=	window.app || (window.app = {}),
 				app.settings.MAP_CIRCLE_SETTINGS);
 			this._mapCirc.setMap(this._mapObj);
 			
+			this._el.addEvent('tabFocus',
+				google.maps.event.trigger.pass([this._mapObj, 'resize']));
 		}
 	});
 	
 	info = new View({
+		_loadInfo: function (text) {
+			this._el.set('html', text);
+		},
 		setup: function () {
 			this._el = tabs.add('INFO');
+			this._el.setStyles({
+				color: '#333',
+				overflow: 'auto',
+				padding: '25px 15px',
+				width: '95%'
+			});
+			
+			PubSub.subscribe('inputChanged', function (data) {
+				var shortName = $('site').options[$('site').selectedIndex]
+					.getAttribute('site').toLowerCase();
+
+				info._el.set('text', 'Loading...');
+
+				new Request({
+					onSuccess: info._loadInfo,
+					url: 'siteInfo.php'
+				}).get('site=' + shortName);
+			});
+			
 			this._el.set('text', '');
 		}
 	});
@@ -136,21 +163,27 @@ var	app		=	window.app || (window.app = {}),
 	evtGrid = new View({
 		_events: {
 			'eventsUpdated': '_loadEvents',
+			'inputChanged': '_empty',
 			'clearTable': '_empty'
 		},
 		_loadEvents: function (models) {
 			var i, j, k,
-                metaData;
+				metaData;
 				
-			this._empty();
+			this._grid.empty();
+			if (!app.Controller.Input._input.sortBy) {
+				$$('.sort').removeClass('sort');
+			}
+			
 			for (i = 0, j = models.length; i < j; i++) {
-				this._grid.push([new Element('div', {
-					'class': 'evt-item evt-item-' + models[i].id,
-                    'title': 'You have selected channel(s) from this event'
-				})].append(
-					this.filter(Object.values(
-						Object.subset(models[i], this._headers)
-					))
+				this._grid.push([
+						this.filter(Object.values(
+							Object.subset(models[i], this._headers)
+					))].append(
+					new Element('div', {
+						'class': 'evt-item evt-item-' + models[i].id,
+						'title': 'You have selected channel(s) from this event'
+					})
 				), {
 					modelNum: i
 				});
@@ -170,11 +203,12 @@ var	app		=	window.app || (window.app = {}),
 		},
 		_empty: function () {
 			this._grid.empty();
+			this._grid.push([ 'Loading...' ]);
 		},
 		_onSort: function (tbody, sortIndex) {
 			var input   =   app.Controller.Input._input,
 				colName =   Object.keyOf(app.settings.EVT_GRID_HEADER,
-								sortIndex.get('text'));
+								sortIndex.get('html'));
 				
 			this._grid.head.getElements('th').removeClass('sort').removeClass('desc');
 			
@@ -185,7 +219,7 @@ var	app		=	window.app || (window.app = {}),
 			} else {
 				sortIndex.addClass('sort');
 				input.sortBy = colName;
-				if (!input.desc) delete input.desc;
+				if (input.desc) delete input.desc;
 			}
 			input.page = 0;
 			
@@ -216,8 +250,8 @@ var	app		=	window.app || (window.app = {}),
 		},
 		_toggleDepEvid: function () {
 			var	hasDepth	=	this._headers.contains('depth'),
-				headerText	=	[''].append(
-					Object.values(app.settings.EVT_GRID_HEADER));
+				headerText	=	Object.values(app.settings.EVT_GRID_HEADER)
+									.append([]);
 				
 			this._headers = [''].append(
 				Object.keys(app.settings.EVT_GRID_HEADER));
@@ -253,8 +287,8 @@ var	app		=	window.app || (window.app = {}),
 			this._grid = new HtmlTable({
 				classZebra: 'odd',
 				gridContainer : this._el,
-				headers: [''] // blank header for cart indicator
-                    .append(Object.values(app.settings.EVT_GRID_HEADER)),
+				headers: Object.values(app.settings.EVT_GRID_HEADER)
+					.append([]),
 				zebra: true
 			});
 			this._grid.element.addEvent('click:relay(th)', this._onSort);
@@ -279,7 +313,7 @@ var	app		=	window.app || (window.app = {}),
 		_events: {
 			'cartUpdated': '_loadCart'
 		},
-        _emailRegex: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i,
+		_emailRegex: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i,
 		_loadCart: function () {
 			var	cartItems	=	app.Models.Cart.toObj(),
 				pane		=	$('cart-left'),
@@ -287,51 +321,54 @@ var	app		=	window.app || (window.app = {}),
 
 			pane.empty();
 
-            if (Object.getLength(cartItems) === 0) {
-                pane.set('html', '<div>No channels selected!</div>');
-            } else {
-                for (var i = 0, j = Object.values(cartItems), l = j.length;
-                        i < l; i++) {
-                    var	chnList	=	new Element('ul'),
-                        evtChns	=	j[i].chnList;
-    
-                    for (var p = 0, q = evtChns.length; p < q; p++) {
-                        chnList.adopt(new Element('li', {
-                            'text': evtChns[p]
-                        }));
-                    }
-    
-                    tree.adopt((new Element('li', {
-                        'html': '<b>Event</b>: ' + j[i].siteId +
-                            '<br /><b>Time</b>: ' + j[i].time +
-                            '<br /><b>Channels</b>:'
-                        }))
-                        .adopt(chnList));
-                    pane.adopt(tree);
-                }
-            }
+			if (Object.getLength(cartItems) === 0) {
+				pane.set('html', '<div>No channels selected!</div>');
+			} else {
+				for (var i = 0, j = Object.values(cartItems), l = j.length;
+					i < l; i++) {
+						
+					var	chnList	=	new Element('ul'),
+						evtChns	=	j[i].chnList;
+	
+					for (var p = 0, q = evtChns.length; p < q; p++) {
+						chnList.adopt(new Element('li', {
+							'text': evtChns[p]
+						}));
+					}
+	
+					tree.adopt((new Element('li', {
+						'html': '<b>Event</b>: ML ' +  j[i].ml + ' @ ' +
+								j[i].dist + 'km from ' + j[i].site +
+							'<br /><b>Evid</b>: ' + j[i].evid+
+							'<br /><b>Time</b>: ' + j[i].time +
+							'<br /><b>Channels</b>: [' + evtChns.length + ']'
+						}))
+						.adopt(chnList));
+					pane.adopt(tree);
+				}
+			}
 		},
-        submit: function () {
-            var	cartData, formatData, userData,
+		submit: function () {
+			var	cartData, formatData, userData,
 				name	=	$('cart-input-name').value,
-                email   =   $('cart-input-email').value,
-                format;
-            
-            // Simple validation of email
-            if (!this._emailRegex.test(email)) {
-                alert('Please enter a valid e-mail address!');
-                return;
-            }
-            
-            cartData = {};
-            
-            userData			=	{};
-            userData.name		=	name;
-            userData.email		=	email;
-            cartData.userData	=	userData;
-            
-            formatData			=	{};
-            $$('#cart-input-format tbody tr').each(function (tableRow) {
+				email   =   $('cart-input-email').value,
+				format;
+			
+			// Simple validation of email
+			if (!this._emailRegex.test(email)) {
+				alert('Please enter a valid e-mail address!');
+				return;
+			}
+			
+			cartData = {};
+			
+			userData			=	{};
+			userData.name		=	name;
+			userData.email		=	email;
+			cartData.userData	=	userData;
+			
+			formatData			=	{};
+			$$('#cart-input-format tbody tr').each(function (tableRow) {
 				if (tableRow.getElement('.format-toggle').checked) {
 					var f, formatName =
 						tableRow.getElement('.format-name').get('text');
@@ -344,18 +381,23 @@ var	app		=	window.app || (window.app = {}),
 						tableRow.getElement('.time-absolute').checked ?
 							'absolute'	:	'relative';
 				}
-            });
-            cartData.formatData	=	formatData;
-            
-            cartData.evtData	=	app.Models.Cart.toObj();
-            
-            console.log(JSON.encode(cartData));
-            
-            new Request({
+			});
+			cartData.formatData	=	formatData;
+
+			if (Object.getLength(formatData) == 0) {
+				alert('Please select a format!');
+				return;
+			}
+			
+			cartData.evtData	=	app.Models.Cart.toObj();
+			
+			console.log(JSON.encode(cartData));
+			
+			new Request({
 				method: 'post',
 				url: app.settings.CART_SUBMIT_URL
-            }).send(cartData);
-        },
+			}).send(cartData);
+		},
 		setup: function () {
 			var	appCart		=	this._el		=	$('app-cart'),
 				cartOverlay	=	this._overlay	=	new Element('div', {
@@ -451,14 +493,15 @@ var	app		=	window.app || (window.app = {}),
 				appCart.fade.pass('out', appCart));
 			$('cart-close').addEvent('click',
 				cartOverlay.fade.pass('out', cartOverlay));
-            $('cart-submit').addEvent('click', this.submit);
+			$('cart-submit').addEvent('click', this.submit);
 		}
 	});
 	
 	channelBox = new View({
 		_events: {
-			'channelsUpdated': '_loadChannels',
-			'eventSelected': 'hide'
+			'channelsUpdated':	'_loadChannels',
+			'eventSelected':	'hide',
+			'eventsUpdated':	'hide'
 		},
 		_loadChannels: function (models) {
 			var	i, j, k,
@@ -469,17 +512,17 @@ var	app		=	window.app || (window.app = {}),
 			for (i = 0, j = models.length; i < j; i++) {
 				this._grid.push([
 					new Element('div', {
-                        'class': 'cart-item',
-                        'title': 'Add/Remove from Cart'
-                    }),
+						'class': 'cart-item',
+						'title': 'Add/Remove from Cart'
+					}),
 				].append(Object.values(
 					Object.subset(models[i], this._headers)
 				)).append([
 					new Element('div', {
-                        'class': 'wv-item',
-                        'title': 'Select for viewing'
-                    })
-                ]), {
+						'class': 'wv-item',
+						'title': 'Select for viewing'
+					})
+				]), {
 					'chan': models[i].chan
 				});
 			}
@@ -501,17 +544,17 @@ var	app		=	window.app || (window.app = {}),
 						j[i].getElement('.cart-item').addClass('active');
 					}
 				}
-                
-                if ($$('.cart-item:not(#chn-add-all):not(.active)').length === 0) {
-                    $('chn-add-all').addClass('active');
-                } else {
-                    $('chn-add-all').removeClass('active');
-                }
+				
+				if ($$('.cart-item:not(#chn-add-all):not(.active)').length === 0) {
+					$('chn-add-all').addClass('active');
+				} else {
+					$('chn-add-all').removeClass('active');
+				}
 
 				// Set up clickable items
 				$$('.wv-item, .cart-item:not(#chn-add-all)').addEvent('click', function () {
-                    this.toggleClass('active');
-                });
+					this.toggleClass('active');
+				});
 				$$('.cart-item:not(#chn-add-all)').addEvent('click', this._addToCart);
 
 				$$('.wv-item').addEvent('click', function () {
@@ -524,7 +567,7 @@ var	app		=	window.app || (window.app = {}),
 				this._grid.push(['No channels availible']);
 			}
 			
-            this._el.fade('in');
+			this._el.fade('in');
 			this._slideObj.slideIn();
 		},
 		_adjustSize: function () {
@@ -543,30 +586,31 @@ var	app		=	window.app || (window.app = {}),
 		},
 		_addToCart: function () {
 			var i, j,
-                active		=	$$('.cart-item.active:not(#chn-add-all) ! tr'),
+				active		=	$$('.cart-item.active:not(#chn-add-all) ! tr'),
 				inactive	=	$$('.cart-item:not(.active):not(#chn-add-all) ! tr');
 			
 			for (i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent().evid,
 					'' + inactive[i].get('chan'));
 			}
-            
+			
 			for (i = 0, j = active.length; i < j; i++) {
-                var evid    =   this.getCurrentEvent().evid,
-                    evt     =   app.Models.Events.get(evid);
-                
+				var evid	=   this.getCurrentEvent().evid,
+					evt	 =   app.Models.Events.get(evid);
+				
 				app.Models.Cart.add(this.getCurrentEvent().evid,
 					{
-                        time: evt.time,
-                        siteId: evt.id
+						ml: evt.ml,
+						siteEvt: evt.id,
+						time: evt.time
 					}, '' + active[i].get('chan'));
 			}
-            
-            if ($$('.cart-item:not(#chn-add-all):not(.active)').length === 0) {
-                $('chn-add-all').addClass('active');
-            } else {
-                $('chn-add-all').removeClass('active');
-            }
+			
+			if ($$('.cart-item:not(#chn-add-all):not(.active)').length === 0) {
+				$('chn-add-all').addClass('active');
+			} else {
+				$('chn-add-all').removeClass('active');
+			}
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
 		},
 		_viewSelected: function () {
@@ -580,11 +624,11 @@ var	app		=	window.app || (window.app = {}),
 			}
 
 			$$('.wv-item.active ! tr').each(function (row) {
-                var currChn;
+				var currChn;
 				chanArr.push(row.get('chan'));
 
 				// nsamp and srate appear not to vary per chn
-                currChn = app.Models.Channels.get(row.get('chan'));
+				currChn = app.Models.Channels.get(row.get('chan'));
 				nsamp = currChn.nsamp;
 				srate = currChn.srate;
 			});
@@ -607,7 +651,7 @@ var	app		=	window.app || (window.app = {}),
 		},
 		hide: function () {
 			this._slideObj.slideOut();
-            this._el.fade('out');
+			this._el.fade('out');
 		},
 		setup: function () {
 			_.bindAll(this);
@@ -621,14 +665,14 @@ var	app		=	window.app || (window.app = {}),
 				classZebra: 'odd',
 				gridContainer : this._gridEl,
 				headers: [
-                    new Element('div', {
-                        class: 'cart-item',
-                        id: 'chn-add-all',
-                        title: 'Add/Remove all channels'
-                    })
-                ]
-                .append(Object.values(app.settings.CHN_GRID_HEADER))
-                .append(['']),
+					new Element('div', {
+						class: 'cart-item',
+						id: 'chn-add-all',
+						title: 'Add/Remove all channels'
+					})
+				]
+				.append(Object.values(app.settings.CHN_GRID_HEADER))
+				.append(['']),
 				zebra: true
 			});
 			this._headEl.adopt(new Element('table').adopt(this._grid.thead));
@@ -638,26 +682,26 @@ var	app		=	window.app || (window.app = {}),
 			this._adjustSize();
 			
 			this._slideObj = new Fx.Slide(this._el, {
-                duration: 'short',
+				duration: 'short',
 				hideOverflow: false,
-                link: 'chain',
+				link: 'chain',
 				mode: 'horizontal'
 			});
-            this._el.fade('hide');
+			this._el.fade('hide');
 			this._slideObj.hide();
 			
 			$('channel-close').addEvent('click', this.hide);
 			$('chn-control-view').addEvent('click', this._viewSelected);
-            
-            $('chn-add-all').addEvent('click', function () {
-                if ($('chn-add-all').hasClass('active')) {
-                    // Remove all from cart
-                    $$('.cart-item').removeClass('active');
-                } else {
-                    $$('.cart-item').addClass('active');
-                }
-                this._addToCart();
-            }.bind(this));
+			
+			$('chn-add-all').addEvent('click', function () {
+				if ($('chn-add-all').hasClass('active')) {
+					// Remove all from cart
+					$$('.cart-item').removeClass('active');
+				} else {
+					$$('.cart-item').addClass('active');
+				}
+				this._addToCart();
+			}.bind(this));
 		},
 		getCurrentEvent: function () {
 			return this._currEvt || {};

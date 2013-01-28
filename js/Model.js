@@ -134,10 +134,36 @@ var app     =   window.app || (window.app = {}),
 				delete this._data[evt];
 			}
 		},
+		empty: function () {
+			this._data = {};
+		},
 		toObj: function () {
 			return this._data;
 		}
 	};
 	app.Models.Cart = cart;
+	
+	// Store events client side
+	PubSub.subscribe('cartUpdated', function (data) {
+		window.localStorage.setItem('cartItems', JSON.encode(data));
+	});
+	
+	window.addEvent('load', function () {
+		if (window.localStorage.getItem('cartItems')) {
+			var numChns = 0;
+			cart._data = JSON.decode(window.localStorage.getItem('cartItems'));
+			PubSub.publish('cartUpdated', cart._data);
+			
+			for (var i = 0, j = Object.values(cart._data); i < j.length; i++) {
+				numChns += j[i].chnList.length;
+			}
+			
+			if (cart._data.length === 0) {
+				$('in-cart').innerHTML = '(Cart empty)';
+			} else {
+				$('in-cart').innerHTML = '(' + cart._data.length + ' Chans from ' + cart._data.length + ' Events)';
+			}
+		}
+	});
 	
 }) ();

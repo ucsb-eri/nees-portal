@@ -4,6 +4,7 @@
 * Figure out how we want to sort channels in channel box
 * Cart format selection
 * Submit cart
+* Re-render sort after reloading events
 
 ## Other
 * Abstract wf viewer construction into app.settings (Half implemented)

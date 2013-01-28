@@ -1,9 +1,9 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
-var app			 =   window.app || (window.app = {}),
-	_			   =   window._,
-	Picker		  =   window.Picker,
-	PubSub		  =   window.PubSub;
+var	app		=	window.app || (window.app = {}),
+	_		=	window._,
+	Picker	=	window.Picker,
+	PubSub	=	window.PubSub;
 
 /**
  * Handles user input
@@ -86,6 +86,8 @@ var app			 =   window.app || (window.app = {}),
 							' (' + node.getAttribute('descrip') + ')',
 					value: node.getAttribute('id')
 				});
+				
+				if (node.tagName === 'none') thisEl.addClass('site-gray');
 			}
 			parent.adopt(thisEl);
 			if (node.hasChildNodes()) {
@@ -103,7 +105,6 @@ var app			 =   window.app || (window.app = {}),
 	});
 	
 	// Event query table navigation
-	// @@TODO: page/maxPages should not be 'clickable'. page should have change event
 	Controller.TableNav = {
 		_currPage: 0,
 		_maxPage: 0
