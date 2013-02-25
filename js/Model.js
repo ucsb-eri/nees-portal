@@ -145,7 +145,23 @@ var app     =   window.app || (window.app = {}),
 	
 	// Store events client side
 	PubSub.subscribe('cartUpdated', function (data) {
+		var numChns = 0;
 		window.localStorage.setItem('cartItems', JSON.encode(data));
+		
+		for (var i = 0, j = Object.values(cart._data); i < j.length; i++) {
+			numChns += j[i].chnList.length;
+		}
+		if (Object.getLength(cart._data) === 0) {
+			$('cart-count').innerHTML = 'Cart empty';
+			$('cart-count').title = 'Nothing in the cart!';
+		} else {
+			$('cart-count').innerHTML = numChns + 
+				'C in ' + Object.getLength(cart._data) + 'E';
+			$('cart-count').title = numChns + ' channel(s) in '
+				+ Object.getLength(cart._data) + ' event(s)';
+		}
+		
+		$('empty-cart').setStyle('visibility', numChns ? 'visible': 'hidden');
 	});
 	
 	window.addEvent('load', function () {
@@ -158,10 +174,11 @@ var app     =   window.app || (window.app = {}),
 				numChns += j[i].chnList.length;
 			}
 			
-			if (cart._data.length === 0) {
-				$('in-cart').innerHTML = '(Cart empty)';
+			if (Object.getLength(cart._data) === 0) {
+				$('cart-count').innerHTML = 'Cart empty';
 			} else {
-				$('in-cart').innerHTML = '(' + cart._data.length + ' Chans from ' + cart._data.length + ' Events)';
+				$('cart-count').innerHTML = numChns + 
+					'C in ' + Object.getLength(cart._data) + 'E';
 			}
 		}
 	});

@@ -1,11 +1,12 @@
 /* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
-var	app		=	window.app || (window.app = {}),
+var	app			=	window.app || (window.app = {}),
 
-	_		=	window._,
-	google	=	window.google,
-	PubSub	=	window.PubSub,
-	Tabs	=	window.Tabs;
+	_			=	window._,
+	google		=	window.google,
+	PopUpWindow	=	window.PopUpWindow,
+	PubSub		=	window.PubSub,
+	Tabs		=	window.Tabs;
 
 (function () {
 	'use strict';
@@ -16,8 +17,8 @@ var	app		=	window.app || (window.app = {}),
 		map,
 		tabs,
 		evtGrid,
-		View,
-		sfile, timeout, zipAvail;
+		thumbPop,
+		View;
 	
 	app.View = {};
 	
@@ -176,15 +177,14 @@ var	app		=	window.app || (window.app = {}),
 			}
 			
 			for (i = 0, j = models.length; i < j; i++) {
-				this._grid.push([
-						this.filter(Object.values(
-							Object.subset(models[i], this._headers)
-					))].append(
+				this._grid.push(
+					this.filter(Object.values(
+						Object.subset(models[i], this._headers)
+					)).append([
 					new Element('div', {
 						'class': 'evt-item evt-item-' + models[i].id,
 						'title': 'You have selected channel(s) from this event'
-					})
-				), {
+				})]), {
 					modelNum: i
 				});
 			}
@@ -206,19 +206,27 @@ var	app		=	window.app || (window.app = {}),
 			this._grid.push([ 'Loading...' ]);
 		},
 		_onSort: function (tbody, sortIndex) {
-			var input   =   app.Controller.Input._input,
-				colName =   Object.keyOf(app.settings.EVT_GRID_HEADER,
-								sortIndex.get('html'));
+			var	colName,
+				input   =   app.Controller.Input._input;
 				
-			this._grid.head.getElements('th').removeClass('sort').removeClass('desc');
-			
-			if (input.sortBy && !input.desc) {
+			if (sortIndex.get('text') === 'Evid') {
+				colName = 'evid';
+			} else {
+				colName = Object.keyOf(app.settings.EVT_GRID_HEADER,
+							sortIndex.get('html'));
+			}
+				
+			this._grid.head.getElements('th').removeClass('sort')
+				.removeClass('desc');
+				
+			if (input.sortBy && input.sortBy != colName || !input.desc) {
+				input.sortBy = colName;
 				sortIndex.addClass('sort');
 				sortIndex.addClass('desc');
 				input.desc = true;
 			} else {
-				sortIndex.addClass('sort');
 				input.sortBy = colName;
+				sortIndex.addClass('sort');
 				if (input.desc) delete input.desc;
 			}
 			input.page = 0;
@@ -247,14 +255,16 @@ var	app		=	window.app || (window.app = {}),
 			
 			channelBox.setCurrentEvent(evtObj);
 			PubSub.publish('eventSelected', evtObj);
+			
+			thumbPop._pop.close();
 		},
 		_toggleDepEvid: function () {
 			var	hasDepth	=	this._headers.contains('depth'),
 				headerText	=	Object.values(app.settings.EVT_GRID_HEADER)
-									.append([]);
+					.append(['']);
 				
-			this._headers = [''].append(
-				Object.keys(app.settings.EVT_GRID_HEADER));
+			this._headers = Object.keys(app.settings.EVT_GRID_HEADER)
+				.append(['']);
 
 			if (hasDepth) {
 				headerText[headerText.indexOf('Depth (km)')] = 'Evid';
@@ -288,7 +298,7 @@ var	app		=	window.app || (window.app = {}),
 				classZebra: 'odd',
 				gridContainer : this._el,
 				headers: Object.values(app.settings.EVT_GRID_HEADER)
-					.append([]),
+					.append(['']),
 				zebra: true
 			});
 			this._grid.element.addEvent('click:relay(th)', this._onSort);
@@ -337,22 +347,80 @@ var	app		=	window.app || (window.app = {}),
 					}
 	
 					tree.adopt((new Element('li', {
-						'html': '<b>Event</b>: ML ' +  j[i].ml + ' @ ' +
+						'html': '<b>Event</b>: ML ' +  j[i].mag + ' @ ' +
 								j[i].dist + 'km from ' + j[i].site +
 							'<br /><b>Evid</b>: ' + j[i].evid+
 							'<br /><b>Time</b>: ' + j[i].time +
-							'<br /><b>Channels</b>: [' + evtChns.length + ']'
+							'<br /><b>Channels</b>: (' + evtChns.length + ')'
 						}))
 						.adopt(chnList));
 					pane.adopt(tree);
 				}
 			}
 		},
+		_progress: function (response) {
+			var obj = JSON.decode(response);
+			
+			$('cart-progress').style.width = (obj.progress * 2) + 'px';
+			
+			if (cart.timeout > 1) {
+				var percentDone = parseInt(obj.progress, 10);
+				
+				if (percentDone != 100 && percentDone >= 0) {
+					setTimeout(cart.waitOn, 1000);
+				} else if (percentDone == -1) {
+					var dlLink = '<a href="' + obj.file +
+						'">Click to download your data</a>';
+					cart.zipAvail = true;
+					$('cart-download').innerHTML = dlLink;
+				}
+			}
+		},
+		_waitOn: function () {
+			new Request({
+				async: true,
+				method: 'get',
+				onSuccess: function (response) {
+					cart._progress(response);
+				},
+				url: 'readProgress.php'
+			}).send('statusFile=' + cart.sfile);
+		},
+		_watchdog: function () {
+			if (!cart.zipAvail) {
+				if (cart.timeout > 1) {
+					cart.timeout -= 1;
+					$('cart-download').set('text', 'Estimated max time left: ' +
+						cart.timeout + ' seconds');
+					setTimeout(cart._watchdog, 1000);
+				} else {
+					$('cart-download').set('text', 'Server Timeout');
+					cart.timeout = -1;
+				}
+			}
+		},
+		_confirmEmpty: function () {
+			var	pos		=	$('view-cart').getCoordinates(),
+				posY	=	pos.top - 15,
+				posX	=	pos.left - 20;
+			
+			this._emptyPop.windowDiv.style.top = posY + 'px';
+			this._emptyPop.windowDiv.style.left = posX + 'px';
+			this._emptyPop.open();
+		},
+		_empty: function () {
+			app.Models.Cart.empty();
+			PubSub.publish('cartUpdated', app.Models.Cart._data);
+			this._emptyPop.close();
+		},
+		_declineEmpty: function () {
+			this._emptyPop.close();
+		},
 		submit: function () {
 			var	cartData, formatData, userData,
 				name	=	$('cart-input-name').value,
 				email   =   $('cart-input-email').value,
-				format;
+				formatCount, chnCount = 0;
 			
 			// Simple validation of email
 			if (!this._emailRegex.test(email)) {
@@ -370,33 +438,50 @@ var	app		=	window.app || (window.app = {}),
 			formatData			=	{};
 			$$('#cart-input-format tbody tr').each(function (tableRow) {
 				if (tableRow.getElement('.format-toggle').checked) {
-					var f, formatName =
-						tableRow.getElement('.format-name').get('text');
-						
-					f			=	formatData[formatName]	=	{};
-					f.calibrate	=
+					var f = tableRow.getElement('.format-toggle').name;
+					formatData[f] =
 						tableRow.getElement('.calib-calib').checked ?
-							'calib'	:	'counts';
-					f.time	=
+							'v1' : 'v0';
+					formatData[f] +=
 						tableRow.getElement('.time-absolute').checked ?
-							'absolute'	:	'relative';
+							'' : 'T0';
 				}
 			});
 			cartData.formatData	=	formatData;
 
-			if (Object.getLength(formatData) == 0) {
+			if (Object.getLength(formatData) === 0) {
 				alert('Please select a format!');
 				return;
 			}
 			
 			cartData.evtData	=	app.Models.Cart.toObj();
 			
+			for (var i = 0, j = cartData.evtData, k = j.length; i < k; i++) {
+				chnCount += j[i].chnList.length;
+			}
+			
 			console.log(JSON.encode(cartData));
+			
+			// Calculate worst-case timeout (give one second per channel per
+			//   format)
+			cart.timeout = (formatCount * chnCount * 5) + 15;
+			cart.zipAvail = false;
+			
+			if (chnCount) {
+				alert('No events/channels in the cart!');
+				return;
+			}
 			
 			new Request({
 				method: 'post',
+				onSuccess: function (response) {
+					var obj = JSON.decode(response.split('%')[0]);
+					cart.sfile = obj.progfile;
+					cart._watchdog();
+					cart._waitOn();
+				},
 				url: app.settings.CART_SUBMIT_URL
-			}).send(cartData);
+			}).send('json=' + JSON.encode(cartData));
 		},
 		setup: function () {
 			var	appCart		=	this._el		=	$('app-cart'),
@@ -405,69 +490,83 @@ var	app		=	window.app || (window.app = {}),
 						'background-color': 'rgba(0, 0, 0, 0.8)',
 						'height': '100%',
 						'left': 0,
-						'position': 'absolute',
+						'position': 'fixed',
 						'top': 0,
 						'width': '100%',
 						'z-index': 99
 					}
 				});
 				
+			// Set up format table
 			for (var i = 0, j = app.settings.formats, k = Object.getLength(j);
 					i < k; i++) {
-				var	formatName	=	Object.keys(j)[i],
+				var enabled,
+					formatName	=	Object.keys(j)[i],
 					formatProps	=	Object.values(j)[i],
 					tableRow	=	new Element('tr');
+				
+				enabled = formatProps.enabled;
 				
 				tableRow.adopt(
 					new Element('td').adopt(
 						new Element('input', {
 							class: 'format-toggle',
+							disabled: !enabled,
+							name: formatProps.name,
 							type: 'checkbox'
 						})
 					),
 					new Element('td', {
-						class: 'format-name',
+						class: 'format-name' + (enabled ? '' : ' disabled'),
 						text: formatName
 					}),
 					new Element('td').adopt(
 						new Element('input', {
 							class: 'calib-calib',
-							disabled: !formatProps.calibrate.calib,
+							disabled: !enabled || !formatProps.calibrate.calib,
 							name: formatName + '-calib',
 							type: 'radio'
 						}),
 						new Element('span', {
+							class: !enabled || !formatProps.calibrate.calib
+									? 'disabled': '',
 							text: 'Calib'
 						}),
 						new Element('br'),
 						new Element('input', {
 							class: 'calib-counts',
-							disabled: !formatProps.calibrate.counts,
+							disabled: !enabled || !formatProps.calibrate.counts,
 							name: formatName + '-calib',
 							type: 'radio'
 						}),
 						new Element('span', {
+							class: !enabled || !formatProps.calibrate.counts
+									? 'disabled': '',
 							text: 'Counts'
 						})
 					),
 					new Element('td').adopt(
 						new Element('input', {
 							class: 'time-absolute',
-							disabled: !formatProps.time.absolute,
+							disabled: !enabled || !formatProps.time.absolute,
 							name: formatName + '-time',
 							type: 'radio'
 						}),
 						new Element('span', {
+							class: !enabled || !formatProps.time.absolute
+								? 'disabled': '',
 							text: 'Absolute'
 						}),
 						new Element('br'),
 						new Element('input', {
 							class: 'time-relative',
-							disabled: !formatProps.time.relative,
+							disabled: !enabled || !formatProps.time.relative,
 							name: formatName + '-time',
 							type: 'radio'
 						}),
 						new Element('span', {
+							class: !enabled || !formatProps.time.relative
+								? 'disabled': '',
 							text: 'Relative'
 						})
 					)
@@ -488,12 +587,23 @@ var	app		=	window.app || (window.app = {}),
 				appCart.fade.pass('in', appCart));
 			$('view-cart').addEvent('click',
 				cartOverlay.fade.pass('in', cartOverlay));
-
+				
+			$('empty-cart').addEvent('click',
+				this._confirmEmpty);
+			$('yes-empty').addEvent('click', this._empty);
+			$('no-empty').addEvent('click', this._declineEmpty);
+			
 			$('cart-close').addEvent('click',
 				appCart.fade.pass('out', appCart));
 			$('cart-close').addEvent('click',
 				cartOverlay.fade.pass('out', cartOverlay));
 			$('cart-submit').addEvent('click', this.submit);
+			
+			this._emptyPop = new PopUpWindow('Confirm emptying cart', {
+				contentDiv: 'empty-box',
+				height: '100',
+				width: '250'
+			});
 		}
 	});
 	
@@ -510,6 +620,18 @@ var	app		=	window.app || (window.app = {}),
 			
 			this._grid.empty();
 			for (i = 0, j = models.length; i < j; i++) {
+				var	vchan	=	models[i].dfile,
+					vddir	=	models[i].ddir,
+					vtime	=	0;
+					
+				for (var p = 0, q = app.Models.Events.toArray(), r = j.length;
+					p < r; p++) {
+					if (q[p].id === this.getCurrentEvent().evid)
+						vtime = q[p].epoch;
+				}
+				
+				var cb = thumbPop.show(vddir, vchan, vtime);
+				
 				this._grid.push([
 					new Element('div', {
 						'class': 'cart-item',
@@ -520,6 +642,9 @@ var	app		=	window.app || (window.app = {}),
 				)).append([
 					new Element('div', {
 						'class': 'wv-item',
+						'events': {
+							'mouseover': cb
+						},
 						'title': 'Select for viewing'
 					})
 				]), {
@@ -585,7 +710,7 @@ var	app		=	window.app || (window.app = {}),
 			this._bodyEl.setStyle('height', offsetH - gridH);
 		},
 		_addToCart: function () {
-			var i, j,
+			var i, j, chnCount, siteEvt,
 				active		=	$$('.cart-item.active:not(#chn-add-all) ! tr'),
 				inactive	=	$$('.cart-item:not(.active):not(#chn-add-all) ! tr');
 			
@@ -596,14 +721,24 @@ var	app		=	window.app || (window.app = {}),
 			
 			for (i = 0, j = active.length; i < j; i++) {
 				var evid	=   this.getCurrentEvent().evid,
-					evt	 =   app.Models.Events.get(evid);
+					evt		=   app.Models.Events.get(evid);
 				
 				app.Models.Cart.add(this.getCurrentEvent().evid,
 					{
-						ml: evt.ml,
-						siteEvt: evt.id,
+						dist: evt.dist,
+						evid: evt.evid,
+						mag: evt.ml,
+						site: $('site').options[$('site').selectedIndex]
+							.getAttribute('site'),
+						sitevt: evt.id,
 						time: evt.time
 					}, '' + active[i].get('chan'));
+			}
+			
+			for (i = 0, chnCount = 0,
+				siteEvt = Object.keys(app.Models.Cart.toObj()),
+				j = siteEvt.length; i < j; i++) {
+				chnCount += app.Models.Cart.toObj()[siteEvt[i]].chnList.length;
 			}
 			
 			if ($$('.cart-item:not(#chn-add-all):not(.active)').length === 0) {
@@ -614,8 +749,9 @@ var	app		=	window.app || (window.app = {}),
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
 		},
 		_viewSelected: function () {
-			var	evtTime, nsamp, srate,
+			var	i, j, k, evtTime, nsamp, srate,
 				chanArr				=	[],
+				staArr				=	[],
 				selectedChannels	=	$$('.wv-item.active ! tr');
 
 			if (selectedChannels.length === 0) {
@@ -624,27 +760,42 @@ var	app		=	window.app || (window.app = {}),
 			}
 
 			$$('.wv-item.active ! tr').each(function (row) {
-				var currChn;
-				chanArr.push(row.get('chan'));
+				var staChan = row.get('chan').split(/_(.*)/);
+				staChan = staChan[1].split(/_(.*)/);
+				staArr.push(staChan[0]);
+				chanArr.push(staChan[1]);
 
 				// nsamp and srate appear not to vary per chn
-				currChn = app.Models.Channels.get(row.get('chan'));
-				nsamp = currChn.nsamp;
-				srate = currChn.srate;
+				nsamp = row.get('nsamp');
+				srate = row.get('srate');
 			});
 
-			for (var i = 0, j = app.Models.Events.toArray(), k = j.length;
+			var multiSta = false;
+			for (i = 0, j = staArr.length - 1; i < j; i++) {
+				if (staArr[i] != staArr[i + 1]) {
+					multiSta = true;
+					break;
+				}
+			}
+			if (multiSta) {
+				alert('Viewing channels with different STA\'s in the same' +
+					'viewer-instance currently not supported.');
+				return;
+			}
+			
+			evtTime = 0;
+			for (i = 0, j = app.Models.Events.toArray(), k = j.length;
 					i < k; i++) {
 				if (j[i].id === this.getCurrentEvent().evid) {
-					evtTime = j[i].time;
+					evtTime = j[i].epoch;
 				}
 			}
 
 			// Open WF Viewer
 			window.open(app.settings.constructWF(
-				$('site').options[$('site').selectedIndex].get('site'),
+				staArr[0],
 				chanArr,
-				(Date.parse(evtTime.replace('(UTC)', 'UTC')))/1000,
+				evtTime,
 				nsamp,
 				srate
 			));
@@ -710,5 +861,60 @@ var	app		=	window.app || (window.app = {}),
 			this._currEvt = currEvt;
 		}
 	});
+	
+	thumbPop = new View({
+		setup: function () {
+			var	that	=	this,
+				pop		=	this._pop = new PopUpWindow('PopUp Window', {
+				contentDiv: 'thumb-box',
+				height: '100',
+				width: '250'
+			});
+			
+			this.enabled = !$('disablePrev').checked;
+			
+			$('disablePrev').addEvent('click', function () {
+				if ($('disablePrev').checked) {
+					that.enabled = false;
+					that._pop.close();
+				} else {
+					that.enabled = true;
+				}
+			});
+		},
+		show: function (ddir, dfile, epoch) {
+			var that = this;
+			return function () {
+				var	preview, text,
+					winSize	=	window.getSize(),
+					pos		=	that._pop.windowDiv.getCoordinates();
+	
+				if (ddir === -1 || pos.top > winSize.y - 20 ||
+					pos.left > winSize.x - 20) {
+					var posX, posY;
+					pos		=	$('app-wrap').getCoordinates();
+					posY	=	pos.top + 50;
+					posX	=	pos.left + 70;
+					
+					that._pop.windowDiv.style.top	=	posY + 'px';
+					that._pop.windowDiv.style.left	=	posX + 'px';
+				}
+				
+				that._pop.windowDiv.getElement('span').innerHTML = dfile;
+				
+				preview	=	$('thumb-box');
+				text	=	'<img src=\"thumbnail.php?ddir=' + ddir + '&file=' +
+					dfile + '&time=' + epoch + '\" width=250>';
+				preview.set('html', text);
+				
+				if (that.enabled) {
+					that._pop.open();
+				} else {
+					that._pop.close();
+				}
+			};
+		}
+	});
+	app.View.Preview = thumbPop;
 
 }) ();

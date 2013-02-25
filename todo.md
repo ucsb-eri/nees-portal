@@ -1,4 +1,5 @@
 # TODO:
+http://mechanics.flite.com/blog/2012/06/19/why-we-use-node-dot-js-and-grunt-to-build-javascript/
 
 ## IMPORTANT
 * Figure out how we want to sort channels in channel box
