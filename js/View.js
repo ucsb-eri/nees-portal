@@ -373,7 +373,7 @@ var	app			=	window.app || (window.app = {}),
 					$('cart-download').set('html', 'Server Timeout');
 				} else {
 					cart.zipAvail = true;
-					$('cart-download').set('html', '<a href=' + obj.file
+					$('cart-download').set('html', '<a href="' + obj.file
 						+ '">Click to download your data</a>');
 				}
 			}
