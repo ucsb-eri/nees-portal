@@ -29,6 +29,9 @@ var app	 =   window.app || (window.app = {});
 	
 	settings.formats		=	{
 		'ASCII': {
+			enabled: true,
+			name: 'asc',
+			
 			calibrate: {
 				counts: true,
 				calib: true
@@ -39,6 +42,9 @@ var app	 =   window.app || (window.app = {});
 			}
 		},
 		'COSMOS': {
+			enabled: false,
+			name: 'cos',
+			
 			calibrate: {
 				counts: true,
 				calib: true
@@ -49,6 +55,9 @@ var app	 =   window.app || (window.app = {});
 			}
 		},
 		'MINISEED': {
+			enabled: true,
+			name: 'msd',
+			
 			calibrate: {
 				counts: true,
 				calib: false
@@ -59,6 +68,9 @@ var app	 =   window.app || (window.app = {});
 			}
 		},
 		'RDV': {
+			enabled: true,
+			name: 'rdv',
+			
 			calibrate: {
 				counts: true,
 				calib: true
@@ -69,6 +81,9 @@ var app	 =   window.app || (window.app = {});
 			}
 		},
 		'SAC': {
+			enabled: true,
+			name: 'sac',
+			
 			calibrate: {
 				counts: true,
 				calib: true
