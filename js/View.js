@@ -361,25 +361,27 @@ var	app			=	window.app || (window.app = {}),
 		_progress: function (response) {
 			var obj = JSON.decode(response);
 			
-			$('cart-progress').style.width = (obj.progress * 2) + 'px';
+			$('cart-progress').setStyle('width', (obj.progress * 2) + 'px');
 			
 			if (cart.timeout > 1) {
 				var percentDone = parseInt(obj.progress, 10);
 				
 				if (percentDone != 100 && percentDone >= 0) {
-					setTimeout(cart.waitOn, 1000);
+					setTimeout(cart._waitOn, 1000);
 				} else if (percentDone == -1) {
-					var dlLink = '<a href="' + obj.file +
-						'">Click to download your data</a>';
 					cart.zipAvail = true;
-					$('cart-download').innerHTML = dlLink;
+					$('cart-download').set('html', 'Server Timeout');
+				} else {
+					cart.zipAvail = true;
+					$('cart-download').set('html', '<a href=' + obj.file
+						+ '">Click to download your data</a>');
 				}
 			}
 		},
 		_waitOn: function () {
 			new Request({
 				async: true,
-				method: 'get',
+				method: 'post',
 				onSuccess: function (response) {
 					cart._progress(response);
 				},
@@ -448,26 +450,31 @@ var	app			=	window.app || (window.app = {}),
 				}
 			});
 			cartData.formatData	=	formatData;
+			
+			formatCount = Object.getLength(formatData);
 
 			if (Object.getLength(formatData) === 0) {
 				alert('Please select a format!');
 				return;
 			}
 			
-			cartData.evtData	=	app.Models.Cart.toObj();
-			
-			for (var i = 0, j = cartData.evtData, k = j.length; i < k; i++) {
-				chnCount += j[i].chnList.length;
+			cartData.evtData	=	{};
+			for (var i = 0, j = app.Models.Cart.toObj(), k = Object.getLength(j); i < k; i++) {
+				var evt = cartData.evtData[Object.keys(j)[i]] = {};
+				evt.chnList = Object.values(j)[i].chnList;
 			}
 			
-			console.log(JSON.encode(cartData));
+			for (var i = 0, j = Object.values(cartData.evtData), k = j.length;
+				i < k; i++) {
+				chnCount += j[i].chnList.length;
+			}
 			
 			// Calculate worst-case timeout (give one second per channel per
 			//   format)
 			cart.timeout = (formatCount * chnCount * 5) + 15;
 			cart.zipAvail = false;
 			
-			if (chnCount) {
+			if (!chnCount) {
 				alert('No events/channels in the cart!');
 				return;
 			}
