@@ -8,7 +8,7 @@ var app			=	window.app || (window.app = {}),
 	'use strict';
 
 	app.DEBUG	=	true;
-	app.version	=	'0.2.1';
+	app.version	=	'0.2.1a';
 
 
 	window.addEvent('load', function () {
