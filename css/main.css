@@ -147,7 +147,8 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	margin: auto 15px;
 }
 .input-field .double-field {
-	width: 35%;
+	padding: 2px 5%;
+	width: 25%;
 }
 .input-field label {
 	color: #AAA;
@@ -166,7 +167,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 .tabTitle {
 	border-bottom: 5px solid #555;
-	color: #FFF;
+	color: #AAA;
 	cursor: default;
 	float: left;
 	font-size: 16px;
@@ -175,8 +176,13 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	margin-left: 15px;
 	padding: 0 30px;
 }
+.tabTitle: hover {
+	border-bottom: 5px solid #777;
+	color: #CCC;
+}
 .tabTitle.active {
 	border-bottom: 5px solid #33b5e5;
+	color: #FFF;
 }
 .tabView {
 }
@@ -204,6 +210,10 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	padding-left: 0;
 	padding-right: 0;
 	width: 100%;
+}
+.app-input-flds[type=text] {
+	padding: 2px 10%;
+	width: 80%;
 }
 .table-ctrl {
 	cursor: default;
@@ -383,6 +393,9 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	overflow: auto;
 	width: 100%;
 }
+#cart-input-format span.disabled, #cart-input-format td.disabled {
+	color: #AAA;
+}
 #cart-input-format th {
 	background-color: #333;
 	color: #CCC;
@@ -402,21 +415,27 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 #cart-button {
 	border-left: 1px solid #CCC;
-	cursor: pointer;
-	padding: 5px 15px;
+	padding: 10px 15px;
     float: right;
     margin: 15px 25px;
     min-width: 180px;
     text-align: left;
 }
 #view-cart {
-	font-size: 105%;
+	cursor: pointer;
+	font-size: 125%;
+	font-weight: bold;
 }
 #view-cart:hover {
 	text-decoration: underline;
 }
+#cart-count {
+	font-size: 12px;
+	font-weight: normal;
+}
 #empty-cart {
-	color: #002;
+	cursor: pointer;
+	color: #CCC;
 }
 #empty-cart:hover {
 	text-decoration: underline;
@@ -436,7 +455,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	background-color: #333;
 	color: #FFF;
 	font-size: 21px;
-	padding: 15px 35px;
+	padding: 15px 25px;
 }
 #channel-title {
 	background-color: #101214;
@@ -480,7 +499,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	width: 20px;
 }
 .cart-item.active {
-	background: transparent url(../img/nees/cartin.png) no-repeat center center;
+	background: transparent url(../img/nees/wviewSl.png) no-repeat center center;
 }
 .wv-item {
 	background: transparent url(../img/nees/wviewUn.png) no-repeat center center;
@@ -495,27 +514,30 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 
 
 .popUpWindow .titleBar {
-    background: none repeat scroll 0 0 #000000;
-    border-radius: 8px 8px 0 0;
+    background: #333;
     font-size: 11px;
-    width: 230px;
+    width: 200px;
     height: 15px;
-    padding: 1px 10px 7px;
+	line-height: 15px;
+    padding: 2px 10px;
     position: relative;
 }
 
-.popUpWindow .titleBar span.closeIcon {
+.popUpWindow span.closeIcon {
 	content: '×';
     cursor: pointer;
+	font-size: 14px;
     height: 15px;
     position: absolute;
-    right: 7px;
+    right: 5px;
     top: 5px;
     width: 23px;
 }
 #empty-box {
-    color: #000;
     background-color: #EEE;
+    color: #000;
+	height: 35px;
+	padding: 5px 0;
     text-align: center;
 }
 #empty-box span {
@@ -534,6 +556,22 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
     text-decoration: underline;
 }
 
+#feedback {
+	background-color: #000;
+	bottom: 5%;
+	color: #FFF;
+	display: block;
+	padding: 15px;
+	position: fixed;
+	right: 0;
+	text-decoration: none;
+	width: 100px;
+}
+#feedback:hover {
+	border-left: 8px solid #FC0;
+	color: #FC0;
+	text-decoration: underline;
+}
 
 #cart-progress {
     top: 17px;
