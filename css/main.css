@@ -407,7 +407,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
     float: right;
     margin: 15px 25px;
     min-width: 180px;
-    text-align: right;
+    text-align: left;
 }
 #view-cart {
 	font-size: 105%;
@@ -505,7 +505,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 
 .popUpWindow .titleBar span.closeIcon {
-    background: url("iconWhiteBigX.png") no-repeat scroll 0 0 transparent;
+	content: '×';
     cursor: pointer;
     height: 15px;
     position: absolute;
@@ -532,4 +532,46 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 #no-empty:hover {
     text-decoration: underline;
+}
+
+
+#cart-progress {
+    top: 17px;
+    left: 202px;
+    width: 0px;
+    height: 20px;
+    margin: 2px;
+    background-color: #0cf264;
+    position: absolute;
+}
+
+#cart-progframe {
+    top: 15px;
+    left: 200px;
+    width: 204px;
+    height: 24px;
+    border: 2px solid white;
+    position: absolute;
+}
+
+#cart-progress-title {
+    top: 20px;
+    left: 144px;
+    width: 204px;
+    height: 24px;
+    position: absolute;
+}
+
+#cart-download {
+    top: 20px;
+    left: 440px;
+    width: 285px;
+    height: 24px;
+    position: absolute;
+    color: white;
+    font-size: 100%;
+}
+
+#cart-download a {
+   color: white;
 }
