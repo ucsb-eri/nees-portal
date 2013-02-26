@@ -155,10 +155,8 @@ var app     =   window.app || (window.app = {}),
 			$('cart-count').innerHTML = 'Cart empty';
 			$('cart-count').title = 'Nothing in the cart!';
 		} else {
-			$('cart-count').innerHTML = numChns + 
-				'C in ' + Object.getLength(cart._data) + 'E';
-			$('cart-count').title = numChns + ' channel(s) in '
-				+ Object.getLength(cart._data) + ' event(s)';
+			$('cart-count').set('html', numChns + 
+				' chns in ' + Object.getLength(cart._data) + ' evts');
 		}
 		
 		$('empty-cart').setStyle('visibility', numChns ? 'visible': 'hidden');
@@ -177,8 +175,8 @@ var app     =   window.app || (window.app = {}),
 			if (Object.getLength(cart._data) === 0) {
 				$('cart-count').innerHTML = 'Cart empty';
 			} else {
-				$('cart-count').innerHTML = numChns + 
-					'C in ' + Object.getLength(cart._data) + 'E';
+				$('cart-count').set('html', numChns + 
+					' chns in ' + Object.getLength(cart._data) + ' evts');
 			}
 		}
 	});

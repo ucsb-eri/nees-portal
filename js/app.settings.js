@@ -108,7 +108,7 @@ var app	 =   window.app || (window.app = {});
 		strokeOpacity: 0.0
 	};
 	settings.CHN_GRID_HEADER = {
-		chan: 'Channel [<abbr title="We assign location codes, e.g. 00 or 99 to the channel names to identify the instrument and its location. The images in the Info tab show the relative position and depth. Survey maps are available for the site layouts.">?</abbr>]',
+		chan: 'Channel (<abbr title="We assign location codes, e.g. 00 or 99 to the channel names to identify the instrument and its location. The images in the Info tab show the relative position and depth. Survey maps are available for the site layouts.">?</abbr>)',
 		snr: '<a title="Ratio of peak value to pre-event RMS level">SNR</a>',
 		peaka: '<a title="Abs value of filtered-signal\'s peak (0.5 to 40Hz)">Peak</a>'
 	};
@@ -130,6 +130,7 @@ var app	 =   window.app || (window.app = {});
 		};
 	};
 	settings.constructWF = function (site, stations, time, nsamp, srate) {
+		console.log(arguments);
 		time -= 15;
 		
 		var	endTime	=	time + 10 + (nsamp - 1) / srate,
