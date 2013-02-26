@@ -245,6 +245,7 @@ var	app			=	window.app || (window.app = {}),
 				id			=   app.Models.Events.get(row.get('id')).id,
 				
 				evtObj		=   {
+					evid: id,
 					id: id,
 					date: date,
 					siteId: $(app.Controller.Input._input.site).get('id')
