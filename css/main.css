@@ -558,14 +558,14 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 
 #feedback {
 	background-color: #000;
-	bottom: 5%;
+	bottom: 0;
 	color: #FFF;
 	display: block;
-	padding: 15px;
+	padding: 5px 15px;
 	position: fixed;
 	right: 0;
 	text-decoration: none;
-	width: 100px;
+	width: 75px;
 }
 #feedback:hover {
 	border-left: 8px solid #FC0;
