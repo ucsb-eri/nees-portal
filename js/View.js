@@ -185,6 +185,7 @@ var	app			=	window.app || (window.app = {}),
 						'class': 'evt-item evt-item-' + models[i].id,
 						'title': 'You have selected channel(s) from this event'
 				})]), {
+					id: models[i].id,
 					modelNum: i
 				});
 			}
@@ -240,12 +241,11 @@ var	app			=	window.app || (window.app = {}),
 			map._dehighlightMarker(parseInt(row.get('modelNum'), 10));
 		},
 		_rowSelected: function (evt, row) {
-			var modelNum	=   parseInt(row.get('modelNum'), 10),
-				date		=   app.Models.Events.toArray()[modelNum].time,
-				evid		=   app.Models.Events.toArray()[modelNum].id,
+			var	date		=   app.Models.Events.get(row.get('id')).time,
+				id			=   app.Models.Events.get(row.get('id')).id,
 				
 				evtObj		=   {
-					evid: evid,
+					id: id,
 					date: date,
 					siteId: $(app.Controller.Input._input.site).get('id')
 				};
@@ -310,7 +310,7 @@ var	app			=	window.app || (window.app = {}),
 			PubSub.subscribe('cartUpdated', function () {
 				$$('.evt-item').removeClass('active');
 				for (var i = 0, j = Object.keys(app.Models.Cart.toObj()),
-						k = j.length; i < k; i++) {
+					k = j.length; i < k; i++) {
 					$$('.evt-item-' + j[i]).addClass('active');
 				}
 			});
@@ -627,17 +627,13 @@ var	app			=	window.app || (window.app = {}),
 			
 			this._grid.empty();
 			for (i = 0, j = models.length; i < j; i++) {
-				var	vchan	=	models[i].dfile,
+				var	cb,
+					vchan	=	models[i].dfile,
 					vddir	=	models[i].ddir,
 					vtime	=	0;
 					
-				for (var p = 0, q = app.Models.Events.toArray(), r = j.length;
-					p < r; p++) {
-					if (q[p].id === this.getCurrentEvent().evid)
-						vtime = q[p].epoch;
-				}
-				
-				var cb = thumbPop.show(vddir, vchan, vtime);
+				vtime = app.Models.Events.get(this.getCurrentEvent().id).epoch;
+				cb = thumbPop.show(vddir, vchan, vtime);
 				
 				this._grid.push([
 					new Element('div', {
@@ -700,12 +696,11 @@ var	app			=	window.app || (window.app = {}),
 			}
 			
 			this._el.fade('in');
-			this._slideObj.slideIn();
 		},
 		_adjustSize: function () {
 			var	gridH,
 				offsetH = $('app-grid').getSize().y - 5,
-				sidebarW = $('app-grid').getSize().x;
+				sidebarW = $('app-grid').getSize().x + 10;
 			this._el.setStyles({
 				height: offsetH + 'px',
 				left: sidebarW + 'px'
@@ -727,19 +722,19 @@ var	app			=	window.app || (window.app = {}),
 			}
 			
 			for (i = 0, j = active.length; i < j; i++) {
-				var evid	=   this.getCurrentEvent().evid,
-					evt		=   app.Models.Events.get(evid);
+				var id	=   this.getCurrentEvent().id,
+					evt	=   app.Models.Events.get(id);
 				
-				app.Models.Cart.add(this.getCurrentEvent().evid,
-					{
-						dist: evt.dist,
-						evid: evt.evid,
-						mag: evt.ml,
-						site: $('site').options[$('site').selectedIndex]
-							.getAttribute('site'),
-						sitevt: evt.id,
-						time: evt.time
-					}, '' + active[i].get('chan'));
+				app.Models.Cart.add(this.getCurrentEvent().id,
+				{
+					dist: evt.dist,
+					evid: evt.evid,
+					mag: evt.ml,
+					site: $('site').options[$('site').selectedIndex]
+						.getAttribute('site'),
+					sitevt: evt.id,
+					time: evt.time
+				}, '' + active[i].get('chan'));
 			}
 			
 			for (i = 0, chnCount = 0,
@@ -756,7 +751,7 @@ var	app			=	window.app || (window.app = {}),
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
 		},
 		_viewSelected: function () {
-			var	i, j, k, evtTime, nsamp, srate,
+			var	i, j, evtTime, nsamp, srate,
 				chanArr				=	[],
 				staArr				=	[],
 				selectedChannels	=	$$('.wv-item.active ! tr');
@@ -767,14 +762,16 @@ var	app			=	window.app || (window.app = {}),
 			}
 
 			$$('.wv-item.active ! tr').each(function (row) {
-				var staChan = row.get('chan').split(/_(.*)/);
+				var	staChan	=	row.get('chan').split(/_(.*)/),
+					chnObj	=	app.Models.Channels.get(row.get('chan'));
+					
 				staChan = staChan[1].split(/_(.*)/);
 				staArr.push(staChan[0]);
 				chanArr.push(staChan[1]);
 
 				// nsamp and srate appear not to vary per chn
-				nsamp = row.get('nsamp');
-				srate = row.get('srate');
+				nsamp = chnObj.nsamp;
+				srate = chnObj.srate;
 			});
 
 			var multiSta = false;
@@ -790,13 +787,7 @@ var	app			=	window.app || (window.app = {}),
 				return;
 			}
 			
-			evtTime = 0;
-			for (i = 0, j = app.Models.Events.toArray(), k = j.length;
-					i < k; i++) {
-				if (j[i].id === this.getCurrentEvent().evid) {
-					evtTime = j[i].epoch;
-				}
-			}
+			evtTime = app.Models.Events.get(this.getCurrentEvent().id).epoch;
 
 			// Open WF Viewer
 			window.open(app.settings.constructWF(
@@ -808,7 +799,6 @@ var	app			=	window.app || (window.app = {}),
 			));
 		},
 		hide: function () {
-			this._slideObj.slideOut();
 			this._el.fade('out');
 		},
 		setup: function () {
@@ -839,14 +829,7 @@ var	app			=	window.app || (window.app = {}),
 			window.addEvent('resize', this._adjustSize);
 			this._adjustSize();
 			
-			this._slideObj = new Fx.Slide(this._el, {
-				duration: 'short',
-				hideOverflow: false,
-				link: 'chain',
-				mode: 'horizontal'
-			});
 			this._el.fade('hide');
-			this._slideObj.hide();
 			
 			$('channel-close').addEvent('click', this.hide);
 			$('chn-control-view').addEvent('click', this._viewSelected);
@@ -871,8 +854,9 @@ var	app			=	window.app || (window.app = {}),
 	
 	thumbPop = new View({
 		setup: function () {
-			var	that	=	this,
-				pop		=	this._pop = new PopUpWindow('PopUp Window', {
+			var	that	=	this;
+			
+			this._pop = new PopUpWindow('PopUp Window', {
 				contentDiv: 'thumb-box',
 				height: '100',
 				width: '250'
@@ -910,8 +894,9 @@ var	app			=	window.app || (window.app = {}),
 				that._pop.windowDiv.getElement('span').innerHTML = dfile;
 				
 				preview	=	$('thumb-box');
-				text	=	'<img src=\"thumbnail.php?ddir=' + ddir + '&file=' +
-					dfile + '&time=' + epoch + '\" width=250>';
+				text	=	'<img src=\"thumbnail.php?ddir=' + ddir + '&file='
+					+ dfile + '&time=' + epoch + '\" width=250>'
+					+ '<div>(Note: waveform filtered 0.5 to 40Hz)</div>';
 				preview.set('html', text);
 				
 				if (that.enabled) {
