@@ -151,12 +151,14 @@ var app     =   window.app || (window.app = {}),
 		for (var i = 0, j = Object.values(cart._data); i < j.length; i++) {
 			numChns += j[i].chnList.length;
 		}
+		
 		if (Object.getLength(cart._data) === 0) {
 			$('cart-count').innerHTML = 'Cart empty';
-			$('cart-count').title = 'Nothing in the cart!';
 		} else {
-			$('cart-count').set('html', numChns + 
-				' chns in ' + Object.getLength(cart._data) + ' evts');
+			$('cart-count').set('html', app.settings.CART_COUNT_STRING
+				.replace('{chnCount}', numChns)
+				.replace('{evtCount}', Object.getLength(cart._data))
+			);
 		}
 		
 		$('empty-cart').setStyle('visibility', numChns ? 'visible': 'hidden');
@@ -175,8 +177,10 @@ var app     =   window.app || (window.app = {}),
 			if (Object.getLength(cart._data) === 0) {
 				$('cart-count').innerHTML = 'Cart empty';
 			} else {
-				$('cart-count').set('html', numChns + 
-					' chns in ' + Object.getLength(cart._data) + ' evts');
+				$('cart-count').set('html', app.settings.CART_COUNT_STRING
+					.replace('{chnCount}', numChns)
+					.replace('{evtCount}', Object.getLength(cart._data))
+				);
 			}
 		}
 	});

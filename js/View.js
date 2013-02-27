@@ -362,20 +362,25 @@ var	app			=	window.app || (window.app = {}),
 		_progress: function (response) {
 			var obj = JSON.decode(response);
 			
-			$('cart-progress').setStyle('width', (obj.progress * 2) + 'px');
-			
 			if (cart.timeout > 1) {
 				var percentDone = parseInt(obj.progress, 10);
+				$('cart-download').setStyle('display', 'none');
+				$('cart-progress').setStyle('display', 'block');
+				$('cart-progress-bar').setStyle('width', percentDone + '%');
 				
-				if (percentDone != 100 && percentDone >= 0) {
+				if (percentDone !== 100 && percentDone >= 0) {
 					setTimeout(cart._waitOn, 1000);
-				} else if (percentDone == -1) {
-					cart.zipAvail = true;
-					$('cart-download').set('html', 'Server Timeout');
 				} else {
 					cart.zipAvail = true;
-					$('cart-download').set('html', '<a href="' + obj.file
-						+ '">Click to download your data</a>');
+					
+					$('cart-progress').setStyle('display', 'none');
+					$('cart-download').setStyle('display', 'block');
+					if (percentDone === -1) {
+						$('cart-download').set('html', 'Server Timeout');
+					} else {
+						$('cart-download').set('html', '<a href="' + obj.file
+							+ '">Click to download your data</a>');
+					}
 				}
 			}
 		},
@@ -393,10 +398,10 @@ var	app			=	window.app || (window.app = {}),
 			if (!cart.zipAvail) {
 				if (cart.timeout > 1) {
 					cart.timeout -= 1;
-					$('cart-download').set('text', 'Estimated max time left: ' +
-						cart.timeout + ' seconds');
 					setTimeout(cart._watchdog, 1000);
 				} else {
+					$('cart-progress').setStyle('display', 'none');
+					$('cart-download').setStyle('display', 'block');
 					$('cart-download').set('text', 'Server Timeout');
 					cart.timeout = -1;
 				}
@@ -418,6 +423,14 @@ var	app			=	window.app || (window.app = {}),
 		},
 		_declineEmpty: function () {
 			this._emptyPop.close();
+		},
+		_hide: function () {
+			this._el.fade('out');
+			this._overlay.fade('out');
+		},
+		_show: function () {
+			this._el.fade('in');
+			this._overlay.fade('in');
 		},
 		submit: function () {
 			var	cartData, formatData, userData,
@@ -472,6 +485,7 @@ var	app			=	window.app || (window.app = {}),
 			
 			// Calculate worst-case timeout (give one second per channel per
 			//   format)
+			cart.initTimeout = (formatCount * chnCount * 5) + 15;
 			cart.timeout = (formatCount * chnCount * 5) + 15;
 			cart.zipAvail = false;
 			
@@ -591,26 +605,26 @@ var	app			=	window.app || (window.app = {}),
 			document.body.adopt(cartOverlay);
 			$$(this._el, this._overlay).fade('hide');
 
-			$('view-cart').addEvent('click',
-				appCart.fade.pass('in', appCart));
-			$('view-cart').addEvent('click',
-				cartOverlay.fade.pass('in', cartOverlay));
+			$('view-cart').addEvent('click', this._show);
 				
 			$('empty-cart').addEvent('click',
 				this._confirmEmpty);
 			$('yes-empty').addEvent('click', this._empty);
 			$('no-empty').addEvent('click', this._declineEmpty);
 			
-			$('cart-close').addEvent('click',
-				appCart.fade.pass('out', appCart));
-			$('cart-close').addEvent('click',
-				cartOverlay.fade.pass('out', cartOverlay));
+			$('cart-close').addEvent('click', this._hide);
+			cartOverlay.addEvent('click', this._hide);
 			$('cart-submit').addEvent('click', this.submit);
 			
-			this._emptyPop = new PopUpWindow('Confirm emptying cart', {
+			this._emptyPop = new PopUpWindow('-', {
 				contentDiv: 'empty-box',
 				height: '100',
 				width: '250'
+			});
+			
+			PubSub.publish('cartUpdated', function () {
+				$('cart-progress').setStyle('display', 'none');
+				$('cart-download').setStyle('display', 'none');
 			});
 		}
 	});
@@ -895,16 +909,17 @@ var	app			=	window.app || (window.app = {}),
 				that._pop.windowDiv.getElement('span').innerHTML = dfile;
 				
 				preview	=	$('thumb-box');
-				text	=	'<img src=\"thumbnail.php?ddir=' + ddir + '&file='
-					+ dfile + '&time=' + epoch + '\" width=250>'
+				
+				var thumbURL	=	app.settings.THUMBNAIL_URL_STRING
+					.replace('{DDIR}', ddir)
+					.replace('{DFILE}', dfile)
+					.replace('{EPOCH}', epoch);
+				
+				text	=	'<img src="'+ thumbURL + '" width=250>'
 					+ '<div>(Note: waveform filtered 0.5 to 40Hz)</div>';
 				preview.set('html', text);
 				
-				if (that.enabled) {
-					that._pop.open();
-				} else {
-					that._pop.close();
-				}
+				that._pop[that.enabled ? 'open' : 'close']();
 			};
 		}
 	});

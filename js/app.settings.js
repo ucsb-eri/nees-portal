@@ -27,6 +27,10 @@ var app	 =   window.app || (window.app = {});
 	settings.CART_SUBMIT_URL	=	'cartProc.php';
 	settings.FACILITIES_URL		=	'http://eot-dev.nees.ucsb.edu/facilities/';
 	
+	settings.CART_COUNT_STRING	=	'{chnCount} chans in {evtCount} events';
+	settings.THUMBNAIL_URL_STRING	=
+		'thumbnail.php?ddir={DDIR}&file={DFILE}&time={EPOCH}';
+	
 	settings.formats		=	{
 		'ASCII': {
 			enabled: true,
