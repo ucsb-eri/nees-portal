@@ -622,9 +622,10 @@ var	app			=	window.app || (window.app = {}),
 				width: '250'
 			});
 			
-			PubSub.publish('cartUpdated', function () {
+			PubSub.subscribe('cartUpdated', function () {
 				$('cart-progress').setStyle('display', 'none');
 				$('cart-download').setStyle('display', 'none');
+				cart.timeout = -1;
 			});
 		}
 	});
