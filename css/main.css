@@ -337,7 +337,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
     width: 35%;
 }
 #cart-left div {
-    padding: 15px 25px;
+    line-height: 1.4em;
 }
 #cart-left ul {
     list-style: none;
@@ -422,6 +422,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	padding: 5px 15px;
     float: right;
     margin: 15px 25px;
+	min-width: 125px;
     text-align: left;
 }
 #view-cart {
@@ -536,9 +537,8 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
     width: 23px;
 }
 .popUpWindow>.content {
-    background-color: #EEE;
+    background-color: #FFF;
     color: #000;
-	height: 35px;
 	padding: 5px 0;
     text-align: center;
 }
@@ -595,7 +595,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
     background-color: #FD8;
 	display: none;
     height: 20px;
-	padding: 15px 0;
+	padding: 5px 0;
 	text-align: center;
     width: 100%;
 }
@@ -606,7 +606,10 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 #cart-download a:hover {
 	text-decoration: underline;
 }
-
-#cart-download a {
-   color: white;
+.expandChn b {
+	cursor: pointer;
+	text-decoration: underline;
+}
+.expandChn:hover b {
+	text-decoration: none;
 }
