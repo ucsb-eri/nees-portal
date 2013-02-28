@@ -68,10 +68,16 @@ var	app			=	window.app || (window.app = {}),
 							strokeOpacity: 1,
 							strokeWeight: 1
 						}, app.settings.getMarkerOptions(data[i].ml)),
+						markerIndex: i.valueOf(),
 						position: loc,
 						title: 'Evid: ' + data[i].evid + '\nML: ' + data[i].ml,
 						zIndex: -1
 					});
+
+google.maps.event.addListener(marker, 'click', function () {
+	$('app-evt-table').getElement('tbody tr[modelNum='
+		+ this.markerIndex + ']').click();
+});
 				marker.setMap(this._mapObj);
 				this._markers.push(marker);
 			}
@@ -326,6 +332,7 @@ var	app			=	window.app || (window.app = {}),
 		},
 		_emailRegex: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i,
 		_loadCart: function () {
+
 			var	cartItems	=	app.Models.Cart.toObj(),
 				pane		=	$('cart-left'),
 				tree		=	new Element('ul');
@@ -337,27 +344,57 @@ var	app			=	window.app || (window.app = {}),
 			} else {
 				for (var i = 0, j = Object.values(cartItems), l = j.length;
 					i < l; i++) {
-						
-					var	chnList	=	new Element('ul'),
-						evtChns	=	j[i].chnList;
-	
-					for (var p = 0, q = evtChns.length; p < q; p++) {
-						chnList.adopt(new Element('li', {
-							'text': evtChns[p]
-						}));
-					}
-	
-					tree.adopt((new Element('li', {
-						'html': '<b>Event</b>: ML ' +  j[i].mag + ' @ ' +
-								j[i].dist + 'km from ' + j[i].site +
-							'<br /><b>Evid</b>: ' + j[i].evid+
-							'<br /><b>Time</b>: ' + j[i].time +
-							'<br /><b>Channels</b>: (' + evtChns.length + ')'
-						}))
-						.adopt(chnList));
+					var table = this._makeCartRow(j[i]);
+					
+					tree.adopt(new Element('li').adopt(table));
 					pane.adopt(tree);
+					table.body.lastChild.hide();
 				}
+
 			}
+		},
+		_makeCartRow: function (cartData) {
+			var	chnList	=	new Element('ul'),
+				evtChns	=	cartData.chnList;
+
+			for (var p = 0, q = evtChns.length; p < q; p++) {
+				chnList.adopt(new Element('li', {
+					'text': evtChns[p]
+				}));
+			}
+
+
+			var table = new HtmlTable({
+				rows: [
+					['<b>Event</b>:&nbsp;', 'ML ' + cartData.mag + ' @ '
+						+ cartData.dist + 'km from ' + cartData.site],
+					['<b>Evid</b>:&nbsp;', cartData.evid],
+					['<b>Time</b>:&nbsp;', cartData.time],
+					[{
+						content: '<b>Channels</b>: ('
+							+ evtChns.length + ')',
+						properties: {
+							class: 'expandChn',
+							colspan: 2,
+							events: {
+								click: function (evt, tbl) {
+									table.body.lastChild.toggle();
+								}
+							}
+						}
+					}],
+					[{
+						content: new Element('div').adopt(chnList)
+							.get('html'),
+						properties: {
+							class: 'chnList',
+							colspan: 2
+						}
+					}]
+				]
+			});
+
+			return table;
 		},
 		_progress: function (response) {
 			var obj = JSON.decode(response);
@@ -625,7 +662,6 @@ var	app			=	window.app || (window.app = {}),
 			PubSub.subscribe('cartUpdated', function () {
 				$('cart-progress').setStyle('display', 'none');
 				$('cart-download').setStyle('display', 'none');
-				cart.timeout = -1;
 			});
 		}
 	});
