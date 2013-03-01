@@ -176,11 +176,18 @@ var app     =   window.app || (window.app = {}),
 			
 			if (Object.getLength(cart._data) === 0) {
 				$('cart-count').innerHTML = 'Cart empty';
+				$('cart-msg').hide();
 			} else {
 				$('cart-count').set('html', app.settings.CART_COUNT_STRING
 					.replace('{chnCount}', numChns)
 					.replace('{evtCount}', Object.getLength(cart._data))
 				);
+				$('cart-msg').set('text', 'Loaded '
+					+ Object.getLength(cart._data) + ' items from previous session');
+				
+				(function () {
+					$('cart-msg').fade('out');
+				}).delay(5000);
 			}
 		}
 	});

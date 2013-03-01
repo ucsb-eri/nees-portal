@@ -74,10 +74,11 @@ var	app			=	window.app || (window.app = {}),
 						zIndex: -1
 					});
 
-google.maps.event.addListener(marker, 'click', function () {
-	$('app-evt-table').getElement('tbody tr[modelNum='
-		+ this.markerIndex + ']').click();
-});
+				google.maps.event.addListener(marker, 'click', function () {
+					$('app-evt-table').getElement('tbody tr[modelNum='
+						+ this.markerIndex + ']').click();
+				});
+				
 				marker.setMap(this._mapObj);
 				this._markers.push(marker);
 			}
@@ -439,7 +440,7 @@ google.maps.event.addListener(marker, 'click', function () {
 				} else {
 					$('cart-progress').setStyle('display', 'none');
 					$('cart-download').setStyle('display', 'block');
-					$('cart-download').set('text', 'Server Timeout');
+					$('cart-download').set('html', 'Server Timeout');
 					cart.timeout = -1;
 				}
 			}

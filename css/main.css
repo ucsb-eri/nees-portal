@@ -614,6 +614,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 #cart-download a {
 	color: #7F7F7F;
+	line-height: 20px;
 	text-decoration: none;
 }
 #cart-download a:hover {
@@ -635,4 +636,14 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	line-height: 1.4em;
 	margin: 5px 0;
 	padding: 10px 15px;
+}
+#cart-msg {
+	position: absolute;
+	top: 40px;
+	background-color: #FDA;
+	color: #750;
+	padding: 15px;
+	left: 50%;
+	margin-left: -100px;
+	box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.2);
 }
