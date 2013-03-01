@@ -24,6 +24,7 @@
 					<span id="cart-count">Cart is empty</span>
 					<div id="empty-cart">Empty Cart</div>
 				</div>
+				<a id="feedback" href="mailto:nees_contact@eri.ucsb.edu">Feedback, Questions?</a>
 				<div id="thumb-box"></div>
 				<div id="empty-box">
 					Confirm cart empty?
@@ -40,6 +41,7 @@
 					<div id="app-input" class="toggle-target">
 						<div class="input-field">
 							<label for="site">Station:</label>
+							<div id="site-msg"></div>
 							<select class="app-input-flds" id="site">
 							</select>
 						</div>
@@ -50,9 +52,16 @@
 	
 						<div class="input-field">
 							<label for="minMag">Magnitude:</label>
-							<input class="app-input-flds double-field" id="minMag" type="text" value="1.0" />
+							<input class="app-input-flds number-field" id="minMag" type="text" value="1.0" />
 							<span class="spacer">to</span>
-							<input class="app-input-flds double-field" id="maxMag" type="text" value="9.0" />
+							<input class="app-input-flds number-field" id="maxMag" type="text" value="9.0" />
+						</div>
+	
+						<div id="pga-field" class="input-field">
+							<label for="minPGA">PGA (cm/s/s):</label>
+							<input class="app-input-flds number-field" id="minPGA" type="text" value="0" />
+							<span class="spacer">to</span>
+							<input class="app-input-flds number-field" id="maxPGA" type="text" value="9000" />
 						</div>
 	
 						<div class="input-field">
@@ -62,18 +71,23 @@
 							<input class="app-input-flds app-input-flds-date double-field" id="eDate" type="text" />
 
 						</div>
+						
+						<hr />
 	
 						<div class="input-field">
-							<label for="itemsPerPage">Events/Page:</label>
-							<input class="app-input-flds" id="itemsPerPage" type="text" value='25' />
+							<input id="enable-PGA" class="float-left" type="checkbox" />
+							<label for="enable-PGA">Enable PGA search</label>
+							<br />
+							<input id="depToEvid" class="float-left" type="checkbox" />
+							<label for="depToEvid">Replace depth with evid</label>
+							<br />
+							<input id="disablePrev" class="float-left" type="checkbox" checked />
+							<label for="disablePrev">Disable waveform preview</label>
 						</div>
 	
 						<div class="input-field">
-							<input id="depToEvid" style="float: right" type="checkbox" />
-							<label for="depToEvid">Replace depth with evid</label>
-							<br />
-							<input id="disablePrev" style="float: right" type="checkbox" checked />
-							<label for="disablePrev">Disable waveform preview</label>
+							<input class="app-input-flds number-field float-left" id="itemsPerPage" type="text" style="width: 20px" value='25' />
+							<label id="itemsPerPageLbl" for="itemsPerPage">Events/Page:</label>
 						</div>
 					</div>
 				</div>
@@ -144,7 +158,6 @@
 				</div>
 			</div>
 		</div>
-		<a id="feedback" href="mailto:nees_contact@eri.ucsb.edu">&raquo; Feedback, Questions?</a>
 
 		<!-- Libraries -->
 		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
