@@ -22,11 +22,20 @@ body {
 	font-size: 0;
 }
 */
+hr {
+	border: 0;
+	border-bottom: 1px solid #333;
+	margin-top: 35px;
+	margin-bottom: 15px;
+}
 .clearfix {
 	overflow: hidden;
 	margin: 0;
 	padding: 0;
 	width: 100%;
+}
+.float-left {
+	float: left;
 }
 
 #app-wrap {
@@ -41,8 +50,7 @@ body {
     position: relative;
 }
 #app-title {
-	background-color: #06A;
-	border-bottom: 3px solid #09F;
+	background-color: #07C;
 	height: 80px;
 	margin-top: -3px;
 	min-height: 55px;
@@ -54,7 +62,7 @@ body {
 	font-size: 26px;
 	font-weight: normal;
 	margin: 0;
-	padding: 25px;
+	padding: 17px 25px;
 	padding-bottom: 0;
 }
 #app-evt-table table {
@@ -74,7 +82,7 @@ tr.odd {
 	cursor: pointer;
 }
 tr.selected, #app-evt-table tbody tr.selected:hover {
-	background-color: #002e3e;
+	background-color: #048;
 	color: #FFF;
 }
 #app-evt-table thead {
@@ -111,7 +119,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 .toggle .toggle-title {
 	border-bottom: 2px solid #4E4E4E;
-	color: #c9c9c9;
+	color: #FFF;
 	display: block;
 	font-size: 18px;
 	height: 35px;
@@ -147,22 +155,16 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	width: 100%;
 }
 .tabTitle {
-	border-bottom: 5px solid #555;
 	color: #AAA;
 	cursor: default;
 	float: left;
 	font-size: 16px;
-	height: 40px;
+	height: 45px;
 	line-height: 50px;
-	margin-left: 15px;
 	padding: 0 30px;
 }
-.tabTitle:hover {
-	border-bottom: 5px solid #777;
-	color: #CCC;
-}
 .tabTitle.active {
-	border-bottom: 5px solid #33b5e5;
+	background: #07C;
 	color: #FFF;
 }
 .tabView {
@@ -190,11 +192,21 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	margin: 3px 0;
 	padding-left: 0;
 	padding-right: 0;
-	width: 100%;
+	width: 338px;
+}
+.app-input-flds, .input-field {
+	font-family: 'Ubuntu', sans-serif;
 }
 .app-input-flds[type=text] {
-	padding: 2px 2%;
-	width: 96%;
+	border: 1px solid #444;
+	padding: 4px 8px;
+	width: 320px;
+}
+#itemsPerPage {
+	margin-right: 15px;
+}
+#itemsPerPageLbl {
+	line-height: 35px;
 }
 
 .input-field {
@@ -205,16 +217,19 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	border: 0;
 	border-bottom: 1px solid #555;
 	color: #eee;
+	line-height: 20px;
 }
 .input-field span.spacer {
 	margin: auto 15px;
 }
 .input-field .double-field {
-	padding: 2px 2%;
-	width: 31%;
+	width: 126px;
+}
+.input-field .number-field {
+	width: 40px;
 }
 .input-field label {
-	color: #AAA;
+	color: #CCC;
 	display: block;
 }
 
@@ -244,7 +259,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	width: 2.5em;
 }
 #query-result {
-	color: gray;
+	color: #ccc;
 	padding: 0 2px;
 }
 #app-channel-box {
@@ -402,7 +417,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 #cart-input-format th {
 	background-color: #333;
-	color: #CCC;
+	color: #EEE;
 }
 #cart-input-format td, #cart-input-format th {
 	padding: 5px;
@@ -418,16 +433,16 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	vertical-align: middle;
 }
 #cart-button {
-	border-left: 1px solid #CCC;
 	padding: 5px 15px;
     float: right;
-    margin: 15px 25px;
+	font-size: 10px;
+    margin: 12px 25px;
 	min-width: 125px;
     text-align: left;
 }
 #view-cart {
 	cursor: pointer;
-	font-size: 125%;
+	font-size: 22px;
 	font-weight: bold;
 }
 #view-cart:hover {
@@ -456,7 +471,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	cursor: pointer;
 }
 #cart-title {
-	background-color: #333;
+	background-color: #07C;
 	color: #FFF;
 	font-size: 21px;
 	padding: 15px 25px;
@@ -498,22 +513,26 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 .cart-item {
 	background: transparent url(../img/nees/cartadd.png) no-repeat center center;
-	float: left;
-	height: 20px;
-	width: 20px;
 }
 .cart-item.active {
 	background: transparent url(../img/nees/cartin.png) no-repeat center center;
 }
 .wv-item {
 	background: transparent url(../img/nees/wviewUn.png) no-repeat center center;
-	float: left;
-	height: 20px;
 	margin-left: 5px;
-	width: 20px;
 }
 .wv-item.active {
 	background: transparent url(../img/nees/wviewSl.png) no-repeat center center;
+}
+.cart-item, .wv-item {
+	border-radius: 25px;
+	cursor: pointer;
+	float: left;
+	height: 20px;
+	width: 20px;
+}
+.cart-item:hover, .wv-item:hover {
+	background-color: rgba(0, 0, 0, 0.1);
 }
 
 
@@ -562,20 +581,14 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 
 #feedback {
-	background-color: #000;
-	top: 0;
-	color: #FFF;
-	display: block;
-	margin-left: -32px;
-	padding: 5px 15px;
-	position: fixed;
-	right: 50%;
+	clear: left;
+	color: #CCC;
+	float: left;
+	font-size: 14px;
+	margin-left: 42px;
 	text-decoration: none;
-	width: 75px;
 }
 #feedback:hover {
-	border-left: 8px solid #FC0;
-	color: #FC0;
 	text-decoration: underline;
 }
 
@@ -612,4 +625,14 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 }
 .expandChn:hover b {
 	text-decoration: none;
+}
+#depToEvid, #disablePrev, #enable-PGA {
+	margin-right: 37px;
+}
+#site-msg {
+	background: #FDA;
+	color: #750;
+	line-height: 1.4em;
+	margin: 5px 0;
+	padding: 10px 15px;
 }

@@ -112,9 +112,9 @@ var app	 =   window.app || (window.app = {});
 		strokeOpacity: 0.0
 	};
 	settings.CHN_GRID_HEADER = {
-		chan: 'Channel (<abbr title="We assign location codes, e.g. 00 or 99 to the channel names to identify the instrument and its location. The images in the Info tab show the relative position and depth. Survey maps are available for the site layouts.">?</abbr>)',
-		snr: '<a title="Ratio of peak value to pre-event RMS level">SNR</a>',
-		peaka: '<a title="Abs value of filtered-signal\'s peak (0.5 to 40Hz)">Peak</a>'
+		chan: '<span title="We assign location codes, e.g. 00 or 99 to the channel names to identify the instrument and its location. The images in the Info tab show the relative position and depth. Survey maps are available for the site layouts.">Channel</span>',
+		snr: '<span title="Ratio of peak value to pre-event RMS level">SNR</span>',
+		peaka: '<span title="Abs value of filtered-signal\'s peak (0.5 to 40Hz)">Peak</span>'
 	};
 	settings.EVT_GRID_HEADER = {
 		time: 'Date (UTC)',

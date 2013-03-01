@@ -40,13 +40,43 @@ var	app		=	window.app || (window.app = {}),
 		this.getSites();
 		
 		inputFields.addEvent('change', this.getInput);
+		
+		$('pga-field')[$('enable-PGA').checked ? 'show' : 'hide']();
+		$('enable-PGA').addEvent('click', function () {
+			$('pga-field')[$('enable-PGA').checked ? 'show' : 'hide']();
+		});
+		
+		$('site-msg').hide();
+		PubSub.subscribe('inputChanged', function (data) {
+			var siteName = $('site').options[$('site').selectedIndex]
+				.getAttribute('site').toLowerCase();
+				
+			$('site-msg').hide();
+				
+			new Request({
+				onSuccess: Controller.Input.siteMsg,
+				url: siteName + '.txt'
+			}).get();
+		});
 	});
+	
+	// Display msg regarding site
+	Controller.Input.siteMsg = (function (txt) {
+		$('site-msg').show();
+		$('site-msg').set('html', txt);
+	});
+	
 	// Prepare user input for data request
 	Controller.Input.getInput = (function () {
 		this._input = {};
 		
 		for (var idx = 0, l = inputFields.length; idx < l; idx++) {
 			this._input[inputFields[idx].get('id')] = inputFields[idx].value;
+		}
+		
+		if (!$('enable-PGA').checked) {
+			delete this._input['minPGA'];
+			delete this._input['maxPGA'];
 		}
 		
 		this._input.page = this._input.maxPages = 0;
