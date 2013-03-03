@@ -168,8 +168,6 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	color: #FFF;
 }
 .tabView {
-}
-.tabView.active {
 	background-color: #FFF;
 	height: 100%;
 }
@@ -416,7 +414,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	color: #AAA;
 }
 #cart-input-format th {
-	background-color: #333;
+	background-color: #777;
 	color: #EEE;
 }
 #cart-input-format td, #cart-input-format th {
@@ -538,10 +536,10 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 
 .popUpWindow>.titleBar {
     background: #333;
-    font-size: 11px;
+    font-size: 12px;
     height: 15px;
 	line-height: 15px;
-    padding: 2px 10px;
+    padding: 6px 10px;
     position: relative;
 }
 
@@ -596,7 +594,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
     background-color: #888;
 	border: 2px solid #EEE;
 	display: none;
-    height: 20px;
+    height: 26px;
 	position: relative;
 }
 #cart-progress-bar {
@@ -646,4 +644,8 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	left: 50%;
 	margin-left: -100px;
 	box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.2);
+}
+#thumb-box {
+	width: 250px;
+	height: 220px;
 }

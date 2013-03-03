@@ -117,7 +117,7 @@ var	app		=	window.app || (window.app = {}),
 					value: node.getAttribute('id')
 				});
 				
-				if (node.tagName === 'none') thisEl.addClass('site-gray');
+				if (node.tagName === 'none') thisEl.disabled = true;
 			}
 			parent.adopt(thisEl);
 			if (node.hasChildNodes()) {
