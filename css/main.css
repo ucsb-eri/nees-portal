@@ -277,7 +277,7 @@ input:checked ~ .toggle-target {
 	width: 400px;
 }
 #app-channel-box table {
-	background-color: #FFF;
+	background-color: #101214;
 	border-collapse: collapse;
 	border: 1px solid #333;
 	overflow: hidden;
@@ -317,6 +317,9 @@ input:checked ~ .toggle-target {
 	float: right;
 	font-size: 0.8em;
 	padding: 2px 8px;
+	position: absolute;
+	top: 5px;
+	right: 5px;
 }
 #channel-close:hover, #channel-close:active {
 	border: 1px solid #555;
