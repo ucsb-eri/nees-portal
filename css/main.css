@@ -16,8 +16,7 @@ body {
 hr {
 	border: 0;
 	border-bottom: 1px solid #333;
-	margin-top: 35px;
-	margin-bottom: 15px;
+	margin: 10px 0;
 }
 .clearfix {
 	overflow: hidden;

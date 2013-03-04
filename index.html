@@ -74,21 +74,28 @@
 						</div>
 						
 						<hr />
-	
-						<div class="input-field">
-							<input id="enable-PGA" class="float-left" type="checkbox" />
-							<label for="enable-PGA">Enable PGA search</label>
-							<br />
-							<input id="depToEvid" class="float-left" type="checkbox" />
-							<label for="depToEvid">Replace depth with evid</label>
-							<br />
-							<input id="disablePrev" class="float-left" type="checkbox" checked />
-							<label for="disablePrev">Disable waveform preview</label>
-						</div>
-	
-						<div class="input-field">
-							<input class="app-input-flds number-field float-left" id="itemsPerPage" type="text" style="width: 20px" value='25' />
-							<label id="itemsPerPageLbl" for="itemsPerPage">Events/Page:</label>
+						
+						<div class="toggle">
+							<input id="toggle-options-check" type="checkbox">
+							<label for="toggle-options-check">Show Options</label>
+							<hr />
+							<div class="toggle-target" style="border: 0">
+								<div class="input-field">
+									<input id="enable-PGA" class="float-left" type="checkbox" />
+									<label for="enable-PGA">Enable PGA search</label>
+									<br />
+									<input id="depToEvid" class="float-left" type="checkbox" />
+									<label for="depToEvid">Replace depth with evid</label>
+									<br />
+									<input id="disablePrev" class="float-left" type="checkbox" checked />
+									<label for="disablePrev">Disable waveform preview</label>
+								</div>
+			
+								<div class="input-field">
+									<input class="app-input-flds number-field float-left" id="itemsPerPage" type="text" style="width: 20px" value='25' />
+									<label id="itemsPerPageLbl" for="itemsPerPage">Events/Page:</label>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
