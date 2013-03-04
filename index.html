@@ -37,7 +37,8 @@
 			</div>
 			<div id="app-grid" class="clearfix">
 				<div class="toggle">
-					<span class="toggle-title active"><img alt="Input" src="img/android/search.png" width="32" height="32" />Input</span>
+					<input id="toggle-input-check" class="toggle-check" type="checkbox" checked>
+					<label for="toggle-input-check" class="toggle-title active"><img alt="Input" src="img/android/search.png" width="32" height="32" />Input</label>
 					<div id="app-input" class="toggle-target">
 						<div class="input-field">
 							<label for="site">Station:</label>
@@ -92,7 +93,8 @@
 					</div>
 				</div>
 				<div class="toggle">
-					<span class="toggle-title active"><img alt="Events" src="img/android/globe.png" width="32" height="32" />Events</span>
+					<input id="toggle-evtgrid-check" class="toggle-check" type="checkbox" checked>
+					<label for="toggle-evtgrid-check" class="toggle-title active"><img alt="Events" src="img/android/globe.png" width="32" height="32" />Events</label>
 					<div class="toggle-target">
 						<div id="table-ctrls" class="clearfix">
 							<div class="table-ctrl btn left-motion" id="table-ctrl-prev" data-page-offset="-1"><img src="img/android/prev.png" alt="Previous" height="16" width="16"></div>
@@ -169,14 +171,7 @@
 		<script type="text/javascript" src="js/lib/pubsub.js"></script>
 		<script type="text/javascript" src="js/lib/domStorageShim.js"></script>
 		<script type="text/javascript" src="js/lib/PopUpWindow.js"></script>
-
-
-
-		<script type="text/javascript" src="js/lib/DoubleSlider.js"></script>
-		<script type="text/javascript" src="js/lib/Scrollable.js"></script>
-
 		<script type="text/javascript" src="js/lib/tab.js"></script>
-		<script type="text/javascript" src="js/lib/toggle.js"></script>
 		
 		<!-- DatePicker JS -->
 		<script type="text/javascript" src="js/lib/DatePicker/Locale.en-US.DatePicker.js"></script>

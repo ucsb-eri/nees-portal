@@ -13,15 +13,6 @@ body {
 	font-family: 'Ubuntu', sans-serif; 
 	font-size: 12px;
 }
-/*
-.clearfix:after {
-	clear: both;
-	content: '.';
-	height: 0;
-	visibility: hidden;
-	font-size: 0;
-}
-*/
 hr {
 	border: 0;
 	border-bottom: 1px solid #333;
@@ -117,7 +108,10 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 .toggle {
 	margin: 10px 5px;
 }
-.toggle .toggle-title {
+.toggle-check {
+	display: none;
+}
+.toggle-title {
 	border-bottom: 2px solid #4E4E4E;
 	color: #FFF;
 	display: block;
@@ -125,23 +119,41 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	height: 35px;
 	padding: 2px 15px;
 }
-.toggle .toggle-title img {
+.toggle-title img {
 	vertical-align: middle;
 	margin-right: 5px;
 }
-.toggle .toggle-title:after {
+.toggle-title:after {
 	content: '▾';
 	display: block;
 	float: right;
+	font-size: 28px;
 	margin-right: 5px;
-	margin-top: -2px;
+	margin-top: -4px;
 }
-.toggle .toggle-title.active:after {
+input:checked ~ .toggle-title:after {
 	content: '▴';   
 }
 .toggle-target {
 	border-bottom: 1px solid #252525;
-	padding-bottom: 15px;
+	height: auto;
+	max-height: 0;
+	opacity: 0;
+	overflow: hidden;
+	-webkit-transition: max-height 1s, opacity 1s ease-in-out;
+	-moz-transition: max-height 1s, opacity 1s ease-in-out;
+	-o-transition: max-height 1s, opacity 1s ease-in-out;
+	-ms-transition: max-height 1s, opacity 1s ease-in-out;
+	transition: max-height 1s, opacity 1s ease-in-out;
+}
+input:checked ~ .toggle-target {
+	max-height: 5000px;
+	opacity: 1;
+	-webkit-transition: max-height 1s, opacity 1s ease-in-out;
+	-moz-transition: max-height 1s, opacity 1s ease-in-out;
+	-o-transition: max-height 1s, opacity 1s ease-in-out;
+	-ms-transition: max-height 1s, opacity 1s ease-in-out;
+	transition: max-height 1s, opacity 1s ease-in-out;
 }
 #app-viewport {
 	background-color: #101214;
@@ -184,7 +196,6 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	width: 350px;
 }
 #app-input {
-	padding-top: 15px;
 }
 .app-input-flds {
 	margin: 3px 0;
@@ -441,7 +452,6 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 #view-cart {
 	cursor: pointer;
 	font-size: 22px;
-	font-weight: bold;
 }
 #view-cart:hover {
 	text-decoration: underline;
