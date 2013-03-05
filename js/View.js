@@ -760,7 +760,6 @@ var	app			=	window.app || (window.app = {}),
 			});
 			
 			gridH = $('channel-title').getSize().y +
-					$('channel-controls').getSize().y +
 					$('channel-grid-head').getSize().y;
 			this._bodyEl.setStyle('height', offsetH - gridH);
 		},
@@ -835,7 +834,7 @@ var	app			=	window.app || (window.app = {}),
 				}
 			}
 			if (multiSta) {
-				alert('Viewing channels with different STA\'s in the same' +
+				alert('Viewing channels with different STA\'s in the same ' +
 					'viewer-instance currently not supported.');
 				return;
 			}
@@ -885,7 +884,7 @@ var	app			=	window.app || (window.app = {}),
 			this._el.fade('hide');
 			
 			$('channel-close').addEvent('click', this.hide);
-			$('chn-control-view').addEvent('click', this._viewSelected);
+			$('channel-view').addEvent('click', this._viewSelected);
 			
 			$('chn-add-all').addEvent('click', function () {
 				if ($('chn-add-all').hasClass('active')) {

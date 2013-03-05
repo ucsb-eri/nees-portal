@@ -72,12 +72,11 @@ tr.odd {
 	cursor: pointer;
 }
 tr.selected, #app-evt-table tbody tr.selected:hover {
-	background-color: #048;
+	background-color: #1f1f1f;
 	color: #FFF;
 }
 #app-evt-table thead {
-	background-color: #101214;
-	border-top: 1px solid #555;
+	background-color: #4D4D4D;
 	color: #CCC;
 	text-align: left;
 	width: 100%;
@@ -95,7 +94,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	border: 0;
 }
 #app-grid {
-	background-color: #101214;
+	background-color: #333;
 	float: left;
 	height: 92%;
 	overflow-x: hidden;
@@ -105,18 +104,18 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	z-index: 2;
 }
 .toggle {
-	margin: 10px 5px;
+	margin: 0 5px;
 }
 .toggle-check {
 	display: none;
 }
 .toggle-title {
-	border-bottom: 2px solid #4E4E4E;
 	color: #FFF;
+	cursor: pointer;
 	display: block;
 	font-size: 18px;
 	height: 35px;
-	padding: 2px 15px;
+	padding-top: 15px;
 }
 .toggle-title img {
 	vertical-align: middle;
@@ -134,11 +133,11 @@ input:checked ~ .toggle-title:after {
 	content: '▴';   
 }
 .toggle-target {
-	border-bottom: 1px solid #252525;
 	height: auto;
 	max-height: 0;
 	opacity: 0;
 	overflow: hidden;
+	padding: 0;
 	-webkit-transition: max-height 1s, opacity 1s ease-in-out;
 	-moz-transition: max-height 1s, opacity 1s ease-in-out;
 	-o-transition: max-height 1s, opacity 1s ease-in-out;
@@ -148,6 +147,7 @@ input:checked ~ .toggle-title:after {
 input:checked ~ .toggle-target {
 	max-height: 5000px;
 	opacity: 1;
+	padding: 10px 0 15px 0;
 	-webkit-transition: max-height 1s, opacity 1s ease-in-out;
 	-moz-transition: max-height 1s, opacity 1s ease-in-out;
 	-o-transition: max-height 1s, opacity 1s ease-in-out;
@@ -167,12 +167,16 @@ input:checked ~ .toggle-target {
 }
 .tabTitle {
 	color: #AAA;
-	cursor: default;
+	cursor: pointer;
 	float: left;
 	font-size: 16px;
 	height: 45px;
 	line-height: 50px;
 	padding: 0 30px;
+}
+.tabTitle:hover {
+	background-color: #4D4D4D;
+	color: #CCC;
 }
 .tabTitle.active {
 	background: #07C;
@@ -188,11 +192,11 @@ input:checked ~ .toggle-target {
 #table-ctrls {
 	color: #FFF; /* #555 */
 	height: 30px;
-	line-height: 25px;
+	line-height: 16px;
 	margin: auto;
 	margin-bottom: 5px;
 	padding: 2px 0px;
-	width: 350px;
+	width: 300px;
 }
 #app-input {
 }
@@ -250,13 +254,11 @@ input:checked ~ .toggle-target {
 	text-align: center;
 }
 .table-ctrl.btn {
-	border: 2px solid #101214;
-	border-radius: 5px;
-	padding: 2px 4px;
+	padding: 4px 6px;
 }
 .table-ctrl.btn:hover {
 /* 233, 133 */
-	border: 2px solid #777;
+	background: #4D4D4D;
 }
 #table-ctrl-page {
 	background: transparent;
@@ -276,17 +278,12 @@ input:checked ~ .toggle-target {
 	width: 400px;
 }
 #app-channel-box table {
-	background-color: #101214;
 	border-collapse: collapse;
-	border: 1px solid #333;
 	overflow: hidden;
 	width: 100%;
 }
 #app-channel-box thead tr {
-	background-color: #101214;
-	border: 1px solid #111;
-	border-top: 0;
-	border-bottom: 0;
+	background-color: #024;
 	color: #DDD;
 	padding: 10px 15px;
 	text-align: left;
@@ -301,9 +298,6 @@ input:checked ~ .toggle-target {
 #app-channel-box tr.odd {
 	background-color: #FFF;
 }
-#app-channel-box thead {
-	background-color: #AAA;
-}
 #app-channel-box th {
 	padding: 5px;
 }
@@ -311,17 +305,15 @@ input:checked ~ .toggle-target {
 	border: 0;
 }
 #channel-close {
-	border-radius: 5px;
 	color: #CCC;
-	float: right;
-	font-size: 0.8em;
-	padding: 2px 8px;
+	font-size: 24px;
+	padding: 5px 12px;
 	position: absolute;
-	top: 5px;
-	right: 5px;
+	top: 0;
+	right: 0;
 }
 #channel-close:hover, #channel-close:active {
-	border: 1px solid #555;
+	background-color: #024;
 	cursor: pointer;
 }
 #channel-grid-body {
@@ -487,28 +479,24 @@ input:checked ~ .toggle-target {
 	padding: 15px 25px;
 }
 #channel-title {
-	background-color: #101214;
-	border-bottom: 1px solid #555;
-	font-size: 1.6em;
-	padding: 5px 15px;
+	background-color: #048;
+	font-size: 18px;
+	padding: 15px;
 }
 .btn.disabled {
 	visibility: hidden;
 }
-#channel-controls {
-	background-color: #101214;
-	height: 40px;
-}
-.chn-control {
-	border-radius: 5px;
-	border: 1px solid #333;
+#channel-view {
+	background-color: #084;
 	cursor: pointer;
-	float: right;
-	margin: 8px 15px;
+	font-size: 12px;
+	position: absolute;
 	padding: 5px 15px;
+	top: 55px;
+	right: 5px;
 }
-.chn-control:hover, .chn-control:active {
-	border: 1px solid #888;
+#channel-view:hover {
+	background-color: #063;
 }
 
 .evt-item {

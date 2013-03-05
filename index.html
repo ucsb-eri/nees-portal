@@ -66,16 +66,12 @@
 							<input class="app-input-flds app-input-flds-date double-field" id="sDate" type="text" />
 							<span class="spacer">to</span>
 							<input class="app-input-flds app-input-flds-date double-field" id="eDate" type="text" />
-
 						</div>
-						
-						<hr />
 						
 						<div class="toggle">
 							<input id="toggle-options-check" type="checkbox">
 							<label for="toggle-options-check">Show Options</label>
-							<div class="toggle-target" style="border: 0">
-								<hr />
+							<div class="toggle-target" style="border-bottom: 1px;padding: 0;padding-left: 15px;margin-left: 10px;">
 								<div class="input-field">
 									<input id="enable-PGA" class="float-left" type="checkbox" />
 									<label for="enable-PGA">Enable PGA search</label>
@@ -100,9 +96,9 @@
 					<label for="toggle-evtgrid-check" class="toggle-title active"><img alt="Events" src="img/android/globe.png" width="32" height="32" />Events</label>
 					<div class="toggle-target">
 						<div id="table-ctrls" class="clearfix">
-							<div class="table-ctrl btn left-motion" id="table-ctrl-prev" data-page-offset="-1"><img src="img/android/prev.png" alt="Previous" height="16" width="16"></div>
+							<div class="table-ctrl btn left-motion" id="table-ctrl-prev" data-page-offset="-1">&larr;</div>
 							<div class="table-ctrl">Page <input id="table-ctrl-page" type="text" value="1"> out of <span id="table-ctrl-total">0</span> ( <span id="query-result"></span> )</div>
-							<div class="table-ctrl btn right-motion" id="table-ctrl-next" data-page-offset="1"><img src="img/android/next.png" alt="Next" height="16" width="16"></div>
+							<div class="table-ctrl btn right-motion" id="table-ctrl-next" data-page-offset="1">&rarr;</div>
 						</div>
 						<div id="app-evt-table">
 						</div>
@@ -110,11 +106,10 @@
 				</div>
 			</div>
 			<div id="app-channel-box">
-				<div id="channel-title" class="title">Channels<div id="channel-close">&#215;</div></div>
-				<div id="channel-controls" class="clearfix">
-					<div id="chn-control-view" class="chn-control">Launch Viewer</div>
-	
-					<div class="clearfix"></div>
+				<div id="channel-title" class="title">
+					Channels
+					<div id="channel-view">View</div>
+					<div id="channel-close">&#215;</div>
 				</div>
 				<div id="channel-grid-head">
 				</div>
