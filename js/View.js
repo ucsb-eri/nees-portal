@@ -656,8 +656,8 @@ var	app			=	window.app || (window.app = {}),
 			
 			this._emptyPop = new PopUpWindow('-', {
 				contentDiv: 'empty-box',
-				height: '100',
-				width: '250'
+				height: '100px',
+				width: '250px'
 			});
 			
 			PubSub.subscribe('cartUpdated', function () {
@@ -911,8 +911,8 @@ var	app			=	window.app || (window.app = {}),
 			
 			this._pop = new PopUpWindow('PopUp Window', {
 				contentDiv: 'thumb-box',
-				height: '100',
-				width: '250'
+				height: '100px',
+				width: '250px'
 			});
 			
 			this.enabled = !$('disablePrev').checked;

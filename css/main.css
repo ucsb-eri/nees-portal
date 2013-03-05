@@ -206,7 +206,7 @@ input:checked ~ .toggle-target {
 	font-family: 'Ubuntu', sans-serif;
 }
 .app-input-flds[type=text] {
-	border: 1px solid #444;
+	border: 1px solid #777;
 	padding: 4px 8px;
 	width: 320px;
 }
@@ -656,6 +656,7 @@ input:checked ~ .toggle-target {
 	left: 50%;
 	margin-left: -100px;
 	box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.2);
+	visibility: hidden;
 }
 #thumb-box {
 	width: 250px;
