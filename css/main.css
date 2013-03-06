@@ -625,7 +625,7 @@ input:checked ~ .toggle-target {
 .expandChn:hover b {
 	text-decoration: none;
 }
-#depToEvid, #disablePrev, #enable-PGA {
+#depToEvid, #enablePrev, #enable-PGA {
 	margin-right: 37px;
 }
 #site-msg {
