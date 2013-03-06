@@ -1,18 +1,14 @@
-/* vim: set tabstop=4 shiftwidth=4: */
-/*jshint mootools:true */
-
 /**
  * Implementation of Publish/Subscribe pattern. Callbacks subscribed to a topic
  *   are fired when data is published to that topic.
  *
- * -----------------------------------------------------------------------------
- * Layout
- * -----------------------------------------------------------------------------
  *  PubSub
  *  - subscribe(topic, callback)
  *  - publish(topic, data)
  */
 (function (exports) {
+	'use strict';
+
 	var DEBUG = true,
 		PubSub;
 

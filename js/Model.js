@@ -1,4 +1,3 @@
-/* vim: set tabstop=4 shiftwidth=4: */
 /*jslint mootools:true */
 var app     =   window.app || (window.app = {}),
 	_       =   window._,
@@ -7,12 +6,13 @@ var app     =   window.app || (window.app = {}),
 /**
  * Handles application data
  * 
- * -----------------------------------------------------------------------------
- * Layout
- * -----------------------------------------------------------------------------
  * Model
+ *   events
+ *   channels
+ *   cart
  */
 (function () {
+	'use strict'
 	var Collection, events, channels, cart;
 	
 	// Initialize app.Models namespace

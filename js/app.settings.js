@@ -1,25 +1,10 @@
-/* vim: set tabstop=4 shiftwidth=4: */
-/*jslint mootools:true */
 var app	 =   window.app || (window.app = {});
-
-/**
- * Specifies algorithms controlling how certain objects are displayed
- * 
- * -----------------------------------------------------------------------------
- * Layout
- * -----------------------------------------------------------------------------
- * app.settings
- * - DP_SETTINGS
- * - FIRST_EVENT
- * - MAP_CIRCLE_SETTINGS
- * 
- * - getMarkerOptions(ml)
- */
 (function () {
 	'use strict';
 	
-	var	// Constant primatives
-		FIRST_EVENT_UTC		=	1072944000, // UTC time of first event
+/* Portal Settings: */
+
+	var	FIRST_EVENT_UTC		=	1072944000, // UTC time of first event
 		WAVEFORM_BASE_URL	=	'http://nees.ucsb.edu:8889/wf/',
 		// Initialize settings object
 		settings			=   {};
@@ -87,6 +72,19 @@ var app	 =   window.app || (window.app = {});
 		'SAC': {
 			enabled: true,
 			name: 'sac',
+			
+			calibrate: {
+				counts: true,
+				calib: true
+			},
+			time: {
+				absolute: true,
+				relative: false
+			}
+		},
+		'MATLAB-CSV': {
+			enabled: true,
+			name: 'mlb',
 			
 			calibrate: {
 				counts: true,

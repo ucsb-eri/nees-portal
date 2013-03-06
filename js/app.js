@@ -1,5 +1,6 @@
-/* vim: set tabstop=4 shiftwidth=4: */
-/*jshint mootools:true */
+/**
+ * Set up app
+ */
 var app			=	window.app || (window.app = {});
 
 (function () {

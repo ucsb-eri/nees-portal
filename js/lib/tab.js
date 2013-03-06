@@ -1,17 +1,12 @@
-/* vim: set tabstop=4 shiftwidth=4: */
-/*jshint mootools:true */
 var _ = window._;
 
 /**
  * Provides tab functionality for a specified element
  * 
- * -----------------------------------------------------------------------------
- * Layout
- * -----------------------------------------------------------------------------
- * Tabs
+ * Tabs()
  * - initialize(wrap)
  * - add(name)
- * - updateSize()
+ * - select(idx)
  */
 (function (exports) {
     'use strict';

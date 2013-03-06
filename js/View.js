@@ -1,5 +1,3 @@
-/* vim: set tabstop=4 shiftwidth=4: */
-/*jslint mootools:true */
 var	app			=	window.app || (window.app = {}),
 
 	_			=	window._,
@@ -8,6 +6,14 @@ var	app			=	window.app || (window.app = {}),
 	PubSub		=	window.PubSub,
 	Tabs		=	window.Tabs;
 
+/**
+ * Handles UI elements. Note: most Views not accessible through app.View
+ *
+ * View
+ *   Preview
+ *     setup()
+ *     show(ddir, dfile, epoch)
+ */
 (function () {
 	'use strict';
 	

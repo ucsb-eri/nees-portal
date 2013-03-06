@@ -1,5 +1,3 @@
-/* vim: set tabstop=4 shiftwidth=4: */
-/*jslint mootools:true */
 var	app		=	window.app || (window.app = {}),
 	_		=	window._,
 	Picker	=	window.Picker,
@@ -8,10 +6,19 @@ var	app		=	window.app || (window.app = {}),
 /**
  * Handles user input
  * 
- * -----------------------------------------------------------------------------
- * Layout
- * -----------------------------------------------------------------------------
  * Controller
+ *   Controller.Input
+ *     init()
+ *     siteMsg(txt)
+ *     getInput()
+ *     getSites()
+ *     loadSites(txt, xml)
+ *   Controller.TableNav
+ *     init()
+ *     checkBounds()
+ *     nav(offset)
+ *     navOnClick(evt, btn)
+ *     pageEntered(evt)
  */
 (function () {
 	'use strict';
@@ -54,6 +61,7 @@ var	app		=	window.app || (window.app = {}),
 			$('site-msg').hide();
 				
 			new Request({
+				noCache: true,
 				onSuccess: Controller.Input.siteMsg,
 				url: siteName + '.txt'
 			}).get();
