@@ -669,6 +669,7 @@ var	app			=	window.app || (window.app = {}),
 	
 	channelBox = new View({
 		_events: {
+			'cartUpdated': '_remarkChannels',
 			'channelsUpdated':	'_loadChannels',
 			'eventSelected':	'hide',
 			'eventsUpdated':	'hide'
@@ -717,20 +718,7 @@ var	app			=	window.app || (window.app = {}),
 						parseInt(bodyRow[i].getStyle('padding'), 10) * 2 + 'px');
 				}
 
-				// Re-mark channel cart items on load
-				for (i = 0, j = $$('#channel-grid-body tr'), k = j.length;
-						i < k; i++) {
-					if (app.Models.Cart.has(this.getCurrentEvent().evid,
-							j[i].get('chan'))) {
-						j[i].getElement('.cart-item').addClass('active');
-					}
-				}
-				
-				if ($$('.cart-item:not(#chn-add-all):not(.active)').length === 0) {
-					$('chn-add-all').addClass('active');
-				} else {
-					$('chn-add-all').removeClass('active');
-				}
+				this._remarkChannels();
 
 				// Set up clickable items
 				$$('.wv-item, .cart-item:not(#chn-add-all)').addEvent('click', function () {
@@ -801,6 +789,24 @@ var	app			=	window.app || (window.app = {}),
 				$('chn-add-all').removeClass('active');
 			}
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
+		},
+		_remarkChannels: function () {
+			// Re-mark channel cart items on load
+			for (var i = 0, j = $$('#channel-grid-body tr'), k = j.length;
+					i < k; i++) {
+				if (app.Models.Cart.has(this.getCurrentEvent().evid,
+						j[i].get('chan'))) {
+					j[i].getElement('.cart-item').addClass('active');
+				} else {
+					j[i].getElement('.cart-item').removeClass('active');
+				}
+			}
+			
+			if ($$('.cart-item:not(#chn-add-all):not(.active)').length === 0) {
+				$('chn-add-all').addClass('active');
+			} else {
+				$('chn-add-all').removeClass('active');
+			}
 		},
 		_viewSelected: function () {
 			var	i, j, evtTime, nsamp, srate,
@@ -963,3 +969,4 @@ var	app			=	window.app || (window.app = {}),
 	app.View.Preview = thumbPop;
 
 }) ();
+
