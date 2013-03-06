@@ -181,7 +181,7 @@ var app     =   window.app || (window.app = {}),
 					.replace('{chnCount}', numChns)
 					.replace('{evtCount}', Object.getLength(cart._data))
 				);
-				$('cart-count').setStyle('visibility', 'visible');
+				$('cart-msg').setStyle('visibility', 'visible');
 				$('cart-msg').set('text', 'Loaded '
 					+ Object.getLength(cart._data) + ' items from previous session');
 				
