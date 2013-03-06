@@ -920,14 +920,14 @@ var	app			=	window.app || (window.app = {}),
 				width: '250px'
 			});
 			
-			this.enabled = !$('disablePrev').checked;
+			this.enabled = !!$('enablePrev').checked;
 			
-			$('disablePrev').addEvent('click', function () {
-				if ($('disablePrev').checked) {
+			$('enablePrev').addEvent('click', function () {
+				if ($('enablePrev').checked) {
+					that.enabled = true;
+				} else {
 					that.enabled = false;
 					that._pop.close();
-				} else {
-					that.enabled = true;
 				}
 			});
 		},
