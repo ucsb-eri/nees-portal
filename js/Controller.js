@@ -5,20 +5,6 @@ var	app		=	window.app || (window.app = {}),
 
 /**
  * Handles user input
- * 
- * Controller
- *   Controller.Input
- *     init()
- *     siteMsg(txt)
- *     getInput()
- *     getSites()
- *     loadSites(txt, xml)
- *   Controller.TableNav
- *     init()
- *     checkBounds()
- *     nav(offset)
- *     navOnClick(evt, btn)
- *     pageEntered(evt)
  */
 (function () {
 	'use strict';
@@ -47,11 +33,17 @@ var	app		=	window.app || (window.app = {}),
 		this.getSites();
 		
 		inputFields.addEvent('change', this.getInput);
+		inputFields.addEvent('keypress', function (evt) {
+			if (evt.key === 'enter') {
+				this.getInput();
+			}
+		}.bind(this));
 		
 		$('pga-field')[$('enable-PGA').checked ? 'show' : 'hide']();
 		$('enable-PGA').addEvent('click', function () {
 			$('pga-field')[$('enable-PGA').checked ? 'show' : 'hide']();
 		});
+		$('enable-PGA').addEvent('click', this.getInput);
 		
 		$('site-msg').hide();
 		PubSub.subscribe('inputChanged', function (data) {

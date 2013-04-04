@@ -115,7 +115,7 @@ tr.selected, #app-evt-table tbody tr.selected:hover {
 	display: block;
 	font-size: 18px;
 	height: 35px;
-	padding-top: 15px;
+	padding-top: 5px;
 }
 .toggle-title img {
 	vertical-align: middle;
@@ -147,7 +147,7 @@ input:checked ~ .toggle-title:after {
 input:checked ~ .toggle-target {
 	max-height: 5000px;
 	opacity: 1;
-	padding: 10px 0 15px 0;
+	padding: 0 0 15px 0;
 	-webkit-transition: max-height 1s, opacity 1s ease-in-out;
 	-moz-transition: max-height 1s, opacity 1s ease-in-out;
 	-o-transition: max-height 1s, opacity 1s ease-in-out;
@@ -163,6 +163,7 @@ input:checked ~ .toggle-target {
 }
 
 #tabView, #tabBar, .tabView {
+	color: #333;
 	width: 100%;
 }
 .tabTitle {
@@ -222,7 +223,8 @@ input:checked ~ .toggle-target {
 }
 
 .input-field {
-	margin: 8px 5px;
+	line-height: 100%;
+	margin: 1px 5px;
 }
 .input-field input {
 	background: transparent;

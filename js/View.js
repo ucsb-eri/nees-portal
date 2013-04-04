@@ -8,17 +8,13 @@ var	app			=	window.app || (window.app = {}),
 
 /**
  * Handles UI elements. Note: most Views not accessible through app.View
- *
- * View
- *   Preview
- *     setup()
- *     show(ddir, dfile, epoch)
  */
 (function () {
 	'use strict';
 	
 	var	cart,
 		channelBox,
+		help,
 		info,
 		map,
 		tabs,
@@ -150,13 +146,7 @@ var	app			=	window.app || (window.app = {}),
 			this._el.set('html', text);
 		},
 		setup: function () {
-			this._el = tabs.add('INFO');
-			this._el.setStyles({
-				color: '#333',
-				overflow: 'auto',
-				padding: '25px 15px',
-				width: '95%'
-			});
+			this._el = tabs.add('SITE');
 			
 			PubSub.subscribe('inputChanged', function (data) {
 				var shortName = $('site').options[$('site').selectedIndex]
@@ -171,6 +161,21 @@ var	app			=	window.app || (window.app = {}),
 			});
 			
 			this._el.set('text', '');
+		}
+	});
+
+	help = new View({
+		_load: function (text) {
+			this._el.set('html', text);
+		},
+		setup: function () {
+			this._el = tabs.add('HELP');
+			this._el.set('text', 'Loading...');
+
+			new Request({
+				onSuccess: this._load,
+				url: app.settings.HELP_URL
+			}).get('');
 		}
 	});
 	
@@ -244,6 +249,8 @@ var	app			=	window.app || (window.app = {}),
 				if (input.desc) delete input.desc;
 			}
 			input.page = 0;
+
+			this._empty();
 			
 			app.Models.Events.fetch(input);
 		},
@@ -853,14 +860,21 @@ var	app			=	window.app || (window.app = {}),
 			
 			evtTime = app.Models.Events.get(this.getCurrentEvent().id).epoch;
 
+			var ans = true;
+			if (Browser.ie) {
+				ans = confirm ('Waveform Viewer is currently not supported in Internet Explorer. Continue?');
+			}
+
 			// Open WF Viewer
-			window.open(app.settings.constructWF(
-				staArr[0],
-				chanArr,
-				evtTime,
-				nsamp,
-				srate
-			));
+			if (ans) {
+				window.open(app.settings.constructWF(
+					staArr[0],
+					chanArr,
+					evtTime,
+					nsamp,
+					srate
+				));
+			}
 		},
 		hide: function () {
 			this._el.fade('out');
@@ -926,14 +940,14 @@ var	app			=	window.app || (window.app = {}),
 				width: '250px'
 			});
 			
-			this.enabled = !!$('enablePrev').checked;
+			this.enabled = !$('disablePrev').checked;
 			
-			$('enablePrev').addEvent('click', function () {
-				if ($('enablePrev').checked) {
-					that.enabled = true;
-				} else {
+			$('disablePrev').addEvent('click', function () {
+				if ($('disablePrev').checked) {
 					that.enabled = false;
 					that._pop.close();
+				} else {
+					that.enabled = true;
 				}
 			});
 		},

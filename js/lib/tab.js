@@ -2,11 +2,6 @@ var _ = window._;
 
 /**
  * Provides tab functionality for a specified element
- * 
- * Tabs()
- * - initialize(wrap)
- * - add(name)
- * - select(idx)
  */
 (function (exports) {
     'use strict';

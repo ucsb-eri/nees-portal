@@ -13,6 +13,9 @@ var app			=	window.app || (window.app = {});
 		app.Controller.Input.init();
 		app.Controller.Input.getInput();
 		app.Controller.TableNav.init();
+
+		$('formatDetails').set('href', app.settings.FORMAT_DETAILS_URL);
+		$('formatDetails').set('target', '_blank');
 	});
 	
 }) ();

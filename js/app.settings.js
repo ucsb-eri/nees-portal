@@ -9,6 +9,8 @@ var app	 =   window.app || (window.app = {});
 		// Initialize settings object
 		settings			=   {};
 		
+	settings.FORMAT_DETAILS_URL	=	'format.pdf';
+	settings.HELP_URL			=	'help.pdf';
 	settings.CART_SUBMIT_URL	=	'cartProc.php';
 	settings.FACILITIES_URL		=	'http://eot-dev.nees.ucsb.edu/facilities/';
 	

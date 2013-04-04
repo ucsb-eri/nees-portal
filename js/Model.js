@@ -1,15 +1,9 @@
-/*jslint mootools:true */
 var app     =   window.app || (window.app = {}),
 	_       =   window._,
 	PubSub  =   window.PubSub;
 
 /**
  * Handles application data
- * 
- * Model
- *   events
- *   channels
- *   cart
  */
 (function () {
 	'use strict'
