@@ -10,7 +10,7 @@ var app	 =   window.app || (window.app = {});
 		settings			=   {};
 		
 	settings.FORMAT_DETAILS_URL	=	'format.pdf';
-	settings.HELP_URL			=	'help.pdf';
+	settings.HELP_URL			=	'help.php';
 	settings.CART_SUBMIT_URL	=	'cartProc.php';
 	settings.FACILITIES_URL		=	'http://eot-dev.nees.ucsb.edu/facilities/';
 	
