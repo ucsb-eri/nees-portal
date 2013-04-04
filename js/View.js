@@ -147,6 +147,7 @@ var	app			=	window.app || (window.app = {}),
 		},
 		setup: function () {
 			this._el = tabs.add('SITE');
+			this._el.setStyle('overflow', 'auto');
 			
 			PubSub.subscribe('inputChanged', function (data) {
 				var shortName = $('site').options[$('site').selectedIndex]
