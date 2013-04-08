@@ -941,10 +941,10 @@ var	app			=	window.app || (window.app = {}),
 				width: '250px'
 			});
 			
-			this.enabled = !$('enablePrev').checked;
+			this.enabled = !!$('enablePrev').checked;
 			
 			$('enablePrev').addEvent('click', function () {
-				if ($('enablePrev').checked) {
+				if (!$('enablePrev').checked) {
 					that.enabled = false;
 					that._pop.close();
 				} else {
