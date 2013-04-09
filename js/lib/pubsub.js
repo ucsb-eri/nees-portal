@@ -1,18 +1,15 @@
-/**
- * Implementation of Publish/Subscribe pattern. Callbacks subscribed to a topic
- *   are fired when data is published to that topic.
- *
- *  PubSub
- *  - subscribe(topic, callback)
- *  - publish(topic, data)
- */
-(function (exports) {
+// PubSub.js
+// =========
+//
+// Implementation of Publish/Subscribe pattern. Callbacks subscribed to a topic
+//   are fired when data is published to that topic.
+//
+(function () {
 	'use strict';
 
-	var DEBUG = true,
-		PubSub;
+	var DEBUG = false;
 
-	PubSub = {
+	var PubSub = {
 		// Register a function to be called when the specified topic is
 		//   published
 		subscribe: function (topic, callback) {
@@ -32,6 +29,6 @@
 			return this;
 		}
 	};
+	window.PubSub = PubSub; // Introduce object to global scope
 
-	exports.PubSub = PubSub; // Introduce object to global scope
-}) (window);
+}) ();

@@ -1,17 +1,19 @@
-var	app			=	window.app || (window.app = {}),
-
-	_			=	window._,
-	google		=	window.google,
-	PopUpWindow	=	window.PopUpWindow,
-	PubSub		=	window.PubSub,
-	Tabs		=	window.Tabs;
-
-/**
- * Handles UI elements. Note: most Views not accessible through app.View
- */
+// View.js
+// =======
+//
+// Visualize data involved in the data portal.
+//
 (function () {
 	'use strict';
-	
+
+	// Make sure app namespace is loaded
+	var app;
+	if (this.app && this.app.settings) {
+	} else {
+		throw 'Error: app namespace not loaded yet.';
+	}
+
+	// Initialize View objects
 	var	cart,
 		channelBox,
 		help,
@@ -21,12 +23,16 @@ var	app			=	window.app || (window.app = {}),
 		evtGrid,
 		thumbPop,
 		View;
-	
+
+	// Create app.View namespace
 	app.View = {};
-	
+
+	// Prepare tabs
 	tabs = new Tabs($('app-viewport'));
-	
+
+	// Create View prototype
 	View = new Class({
+		// Set up View prototype
 		initialize: function (options) {
 			Object.append(this, options);
 			_.bindAll(this);
@@ -39,43 +45,53 @@ var	app			=	window.app || (window.app = {}),
 			
 			this.setup();
 		},
+
+		// Make sure render() and setup() are not undefined
 		render: function () {},
 		setup: function () {}
 	});
-	
+
+// <View.Components>
+
+	// map component
 	map = new View({
 		_events: {
 			'inputChanged': 'setPosition',
 			'eventsUpdated': '_drawMarkers'
 		},
+		// Draw distance range circle
 		_drawCircle: function (center, radius) {
 			this._mapCirc.setMap(null);
 			this._mapCirc.setCenter(center);
 			this._mapCirc.setRadius(radius * 1000);
 			this._mapCirc.setMap(this._mapObj);
 		},
+		// Draw markers on map
 		_drawMarkers: function (data) {
 			this._resetMarkers();
 
 			for (var i = 0, j = data.length; i < j; i++) {
-				var loc		=	new google.maps.LatLng(data[i].lat,
-									data[i].lng),
-					marker	=	new google.maps.Marker({
-						flat: true,
-						icon: Object.append({
-							path: google.maps.SymbolPath.CIRCLE,
-							fillColor: 'yellow',
-							fillOpacity: 0.6,
-							strokeColor: 'black',
-							strokeOpacity: 1,
-							strokeWeight: 1
-						}, app.settings.getMarkerOptions(data[i].ml)),
-						markerIndex: i.valueOf(),
-						position: loc,
-						title: 'Evid: ' + data[i].evid + '\nML: ' + data[i].ml,
-						zIndex: -1
-					});
+				var loc = new google.maps.LatLng(data[i].lat,
+							data[i].lng);
 
+				// Create marker
+				var marker = new google.maps.Marker({
+					flat: true,
+					icon: Object.append({
+						path: google.maps.SymbolPath.CIRCLE,
+						fillColor: 'yellow',
+						fillOpacity: 0.6,
+						strokeColor: 'black',
+						strokeOpacity: 1,
+						strokeWeight: 1
+					}, app.settings.markerSettings(data[i].ml)),
+					markerIndex: i.valueOf(),
+					position: loc,
+					title: 'Evid: ' + data[i].evid + '\nML: ' + data[i].ml,
+					zIndex: -1
+				});
+
+				// Link marker to evtGrid Row
 				google.maps.event.addListener(marker, 'click', function () {
 					$('app-evt-table').getElement('tbody tr[modelNum='
 						+ this.markerIndex + ']').click();
@@ -85,14 +101,16 @@ var	app			=	window.app || (window.app = {}),
 				this._markers.push(marker);
 			}
 		},
+		// Highlight marker, called when evtGrid row is hovered
 		_highlightMarker: function (index) {
 			var marker	  =   this._markers[index],
 				markerIcon  =   marker.getIcon();
 				
 			markerIcon.fillColor = 'red';
 			marker.setIcon(markerIcon);
-			marker.setZIndex(2);
+			marker.setZIndex(2); // Make sure marker can be seen
 		},
+		// Unset marker highlight, called when mouse leaves evtGrid row
 		_dehighlightMarker: function (index) {
 			var marker	  =   this._markers[index],
 				markerIcon  =   marker.getIcon();
@@ -101,54 +119,71 @@ var	app			=	window.app || (window.app = {}),
 			marker.setIcon(markerIcon);
 			marker.setZIndex(1);
 		},
+		// Clear markers
 		_resetMarkers: function () {
 			for (var i = this._markers.length - 1; i >= 0; i--) {
 				this._markers[i].setMap(null);
 				this._markers.pop();
 			}
 		},
+		// Set map position. Moves map, draws and fits to range circle.
 		setPosition: function (data) {
 			var center = new google.maps.LatLng($(data.site).get('lat'),
 				$(data.site).get('lon'));
 
+			// Stop if the distance hasn't changed
 			if (this._mapCirc.getCenter() &&
 				this._mapCirc.getCenter().equals(center) &&
 				this._mapCirc.getRadius() === data.radius * 1000) {
 				return;
 			}
 
+			// Center map on site
 			this._mapObj.setOptions({
 				center:	center
 			});
 
 			this._drawCircle(center, data.radius);
+
+			// Fit to range circle
 			this._mapObj.fitBounds(this._mapCirc.getBounds());
 		},
+		// Initialize this View
 		setup: function () {
-			this._markers = [];
 			this._el = tabs.add('MAP');
+			this._markers = [];
+
+			// Initialize map
 			this._mapObj = new google.maps.Map(this._el, {
 				center: new google.maps.LatLng(0, 0),
 				mapTypeId: google.maps.MapTypeId.TERRAIN,
 				zoom: 8
 			});
+
+			// Initialize range circle
 			this._mapCirc = new google.maps.Circle(
-				app.settings.MAP_CIRCLE_SETTINGS);
+				app.settings.rgcSettings);
 			this._mapCirc.setMap(this._mapObj);
-			
+
+			// Trigger google maps refresh when tab switched
 			this._el.addEvent('tabFocus',
 				google.maps.event.trigger.pass([this._mapObj, 'resize']));
 		}
 	});
-	
+
+	// site tab
 	info = new View({
+		// Load page when request returns
 		_loadInfo: function (text) {
 			this._el.set('html', text);
 		},
+		// Initialize View
 		setup: function () {
+			// Initialize View
 			this._el = tabs.add('SITE');
 			this._el.setStyle('overflow', 'auto');
-			
+
+			// Listen for input change, request new site info
 			PubSub.subscribe('inputChanged', function (data) {
 				var shortName = $('site').options[$('site').selectedIndex]
 					.getAttribute('site').toLowerCase();
@@ -157,44 +192,53 @@ var	app			=	window.app || (window.app = {}),
 
 				new Request({
 					onSuccess: info._loadInfo,
-					url: 'siteInfo.php'
+					url: Drupal.settings.drupal_path + 'siteInfo.php'
 				}).get('site=' + shortName);
 			});
-			
+
+			// Clear element
 			this._el.set('text', '');
 		}
 	});
 
+	// help tab
 	help = new View({
+		// Load help page
 		_load: function (text) {
 			this._el.set('html', text);
 		},
+		// Set up View
 		setup: function () {
 			this._el = tabs.add('HELP');
 			this._el.set('text', 'Loading...');
 
 			new Request({
 				onSuccess: this._load,
-				url: app.settings.HELP_URL
+				url: app.settings.URL.HELP
 			}).get('');
 		}
 	});
-	
+
+	// Lists evts corresponding to the input
 	evtGrid = new View({
 		_events: {
 			'eventsUpdated': '_loadEvents',
 			'inputChanged': '_empty',
 			'clearTable': '_empty'
 		},
+		// Load events into evtGrid
 		_loadEvents: function (models) {
 			var i, j, k,
 				metaData;
-				
+
+			// Empty grid
 			this._grid.empty();
+
 			if (!app.Controller.Input._input.sortBy) {
 				$$('.sort').removeClass('sort');
 			}
-			
+
+			// Load data from models
 			for (i = 0, j = models.length; i < j; i++) {
 				this._grid.push(
 					this.filter(Object.values(
@@ -209,83 +253,91 @@ var	app			=	window.app || (window.app = {}),
 				});
 			}
 
-			// Re-mark evt items on load
+			// Re-mark evt items in cart on load
 			for (i = 0, j = Object.keys(app.Models.Cart.toObj()),
 					k = j.length; i < k; i++) {
 				$$('.evt-item-' + j[i]).addClass('active');
 			}
-			
+
+			// Write metadata
 			metaData = app.Models.Events.getMeta();
 			$('query-result').set('text', metaData.rows +
 				' results.');
 			$('table-ctrl-page').set('value', metaData.pageNum + 1);
 			$('table-ctrl-total').set('text', metaData.totalPages);
 		},
+		// Empty and replace with 'Loading...' message
 		_empty: function () {
 			this._grid.empty();
 			this._grid.push([ 'Loading...' ]);
 		},
+		// Handles sort
 		_onSort: function (tbody, sortIndex) {
-			var	colName,
-				input   =   app.Controller.Input._input;
-				
-			if (sortIndex.get('text') === 'Evid') {
-				colName = 'evid';
-			} else {
-				colName = Object.keyOf(app.settings.EVT_GRID_HEADER,
-							sortIndex.get('html'));
-			}
-				
+			var	input = app.Controller.Input._input;
+
+			var colName = (sortIndex.get('text') === 'Evid') ?
+				'evid':
+				Object.keyOf(app.settings.evtGridHeader, sortIndex.get('html'));
+
+			// Reset sort class
 			this._grid.head.getElements('th').removeClass('sort')
 				.removeClass('desc');
-				
+
+			// Figure out sort column and desc/asc
+			sortIndex.addClass('sort');
+			input.sortBy = colName;
 			if (input.sortBy && input.sortBy != colName || !input.desc) {
-				input.sortBy = colName;
-				sortIndex.addClass('sort');
 				sortIndex.addClass('desc');
 				input.desc = true;
 			} else {
-				input.sortBy = colName;
-				sortIndex.addClass('sort');
 				if (input.desc) delete input.desc;
 			}
+
+			// Reset page number
 			input.page = 0;
 
+			// Get new data
 			this._empty();
-			
 			app.Models.Events.fetch(input);
 		},
+		// evtGrid row hover
 		_rowOver: function (evt, row) {
 			map._highlightMarker(parseInt(row.get('modelNum'), 10));
 		},
+		// evtGrid row mouseleave
 		_rowOut: function (evt, row) {
 			map._dehighlightMarker(parseInt(row.get('modelNum'), 10));
 		},
+		// handle evtGrid row click
 		_rowSelected: function (evt, row) {
-			var	date		=   app.Models.Events.get(row.get('id')).time,
-				id			=   app.Models.Events.get(row.get('id')).id,
-				
-				evtObj		=   {
+			var	date	=   app.Models.Events.get(row.get('id')).time,
+				id		=   app.Models.Events.get(row.get('id')).id,
+
+				// Query for channels
+				evtObj	=   {
 					evid: id,
 					id: id,
 					date: date,
 					siteId: $(app.Controller.Input._input.site).get('id')
 				};
 
+			// Style selected row
 			this.clearSelection();
 			row.addClass('selected');
-			
+
+			// Trigger eventSelected event, open channelBox
 			channelBox.setCurrentEvent(evtObj);
 			PubSub.publish('eventSelected', evtObj);
-			
+
 			thumbPop._pop.close();
 		},
+		// Handle 'Replace depth with evid' option
 		_toggleDepEvid: function () {
 			var	hasDepth	=	this._headers.contains('depth'),
-				headerText	=	Object.values(app.settings.EVT_GRID_HEADER)
+				headerText	=	Object.values(app.settings.evtGridHeader)
 					.append(['']);
 				
-			this._headers = Object.keys(app.settings.EVT_GRID_HEADER)
+			this._headers = Object.keys(app.settings.evtGridHeader)
 				.append(['']);
 
 			if (hasDepth) {
@@ -296,9 +348,11 @@ var	app			=	window.app || (window.app = {}),
 			
 			this._loadEvents(app.Models.Events.toArray());
 		},
+		// Undo evtGrid row highlight
 		clearSelection: function () {
 			this._el.getElements('tr').removeClass('selected');
 		},
+		// Filters evtGrid row data before it is displayed
 		filter: function (oldArr) {
 			var newArr = [];
 			for (var i = 0, j = oldArr.length; i < j; i++) {
@@ -310,24 +364,28 @@ var	app			=	window.app || (window.app = {}),
 			}
 			return newArr;
 		},
+		// Initialize View
 		setup: function () {
 			_.bindAll(this);
 			this._el = $('app-evt-table');
-			
-			this._headers = Object.keys(app.settings.EVT_GRID_HEADER);
-			
+			this._headers = Object.keys(app.settings.evtGridHeader);
+
+			// Create HTMLTable
 			this._grid = new HtmlTable({
 				classZebra: 'odd',
 				gridContainer : this._el,
-				headers: Object.values(app.settings.EVT_GRID_HEADER)
+				headers: Object.values(app.settings.evtGridHeader)
 					.append(['']),
 				zebra: true
 			});
+
+			// Attach event listeners
 			this._grid.element.addEvent('click:relay(th)', this._onSort);
 			this._grid.body.addEvent('click:relay(tr)', this._rowSelected);
 			this._grid.body.addEvent('mouseover:relay(tr)', this._rowOver);
 			this._grid.body.addEvent('mouseout:relay(tr)', this._rowOut);
-			this._grid.inject(this._el);
+
+			$('depToEvid').addEvent('click', this._toggleDepEvid);
 
 			PubSub.subscribe('cartUpdated', function () {
 				$$('.evt-item').removeClass('active');
@@ -336,18 +394,21 @@ var	app			=	window.app || (window.app = {}),
 					$$('.evt-item-' + j[i]).addClass('active');
 				}
 			});
-			
-			$('depToEvid').addEvent('click', this._toggleDepEvid);
+
+			// Insert grid into DOM
+			this._grid.inject(this._el);
 		}
 	});
 	
+	// cart popup component
 	cart = new View({
 		_events: {
 			'cartUpdated': '_loadCart'
 		},
+		// Just make sure it's a reasonable email
 		_emailRegex: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i,
+		// List items in cart
 		_loadCart: function () {
-
 			var	cartItems	=	app.Models.Cart.toObj(),
 				pane		=	$('cart-left'),
 				tree		=	new Element('ul');
@@ -368,6 +429,7 @@ var	app			=	window.app || (window.app = {}),
 
 			}
 		},
+		// Takes cart model as input, returns table listing model data
 		_makeCartRow: function (cartData) {
 			var	chnList	=	new Element('ul'),
 				evtChns	=	cartData.chnList;
@@ -411,6 +473,8 @@ var	app			=	window.app || (window.app = {}),
 
 			return table;
 		},
+
+	// <Paul's Functions for displaying cart progress>
 		_progress: function (response) {
 			var obj = JSON.decode(response);
 			
@@ -443,7 +507,7 @@ var	app			=	window.app || (window.app = {}),
 				onSuccess: function (response) {
 					cart._progress(response);
 				},
-				url: 'readProgress.php'
+				url: Drupal.settings.drupal_path + '/readProgress.php'
 			}).send('statusFile=' + cart.sfile);
 		},
 		_watchdog: function () {
@@ -459,6 +523,9 @@ var	app			=	window.app || (window.app = {}),
 				}
 			}
 		},
+	// </Paul's Functions for displaying cart progress>
+
+	// <#cart-empty functions>
 		_confirmEmpty: function () {
 			var	pos		=	$('view-cart').getCoordinates(),
 				posY	=	pos.top - 15,
@@ -476,6 +543,9 @@ var	app			=	window.app || (window.app = {}),
 		_declineEmpty: function () {
 			this._emptyPop.close();
 		},
+	// </#cart-empty functions>
+
+	// <cart visibility>
 		_hide: function () {
 			this._el.fade('out');
 			this._overlay.fade('out');
@@ -484,6 +554,9 @@ var	app			=	window.app || (window.app = {}),
 			this._el.fade('in');
 			this._overlay.fade('in');
 		},
+	// </cart visibility>
+
+		// Push cart to backend
 		submit: function () {
 			var	cartData, formatData, userData,
 				name	=	$('cart-input-name').value,
@@ -497,12 +570,13 @@ var	app			=	window.app || (window.app = {}),
 			}
 			
 			cartData = {};
-			
+
 			userData			=	{};
 			userData.name		=	name;
 			userData.email		=	email;
 			cartData.userData	=	userData;
-			
+
+			// Construct format data object
 			formatData			=	{};
 			$$('#cart-input-format tbody tr').each(function (tableRow) {
 				if (tableRow.getElement('.format-toggle').checked) {
@@ -515,37 +589,39 @@ var	app			=	window.app || (window.app = {}),
 							'' : 'T0';
 				}
 			});
-			cartData.formatData	=	formatData;
-			
-			formatCount = Object.getLength(formatData);
+			cartData.formatData	= formatData;
 
+			// Make sure >1 format is selected
+			formatCount = Object.getLength(formatData);
 			if (Object.getLength(formatData) === 0) {
 				alert('Please select a format!');
 				return;
 			}
-			
-			cartData.evtData	=	{};
-			for (var i = 0, j = app.Models.Cart.toObj(), k = Object.getLength(j); i < k; i++) {
+
+			// Construct channel list
+			cartData.evtData = {};
+			for (var i = 0, j = app.Models.Cart.toObj(),
+				k = Object.getLength(j); i < k; i++) {
+
 				var evt = cartData.evtData[Object.keys(j)[i]] = {};
 				evt.chnList = Object.values(j)[i].chnList;
 			}
-			
+
+			// Calculate worst-case timeout (give one second per channel per
+			//   format)
 			for (var i = 0, j = Object.values(cartData.evtData), k = j.length;
 				i < k; i++) {
 				chnCount += j[i].chnList.length;
 			}
-			
-			// Calculate worst-case timeout (give one second per channel per
-			//   format)
 			cart.initTimeout = (formatCount * chnCount * 5) + 15;
 			cart.timeout = (formatCount * chnCount * 5) + 15;
 			cart.zipAvail = false;
-			
+
 			if (!chnCount) {
 				alert('No events/channels in the cart!');
 				return;
 			}
-			
+
 			new Request({
 				method: 'post',
 				onSuccess: function (response) {
@@ -554,9 +630,10 @@ var	app			=	window.app || (window.app = {}),
 					cart._watchdog();
 					cart._waitOn();
 				},
-				url: app.settings.CART_SUBMIT_URL
+				url: app.settings.URL.CART_SUBMIT
 			}).send('json=' + JSON.encode(cartData));
 		},
+		// Initialize View
 		setup: function () {
 			var	appCart		=	this._el		=	$('app-cart'),
 				cartOverlay	=	this._overlay	=	new Element('div', {
@@ -580,7 +657,8 @@ var	app			=	window.app || (window.app = {}),
 					tableRow	=	new Element('tr');
 				
 				enabled = formatProps.enabled;
-				
+
+				// Messy... could use html string for this
 				tableRow.adopt(
 					new Element('td').adopt(
 						new Element('input', {
@@ -657,30 +735,32 @@ var	app			=	window.app || (window.app = {}),
 			document.body.adopt(cartOverlay);
 			$$(this._el, this._overlay).fade('hide');
 
+			// Attach event listeners
 			$('view-cart').addEvent('click', this._show);
-				
 			$('empty-cart').addEvent('click',
 				this._confirmEmpty);
 			$('yes-empty').addEvent('click', this._empty);
 			$('no-empty').addEvent('click', this._declineEmpty);
-			
 			$('cart-close').addEvent('click', this._hide);
 			cartOverlay.addEvent('click', this._hide);
 			$('cart-submit').addEvent('click', this.submit);
-			
+
+			// Initialize 'Confirm Empty' box
 			this._emptyPop = new PopUpWindow('-', {
 				contentDiv: 'empty-box',
 				height: '100px',
 				width: '250px'
 			});
-			
+
+			// Close cart if cart if updated
 			PubSub.subscribe('cartUpdated', function () {
 				$('cart-progress').setStyle('display', 'none');
 				$('cart-download').setStyle('display', 'none');
 			});
 		}
 	});
-	
+
+	// component displays channel models
 	channelBox = new View({
 		_events: {
 			'cartUpdated': '_remarkChannels',
@@ -688,12 +768,15 @@ var	app			=	window.app || (window.app = {}),
 			'eventSelected':	'hide',
 			'eventsUpdated':	'hide'
 		},
+		// Display channel models
 		_loadChannels: function (models) {
 			var	i, j, k,
 				bodyRow,
 				headRow;
-			
-			this._grid.empty();
+
+			this._grid.empty(); // Clear grid
+
+			// Push channel rows into HTMLTable
 			for (i = 0, j = models.length; i < j; i++) {
 				var	cb,
 					vchan	=	models[i].dfile,
@@ -735,11 +818,13 @@ var	app			=	window.app || (window.app = {}),
 				this._remarkChannels();
 
 				// Set up clickable items
-				$$('.wv-item, .cart-item:not(#chn-add-all)').addEvent('click', function () {
-					this.toggleClass('active');
-				});
-				$$('.cart-item:not(#chn-add-all)').addEvent('click', this._addToCart);
-
+				$$('.wv-item, .cart-item:not(#chn-add-all)').addEvent('click',
+					function () {
+						this.toggleClass('active');
+					}
+				);
+				$$('.cart-item:not(#chn-add-all)').addEvent('click',
+					this._addToCart);
 				$$('.wv-item').addEvent('click', function () {
 					if ($$('.wv-item.active').length > 4) {
 						this.removeClass('active');
@@ -752,6 +837,7 @@ var	app			=	window.app || (window.app = {}),
 			
 			this._el.fade('in');
 		},
+		// Expand channelBox to viewportSize - titleSize on resize
 		_adjustSize: function () {
 			var	gridH,
 				offsetH = $('app-grid').getSize().y - 5,
@@ -765,10 +851,11 @@ var	app			=	window.app || (window.app = {}),
 					$('channel-grid-head').getSize().y;
 			this._bodyEl.setStyle('height', offsetH - gridH);
 		},
+		// Remove all unmarked items from cart, add marked items
 		_addToCart: function () {
 			var i, j, chnCount, siteEvt,
-				active		=	$$('.cart-item.active:not(#chn-add-all) ! tr'),
-				inactive	=	$$('.cart-item:not(.active):not(#chn-add-all) ! tr');
+				active	 = $$('.cart-item.active:not(#chn-add-all) ! tr'),
+				inactive = $$('.cart-item:not(.active):not(#chn-add-all) ! tr');
 			
 			for (i = 0, j = inactive.length; i < j; i++) {
 				app.Models.Cart.remove(this.getCurrentEvent().evid,
@@ -804,8 +891,8 @@ var	app			=	window.app || (window.app = {}),
 			}
 			PubSub.publish('cartUpdated', app.Models.Cart._data);
 		},
+		// Re-mark channel cart items on load
 		_remarkChannels: function () {
-			// Re-mark channel cart items on load
 			for (var i = 0, j = $$('#channel-grid-body tr'), k = j.length;
 					i < k; i++) {
 				if (app.Models.Cart.has(this.getCurrentEvent().evid,
@@ -822,6 +909,7 @@ var	app			=	window.app || (window.app = {}),
 				$('chn-add-all').removeClass('active');
 			}
 		},
+		// View selected items in WaveForm Viewer
 		_viewSelected: function () {
 			var	i, j, evtTime, nsamp, srate,
 				chanArr				=	[],
@@ -846,6 +934,7 @@ var	app			=	window.app || (window.app = {}),
 				srate = chnObj.srate;
 			});
 
+			// Cannot have multiple channels
 			var multiSta = false;
 			for (i = 0, j = staArr.length - 1; i < j; i++) {
 				if (staArr[i] != staArr[i + 1]) {
@@ -863,12 +952,13 @@ var	app			=	window.app || (window.app = {}),
 
 			var ans = true;
 			if (Browser.ie) {
-				ans = confirm ('Waveform Viewer is currently not supported in Internet Explorer. Continue?');
+				ans = confirm ('Waveform Viewer is currently not supported in '
+					+ 'Internet Explorer. Continue?');
 			}
 
 			// Open WF Viewer
 			if (ans) {
-				window.open(app.settings.constructWF(
+				window.open(app.settings.getWFUrl(
 					staArr[0],
 					chanArr,
 					evtTime,
@@ -877,17 +967,23 @@ var	app			=	window.app || (window.app = {}),
 				));
 			}
 		},
+		// Hide channelBox
 		hide: function () {
 			this._el.fade('out');
 		},
+		// Initialize View
 		setup: function () {
 			_.bindAll(this);
+
+			// Get elements
 			this._el = $('app-channel-box');
 			this._headEl = $('channel-grid-head');
 			this._bodyEl = $('channel-grid-body');
-			
-			this._headers = Object.keys(app.settings.CHN_GRID_HEADER);
-			
+
+			// Get headers
+			this._headers = Object.keys(app.settings.chnGridHeader);
+
+			// Create table
 			this._grid = new HtmlTable({
 				classZebra: 'odd',
 				gridContainer : this._gridEl,
@@ -898,21 +994,22 @@ var	app			=	window.app || (window.app = {}),
 						title: 'Add/Remove all channels'
 					})
 				]
-				.append(Object.values(app.settings.CHN_GRID_HEADER))
+				.append(Object.values(app.settings.chnGridHeader))
 				.append(['']),
 				zebra: true
 			});
 			this._headEl.adopt(new Element('table').adopt(this._grid.thead));
 			this._bodyEl.adopt(new Element('table').adopt(this._grid.body));
-			
+
+			// Resize channelBox when window is resized
 			window.addEvent('resize', this._adjustSize);
 			this._adjustSize();
-			
+
 			this._el.fade('hide');
-			
+
+			// Set up event handlers
 			$('channel-close').addEvent('click', this.hide);
 			$('channel-view').addEvent('click', this._viewSelected);
-			
 			$('chn-add-all').addEvent('click', function () {
 				if ($('chn-add-all').hasClass('active')) {
 					// Remove all from cart
@@ -923,26 +1020,31 @@ var	app			=	window.app || (window.app = {}),
 				this._addToCart();
 			}.bind(this));
 		},
+		// Get evid of event whose channels are displayed in the channel box
 		getCurrentEvent: function () {
 			return this._currEvt || {};
 		},
+		// Set evid of event whose channels are displayed in the channel box
 		setCurrentEvent: function (currEvt) {
 			this._currEvt = currEvt;
 		}
 	});
-	
+
+	// Thumbnail preview of waveforms displayed on mouseover of WF icon in
+	//   channelBox
 	thumbPop = new View({
 		setup: function () {
 			var	that	=	this;
-			
+
+			// Create window
 			this._pop = new PopUpWindow('PopUp Window', {
 				contentDiv: 'thumb-box',
 				height: '100px',
 				width: '250px'
 			});
-			
-			this.enabled = !!$('enablePrev').checked;
-			
+
+			// Set up enable/disable
+			this.enabled = $('enablePrev').checked;
 			$('enablePrev').addEvent('click', function () {
 				if (!$('enablePrev').checked) {
 					that.enabled = false;
@@ -952,6 +1054,8 @@ var	app			=	window.app || (window.app = {}),
 				}
 			});
 		},
+		// Given ddir, dfile, epoch, return closure that will display image
+		//   thumb in popup
 		show: function (ddir, dfile, epoch) {
 			var that = this;
 			return function () {
@@ -974,7 +1078,7 @@ var	app			=	window.app || (window.app = {}),
 				
 				preview	=	$('thumb-box');
 				
-				var thumbURL	=	app.settings.THUMBNAIL_URL_STRING
+				var thumbURL	=	app.settings.URL.THUMB
 					.replace('{DDIR}', ddir)
 					.replace('{DFILE}', dfile)
 					.replace('{EPOCH}', epoch);
@@ -988,6 +1092,8 @@ var	app			=	window.app || (window.app = {}),
 		}
 	});
 	app.View.Preview = thumbPop;
+
+	// </View.Components>
 
 }) ();
 

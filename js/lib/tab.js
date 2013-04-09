@@ -1,19 +1,22 @@
-var _ = window._;
-
-/**
- * Provides tab functionality for a specified element
- */
-(function (exports) {
+// tab.js
+// ======
+//
+// Provides tab functionality for a specified element
+//
+// Structure:
+// - el: Element given as parameter in constructor
+//   - #tabBar: Contains <div>s acting as tabs
+//   - #tabView: Holds content <div>s for each tab
+(function () {
     'use strict';
     
-    var Tabs;
-    
-    Tabs = new Class({
+    var Tabs = new Class({
+		// Constructor
         initialize: function (wrap) {
             _.bindAll(Tabs);
             this._wrap = wrap;
             
-            this._tabCounter = 0;
+            this._tabCounter = 0; // Used as tab "id"
             
             this._bar = new Element('div');
             this._bar.set('id', 'tabBar');
@@ -56,15 +59,18 @@ var _ = window._;
             
             return view;
         },
+		// Activate a specified tab
         select: function (idx) {
+			// Hide all tabViews
             this._wrap.getElements('.tabTitle, .tabView').removeClass('active');
             this._wrap.getElements('.tabView').hide();
-			
+
+			// Show selected tabView
             this._wrap.getElements('.tabTitle')[idx].addClass('active');
             this._wrap.getElements('.tabView')[idx].addClass('active');
             this._wrap.getElements('.tabView')[idx].show();
         }
     });
-    
-    exports.Tabs = Tabs;
-}) (window);
+    window.Tabs = Tabs;
+
+}) ();

@@ -1,13 +1,23 @@
-var app     =   window.app || (window.app = {}),
-	_       =   window._,
-	PubSub  =   window.PubSub;
-
-/**
- * Handles application data
- */
+// Model.js
+// ========
+//
+// Model retrieves and stores data from the server.
+//
 (function () {
-	'use strict'
-	var Collection, events, channels, cart;
+	'use strict';
+
+	// Make sure app namespace is loaded
+	var app;
+	if (this.app && this.app.settings) {
+		app = this.app;
+	} else {
+		throw 'Error: app namespace not loaded yet.';
+	}
+
+	var Collection,
+		events,
+		channels,
+		cart;
 	
 	// Initialize app.Models namespace
 	app.Models = {};
@@ -65,7 +75,8 @@ var app     =   window.app || (window.app = {}),
 			new Request.JSON({
 				method: app.DEBUG ? 'GET' : 'POST',
 				onSuccess: this._processData,
-				url: this.options.url + (app.DEBUG ? '.json' : '.php')
+				url: Drupal.settings.drupal_path + '/' + tthis.options.url
+					+ '.php';
 			}).send(queryString);
 		},
 		getMeta: function () {
@@ -149,7 +160,7 @@ var app     =   window.app || (window.app = {}),
 		if (Object.getLength(cart._data) === 0) {
 			$('cart-count').innerHTML = 'Cart empty';
 		} else {
-			$('cart-count').set('html', app.settings.CART_COUNT_STRING
+			$('cart-count').set('html', app.settings.cartCountStr
 				.replace('{chnCount}', numChns)
 				.replace('{evtCount}', Object.getLength(cart._data))
 			);
@@ -171,7 +182,7 @@ var app     =   window.app || (window.app = {}),
 			if (Object.getLength(cart._data) === 0) {
 				$('cart-count').innerHTML = 'Cart empty';
 			} else {
-				$('cart-count').set('html', app.settings.CART_COUNT_STRING
+				$('cart-count').set('html', app.settings.cartCountStr
 					.replace('{chnCount}', numChns)
 					.replace('{evtCount}', Object.getLength(cart._data))
 				);

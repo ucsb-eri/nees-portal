@@ -1,50 +1,64 @@
-var	app		=	window.app || (window.app = {}),
-	_		=	window._,
-	Picker	=	window.Picker,
-	PubSub	=	window.PubSub;
-
-/**
- * Handles user input
- */
+// Controller.js
+// =============
+//
+// Controller handles the input fields of the data portal, triggering events to
+// drive the application.
+// 
 (function () {
 	'use strict';
-	
-	// Input field elements
-	var Controller  =   {},
-		inputFields =   $$('.app-input-flds'),
-		dateFields  =   $$('.app-input-flds-date');
-	
+
+	// Make sure app namespace is loaded
+	var app;
+	if (this.app && this.app.settings) {
+		app = this.app;
+	} else {
+		throw 'Error: app namespace not loaded yet.'
+	}
+
+	// Set up variables
+	var Controller  = {},
+		inputs = $$('.app-input-flds');
+
+
+// <Controller.Input>
+// ------------------
+// Handles Input
+
 	// Handle user input from Input box
 	Controller.Input = {};
+
 	// Initialize input controls
 	Controller.Input.init = (function () {
 		_.bindAll(this, 'getInput', 'getSites', 'loadSites');
-		
-		dateFields.each(function (el) {
+
+	// Initialize DatePickers
+		$$('.app-input-flds-date').each(function (el) {
 			var datePicker = new Picker.Date(el,
-				app.settings.DP_SETTINGS);
+				app.settings.dpSettings);
 			el.store('_picker', datePicker);
 		});
-		
-		// Set DatePicker initial values
-		$('sDate').retrieve('_picker').select(app.settings.FIRST_EVENT);
+		$('sDate').retrieve('_picker').select(app.settings.firstEvt);
 		$('eDate').retrieve('_picker').select(new Date());
-		
+
+	// Load sites
 		this.getSites();
 		
-		inputFields.addEvent('change', this.getInput);
-		inputFields.addEvent('keypress', function (evt) {
+	// Handle input events
+		inputs.addEvent('change', this.getInput);
+		inputs.addEvent('keypress', function (evt) {
 			if (evt.key === 'enter') {
 				this.getInput();
 			}
 		}.bind(this));
-		
+
+		// Set up PGA-field
 		$('pga-field')[$('enable-PGA').checked ? 'show' : 'hide']();
 		$('enable-PGA').addEvent('click', function () {
 			$('pga-field')[$('enable-PGA').checked ? 'show' : 'hide']();
 		});
 		$('enable-PGA').addEvent('click', this.getInput);
-		
+
+		// Check for site notice in <shortName>.txt
 		$('site-msg').hide();
 		PubSub.subscribe('inputChanged', function (data) {
 			var siteName = $('site').options[$('site').selectedIndex]
@@ -55,7 +69,7 @@ var	app		=	window.app || (window.app = {}),
 			new Request({
 				noCache: true,
 				onSuccess: Controller.Input.siteMsg,
-				url: siteName + '.txt'
+				url: Drupal.settings.drupal_path + '/' + siteName + '.txt'
 			}).get();
 		});
 	});
@@ -69,32 +83,37 @@ var	app		=	window.app || (window.app = {}),
 	// Prepare user input for data request
 	Controller.Input.getInput = (function () {
 		this._input = {};
-		
-		for (var idx = 0, l = inputFields.length; idx < l; idx++) {
-			this._input[inputFields[idx].get('id')] = inputFields[idx].value;
+
+		// Load input
+		for (var idx = 0, l = inputs.length; idx < l; idx++) {
+			this._input[inputs[idx].get('id')] = inputs[idx].value;
 		}
-		
+
 		if (!$('enable-PGA').checked) {
 			delete this._input['minPGA'];
 			delete this._input['maxPGA'];
 		}
-		
+
+		// Reset pagination variables
 		this._input.page = this._input.maxPages = 0;
-		
+
 		PubSub.publish('inputChanged', this._input);
 	});
+
 	// Send request for Station data. Calls Controller.Input.loadSites when
-	//   data is received
+	// data is received
 	Controller.Input.getSites = (function () {
-		var reqUrl = 'sites.' + (app.DEBUG ? 'xml' : 'php');
+		var reqUrl = Drupal.settings.drupal_path + '/sites.php';
 		new Request({
 			async: false,
 			onSuccess: this.loadSites,
 			url: reqUrl
 		}).get();
 	});
-	// Retrieve Station data from sites.xml
+
+	// Retrieve Station data from sites.php
 	Controller.Input.loadSites = (function (txt, xml) {
+		// Turn XML node into <option>
 		function addOption(node, level, parent) {
 			var nbsp	=   '\u00a0', // Unicode &nbsp; character
 				thisEl;
@@ -110,7 +129,7 @@ var	app		=	window.app || (window.app = {}),
 					lon: node.getAttribute('lon'),
 					site: node.getAttribute('name'),
 
-					// Create site hierarchical structure
+					// Create site 'hierarchical structure' with spaces
 					text: (new Array(level + 1).join(nbsp + nbsp)) +
 						node.getAttribute('name') +
 							' (' + node.getAttribute('descrip') + ')',
@@ -128,28 +147,40 @@ var	app		=	window.app || (window.app = {}),
 			}
 		}
 		
+		// Cycle through nodes
 		for (var i = 0, j = xml.getElementsByTagName('category'), k = j.length;
 				i < k; i++) {
 			addOption(j[i], 0, $('site'));
 		}
 	});
+
+// </Controller.Input>
+
+// <Controller.TableNav>
+// ---------------------
+// Handles pagination of evtGrid
 	
 	// Event query table navigation
 	Controller.TableNav = {
 		_currPage: 0,
 		_maxPage: 0
 	};
+
 	// Initialize Table Navigation controls
 	Controller.TableNav.init = (function () {
 		_.bindAll(Controller.TableNav);
+
+		// Attach events
 		$('table-ctrls').addEvent('click:relay(div.btn)',
 			Controller.TableNav.navOnClick);
 		$('table-ctrl-page').addEvent('keypress',
 			Controller.TableNav.pageEntered);
-		
+
+		// Reset to first page if input is changed
 		PubSub.subscribe('inputChanged', function () {
 			Controller.TableNav._currPage = 0;
 		});
+		// Update page navigation settings when eventsUpdated
 		PubSub.subscribe('eventsUpdated', function () {
 			var metaData = app.Models.Events.getMeta();
 			this._currPage = metaData.pageNum;
@@ -157,9 +188,11 @@ var	app		=	window.app || (window.app = {}),
 			
 			this.checkBounds();
 		}.bind(this));
-		
+
+		// Make sure page is in bounds
 		this.checkBounds();
 	});
+
 	// Disable buttons if max/min is reached
 	Controller.TableNav.checkBounds = (function () {
 		// Check lower bound
@@ -176,6 +209,8 @@ var	app		=	window.app || (window.app = {}),
 			$('table-ctrl-next').removeClass('disabled');
 		}
 	});
+
+	// Called by navOnClick and pageEntered to navigate to another page
 	Controller.TableNav.nav = (function (offset) {
 		PubSub.publish('clearTable', {});
 		this._currPage += parseInt(offset, 10);
@@ -186,10 +221,14 @@ var	app		=	window.app || (window.app = {}),
 		app.Controller.Input._input.page = this._currPage;
 		app.Models.Events.fetch(app.Controller.Input._input);
 	});
+
+	// Handle mouse click on nav buttons
 	Controller.TableNav.navOnClick = (function (evt, btn) {
 		this.nav(btn.get('data-page-offset'));
 		evt.preventDefault();
 	});
+
+	// Handle direct input of page number
 	Controller.TableNav.pageEntered = (function (evt) {
 		if (evt.key === 'enter') {
 			this._currPage = $('table-ctrl-page').value - 1;
@@ -198,7 +237,7 @@ var	app		=	window.app || (window.app = {}),
 			app.Models.Events.fetch(app.Controller.Input._input);
 		}
 	});
-	
-	app.Controller = Controller;
+
+// </Controller.TableNav>
 
 }) ();
